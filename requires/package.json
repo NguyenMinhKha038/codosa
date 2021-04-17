@@ -1,0 +1,17 @@
+{
+  "name": "require",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cau1.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node cau3"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cross-fetch": "^3.1.4",
+    "random-date-generator": "^1.0.2"
+  }
+}
