@@ -1,0 +1,39 @@
+hàm update và delete cần xác thực password trước khi update hoặc delete
+Ok hết r h tets 
+user:
+-validate Ok
+-check exits Ok
+-auth ok
+
+staff:
+-register ok
+-login ok
+-token ok
+-check exits ok
+-valiidate ok
+-auth ok
+-getuser ok
+-get info ok
+-update ok
+-delete user ok
+
+manager:
+-register ok
+-login ok
+-check exits ok
+-delete user ok
+-delete staff ok
+-update user ok
+-update staff ok
+-get user ok
+-get staff Ok
+-get info ok
+-add product ok
+-delete product ok
+-get 1 product
+
+
+
+
+
+
