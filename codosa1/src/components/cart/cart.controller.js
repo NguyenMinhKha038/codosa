@@ -14,12 +14,14 @@ const getCart=async(req,res)=>{
 const updateCart=async(req,res)=>{
   const {productName,amount} = req.body;
   const email=req.user.email;
-  const carts = await product.findOne({name:productName});
-  const total=carts.total+price*amount;
-  let arrProduct=[...carts.productName];
-  arrProduct.push({productName:amount});
+  const products = await product.findOne({name:productName});
+  const carts = await cart.findOne({id:email});
+  const total=carts.total+products.price*amount;
+  const arrProduct=[...carts.productName];
 
   try {
+    
+    arrProduct.push({Product:productName,Amount:amount});
     await cart.findOneAndUpdate({id:email},{total:total,productName:arrProduct});
     res.status(200).json({Message:"Cập nhật giỏ hàng thành công"})
   } catch (error) {

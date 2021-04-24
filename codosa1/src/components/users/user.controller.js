@@ -46,7 +46,7 @@ const userLogin = async (req, res) => {
       req.header.authorization = token;
       res
         .status(200)
-        .json({ token: token, paylod: payload, env: process.env.privateKey });
+        .json({ token: token });
     } catch (error) {
       res.status(400).json({ Error: error });
     }

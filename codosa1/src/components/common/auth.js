@@ -76,7 +76,7 @@ const checkAuth = async (req, res, next) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
     const payload = await jwt.verify(token, process.env.privateKey);
-    if (payload.role == "user" || payload.role == "manager") {
+    if (payload.role == "staff" || payload.role == "manager") {
       next();
     } else {
       res.status(401).json({ message: "không có quyền " });
@@ -101,6 +101,18 @@ const checkExitsCategory=async(req,res,next)=>{
   }
   next();
 }
+const checkUpdateCart=async(req,res,next)=>{
+  const productName=req.body.productName;
+  try {
+    const products = await product.findOne({name:productName});
+    if(products){
+      next();
+    }
+    res.status(400).json({message:"Không tồn tại sản phẩm này"});
+  } catch (error) {
+    res.status(400).json({Error:error});
+  }
+}
 export default {
   isStaff,
   isManager,
@@ -110,5 +122,6 @@ export default {
   checkManagerExist,
   checkAuth,
   checkExitsProduct,
-  checkExitsCategory
+  checkExitsCategory,
+  checkUpdateCart
 };

@@ -32,6 +32,10 @@ manager:
 -delete product ok
 -get 1 product
 
+product:
+-add product ok
+-delete product ok
+
 
 
 
