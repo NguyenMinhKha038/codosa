@@ -13,6 +13,6 @@ productRouter.post(
 );
 productRouter.post("/delete", auth.checkAuth, product.deleteProduct);
 productRouter.post("/update", auth.checkAuth, product.updateProduct);
-productRouter.post("/getproduct", auth.checkAuth, product.getProduct);
+productRouter.post("/get", auth.checkAuth, product.getProduct);
 
 export default productRouter;

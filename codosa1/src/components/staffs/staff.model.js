@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const staffSchema = new Schema({
   name: {
     type: String,
-    unique: true,
+    required:true
   },
   password: {
     type: String,
-    unique: true,
+    required:true
   },
   role: {
     type: String,
@@ -17,5 +17,6 @@ const staffSchema = new Schema({
     type: String,
     unique: true,
   },
+  avatar:String
 });
 module.exports = mongoose.model("staff", staffSchema);

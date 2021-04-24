@@ -28,7 +28,7 @@ const managerRegister = async (req, res) => {
 
 const managerLogin = async (req, res) => {
   const { email, password } = req.body;
-  await auth.CheckExist;
+  await auth.checkManagerExist;
   let managers = await manager.findOne({ email: email });
   if (!managers) {
     res.status(401).json({ msg: "No such user found" });

@@ -8,7 +8,7 @@ const staffRoute = Router();
 staffRoute.post(
   "/register",
   validate(validates.validateRegister, {}, {}),
-  auth.checkManagerExist,
+  auth.checkStaffExist,
   staffController.staffRegister
 );
 staffRoute.post(

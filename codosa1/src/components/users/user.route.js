@@ -1,4 +1,5 @@
 import userController from "../users/user.controller";
+import cartController from "../cart/cart.controller";
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../common/auth";
@@ -15,5 +16,7 @@ userRouter.post(
   auth.checkUserExist,
   userController.userRegister
 );
+userRouter.post("/updatecart",auth.isUser,cartController.updateCart);
 userRouter.get("/info", auth.isUser, userController.getInfo);
+
 export default userRouter;

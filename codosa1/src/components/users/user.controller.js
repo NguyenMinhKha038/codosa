@@ -1,4 +1,5 @@
 import user from "./user.model";
+import cart from "../cart/cart.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import auth from "../common/auth";
@@ -9,14 +10,20 @@ const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
   try {
     const hash = await bcrypt.hash(password, 10);
-    let users = await new user({
+    let users = new user({
       name: name,
       password: hash,
       email: email,
       role: "user",
     }); //ok
+    let carts = new cart({
+      id:email,
+      producName:[],
+      total:0
+    })
     try {
       await users.save();
+      await carts.save();
       res.status(200).json({ message: "Tạo thành công" });
     } catch (error) {
       res.status(400).json({ "Lỗi save": error });

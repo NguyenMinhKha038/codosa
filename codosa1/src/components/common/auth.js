@@ -2,6 +2,7 @@ import user from "../users/user.model";
 import staff from "../staffs/staff.model";
 import manager from "../storeManager/manager.model";
 import product from "../products/product.model";
+import category from "../category/category.model";
 import { validate, ValidationError, Joi } from "express-validation";
 import passport from "../common/passport";
 import jwt from "jsonwebtoken";
@@ -84,7 +85,7 @@ const checkAuth = async (req, res, next) => {
     res.status(400).json({ message: "Cần đăng nhập " });
   }
 };
-const checkExitsProduct = async (req, res) => {
+const checkExitsProduct = async (req, res,next) => {
   const name = req.body.name;
   const products = await product.findOne({ name: name });
   if (products) {
@@ -92,6 +93,14 @@ const checkExitsProduct = async (req, res) => {
   }
   next();
 };
+const checkExitsCategory=async(req,res,next)=>{
+  const name = req.body.category;
+  const categorys =await category.findOne({name:name});
+  if(categorys){
+    res.status(403).json({message:"Đã tồn tại"});
+  }
+  next();
+}
 export default {
   isStaff,
   isManager,
@@ -101,4 +110,5 @@ export default {
   checkManagerExist,
   checkAuth,
   checkExitsProduct,
+  checkExitsCategory
 };

@@ -1,17 +1,32 @@
 import auth from "../common/auth";
+import categoryController from "../category/category.controller";
+import categoryy from "../category/category.model";
 import product from "../products/product.model";
 const addProduct = async (req, res) => {
-  const { name, amount, price } = req.body;
+  const { name, amount, price,category,description } = req.body;
   let products = new product({
     name: name,
     amount: amount,
     price: price,
+    category:category,
+    description:description
   });
+  
+  
   try {
+    const checkCategory=await categoryy.find({name:category});
+  if(!checkCategory){
+    let categorys=new categoryy({
+      name:category
+     
+    })
+    await categorys.save();
+  }
     await products.save();
+   
     res.status(200).json({ message: "Tạo thành công" });
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 
