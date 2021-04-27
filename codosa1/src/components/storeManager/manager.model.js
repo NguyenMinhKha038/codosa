@@ -17,5 +17,6 @@ const managerSchema = new Schema({
     type: String,
     unique: true,
   },
+  image:String
 });
 module.exports = mongoose.model("manager", managerSchema);
