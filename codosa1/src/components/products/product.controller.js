@@ -14,7 +14,7 @@ const addProduct = async (req, res) => {
   
   
   try {
-    const checkCategory=await categoryy.find({name:category});
+    const checkCategory=await categoryy.findOne({name:category});
   if(!checkCategory){
     let categorys=new categoryy({
       name:category

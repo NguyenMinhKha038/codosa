@@ -90,7 +90,7 @@ const getUser = async (req, res) => {
 
 const getInfo = async (req, res) => {
   try {
-    const { name, role, email,avatar } = res.user;
+    const { name, role, email,avatar } = req.user;
     res.status(200).json({ Name: name, Role: role, Email: email,avatar:avatar });
   } catch (error) {
     res.status.json({ message: error });

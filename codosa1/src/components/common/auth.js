@@ -108,10 +108,15 @@ const checkUpdateCart=async(req,res,next)=>{
     if(products){
       next();
     }
-    res.status(400).json({message:"Không tồn tại sản phẩm này"});
+    else{
+      res.status(400).json({message:"Không tồn tại sản phẩm này"});
+    }
   } catch (error) {
     res.status(400).json({Error:error});
   }
+}
+const checkStatus=async(req,res,next)=>{
+  
 }
 export default {
   isStaff,
