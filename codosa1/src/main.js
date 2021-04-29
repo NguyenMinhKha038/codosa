@@ -9,6 +9,7 @@ import categoryRoute from "../src/components/category/category.route";
 import searchRoute from "./components/search/search.route";
 import imageRoute from "./components/image/image.route";
 import orderRoute from "./components/order/order.route";
+import reportRoute from "./components/report/report.route";
 import databse from "./config/connectdb";
 import http from "http";
 
@@ -30,6 +31,7 @@ app.use("/category",categoryRoute);
 app.use("/",searchRoute);
 app.use("/image",imageRoute);
 app.use("/order",orderRoute);
+app.use("/report",reportRoute);
 
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {
