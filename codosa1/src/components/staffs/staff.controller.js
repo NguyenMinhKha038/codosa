@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;
-  res.status(200).json({info:req.body})
+  res.status(200).json({ info: req.body });
   try {
     const hash = await bcrypt.hash(password, 10);
     let staffs = await new staff({
@@ -15,7 +15,7 @@ const staffRegister = async (req, res) => {
       password: hash,
       email: email,
       role: "staff",
-      avatar:images
+      avatar: images,
     });
     try {
       await staffs.save();
@@ -36,7 +36,12 @@ const staffLogin = async (req, res) => {
   } else {
     try {
       await bcrypt.compare(password, staffs.password);
-      let payload = { name: staffs.name, role: staffs.role, email: email,avatar:staff.avatar };
+      let payload = {
+        name: staffs.name,
+        role: staffs.role,
+        email: email,
+        avatar: staff.avatar,
+      };
       let token = jwt.sign(payload, process.env.PrivateKey);
       req.header.authorization = token;
       res.status(200).json({ token: token });
@@ -87,8 +92,10 @@ const getUser = async (req, res) => {
 
 const getInfo = async (req, res) => {
   try {
-    const { name, role, email,avatar } = req.user;
-    res.status(200).json({ Name: name, Role: role, Email: email,avatar:avatar });
+    const { name, role, email, avatar } = req.user;
+    res
+      .status(200)
+      .json({ Name: name, Role: role, Email: email, avatar: avatar });
   } catch (error) {
     res.status.json({ message: error });
   }

@@ -1,27 +1,25 @@
 import category from "../category/category.model";
 import product from "../products/product.model";
 const addProduct = async (req, res) => {
-  const { name, amount, price,categoryName,description } = req.body;
+  const { name, amount, price, categoryName, description } = req.body;
   let products = new product({
     name: name,
     amount: amount,
     price: price,
-    category:category,
-    description:description
+    category: category,
+    description: description,
   });
-  
-  
+
   try {
-    const checkCategory=await category.findOne({name:categoryName});
-  if(!checkCategory){
-    let categories=new category({
-      name:category
-     
-    })
-    await categories.save();
-  }
+    const checkCategory = await category.findOne({ name: categoryName });
+    if (!checkCategory) {
+      let categories = new category({
+        name: category,
+      });
+      await categories.save();
+    }
     await products.save();
-   
+
     res.status(200).json({ message: "Tạo thành công" });
   } catch (error) {
     res.status(400).json({ Error: error });

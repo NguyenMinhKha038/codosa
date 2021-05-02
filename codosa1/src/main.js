@@ -1,4 +1,4 @@
-import  express from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import userRoute from "../src/components/users/user.route";
@@ -13,8 +13,6 @@ import reportRoute from "./components/report/report.route";
 import database from "./config/connectDb";
 import http from "http";
 
-
-
 database();
 dotenv.config();
 const app = express();
@@ -24,17 +22,16 @@ const io = new Server(server);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 app.server = http.createServer(app);
 app.use("/user", userRoute);
 app.use("/staff", staffRoute);
 app.use("/manager", managerRoute);
 app.use("/product", productRoute);
-app.use("/category",categoryRoute);
-app.use("/",searchRoute);
-app.use("/image",imageRoute);
-app.use("/order",orderRoute);
-app.use("/report",reportRoute);
+app.use("/category", categoryRoute);
+app.use("/", searchRoute);
+app.use("/image", imageRoute);
+app.use("/order", orderRoute);
+app.use("/report", reportRoute);
 
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {

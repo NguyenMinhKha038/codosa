@@ -17,10 +17,10 @@ const userRegister = async (req, res) => {
       role: "user",
     }); //ok
     let carts = new cart({
-      id:email,
-      productName:[],
-      total:0
-    })
+      id: email,
+      productName: [],
+      total: 0,
+    });
     try {
       await users.save();
       await carts.save();
@@ -44,9 +44,7 @@ const userLogin = async (req, res) => {
       let payload = { name: users.name, role: users.role, email: email };
       let token = jwt.sign(payload, process.env.privateKey);
       req.header.authorization = token;
-      res
-        .status(200)
-        .json({ token: token });
+      res.status(200).json({ token: token });
     } catch (error) {
       res.status(400).json({ Error: error });
     }

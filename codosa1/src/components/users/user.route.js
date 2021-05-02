@@ -16,7 +16,12 @@ userRouter.post(
   auth.checkUserExist,
   userController.userRegister
 );
-userRouter.post("/updatecart",auth.isUser,auth.checkUpdateCart,cartController.updateCart);
+userRouter.post(
+  "/updatecart",
+  auth.isUser,
+  auth.checkUpdateCart,
+  cartController.updateCart
+);
 userRouter.get("/info", auth.isUser, userController.getInfo);
 
 export default userRouter;

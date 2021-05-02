@@ -85,7 +85,7 @@ const checkAuth = async (req, res, next) => {
     res.status(400).json({ message: "Cần đăng nhập " });
   }
 };
-const checkExitsProduct = async (req, res,next) => {
+const checkExitsProduct = async (req, res, next) => {
   const name = req.body.name;
   const products = await product.findOne({ name: name });
   if (products) {
@@ -93,28 +93,27 @@ const checkExitsProduct = async (req, res,next) => {
   }
   next();
 };
-const checkExitsCategory=async(req,res,next)=>{
+const checkExitsCategory = async (req, res, next) => {
   const name = req.body.category;
-  const categories =await category.findOne({name:name});
-  if(categories){
-    res.status(403).json({message:"Đã tồn tại"});
+  const categories = await category.findOne({ name: name });
+  if (categories) {
+    res.status(403).json({ message: "Đã tồn tại" });
   }
   next();
-}
-const checkUpdateCart=async(req,res,next)=>{
-  const productName=req.body.productName;
+};
+const checkUpdateCart = async (req, res, next) => {
+  const productName = req.body.productName;
   try {
-    const products = await product.findOne({name:productName});
-    if(products){
+    const products = await product.findOne({ name: productName });
+    if (products) {
       next();
-    }
-    else{
-      res.status(400).json({message:"Không tồn tại sản phẩm này"});
+    } else {
+      res.status(400).json({ message: "Không tồn tại sản phẩm này" });
     }
   } catch (error) {
-    res.status(400).json({Error:error});
+    res.status(400).json({ Error: error });
   }
-}
+};
 
 export default {
   isStaff,
@@ -126,5 +125,5 @@ export default {
   checkAuth,
   checkExitsProduct,
   checkExitsCategory,
-  checkUpdateCart
+  checkUpdateCart,
 };
