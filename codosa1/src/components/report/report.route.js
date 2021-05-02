@@ -7,5 +7,5 @@ import auth from "../common/auth";
 import validates from "../common/validate";
 const reportRouter = Router();
 reportRouter.post("/product",reportController.reportProduct);
-
+reportRouter.post("/category",reportController.reportCategory);
 export default reportRouter;

@@ -1,8 +1,5 @@
-import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../common/auth";
-import validates from "../common/validate";
-import product from "../products/product.controller";
 import orderController from "./order.controller";
 
 const orderRouter = Router();
@@ -16,5 +13,7 @@ orderRouter.post("/status/processing",auth.checkAuth,orderController.processingU
 orderRouter.post("/status/shipping",auth.checkAuth,orderController.shippingUpdate);
 orderRouter.post("/status/finish",auth.checkAuth,orderController.finishUpdate);
 
+//get 
+orderRouter.get("/waiting",orderController.getWaitingOrder);
 
 export default orderRouter;

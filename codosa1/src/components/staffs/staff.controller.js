@@ -1,12 +1,9 @@
 import staff from "../staffs/staff.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import fs from "fs"
-import auth from "../common/auth";
 import user from "../users/user.model";
 import dotenv from "dotenv";
-import product from "../products/product.controller";
-import imageController from "../image/image.controller";
+
 dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;

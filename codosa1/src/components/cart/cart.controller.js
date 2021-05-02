@@ -10,7 +10,6 @@ const getCart=async(req,res)=>{
     res.status(400).json({Error:error});
   }
 }
-
 const updateCart=async(req,res)=>{
   const {productName,amount} = req.body;
   const email=req.user.email;

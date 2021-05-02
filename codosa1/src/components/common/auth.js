@@ -95,8 +95,8 @@ const checkExitsProduct = async (req, res,next) => {
 };
 const checkExitsCategory=async(req,res,next)=>{
   const name = req.body.category;
-  const categorys =await category.findOne({name:name});
-  if(categorys){
+  const categories =await category.findOne({name:name});
+  if(categories){
     res.status(403).json({message:"Đã tồn tại"});
   }
   next();
@@ -115,9 +115,7 @@ const checkUpdateCart=async(req,res,next)=>{
     res.status(400).json({Error:error});
   }
 }
-const checkStatus=async(req,res,next)=>{
-  
-}
+
 export default {
   isStaff,
   isManager,

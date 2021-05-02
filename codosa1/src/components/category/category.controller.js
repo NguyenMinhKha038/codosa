@@ -2,35 +2,35 @@ import category from "./category.model";
 import product from "../products/product.model";
 const addCategory=async(req,res)=>{
     const categoryName = req.body.category;
-    let categorys = new category({
+    let categories = new category({
         name:categoryName
       
     })
     try {
-        await categorys.save();
+        await categories.save();
         res.status(200).json({massage:"Đã tạo thành công"});
     } catch (error) {
         res.status(400).json({Error:error});
     }
 }
 const deleteCategory=async(req,res)=>{
-    const categorys = req.body.category;
+    const categories = req.body.category;
     try {
-        await category.findOneAndDelete({name:categorys});
-        await product.deleteMany({category:categorys});
+        await category.findOneAndDelete({name:categories});
+        await product.deleteMany({category:categories});
         res.status(200).json({message:"Xóa thành công"});
     } catch (error) {
         res.status(400).json({Error:error});
     }
 }
-const getListCatagory=async(req,res)=>{
+const getListCategory=async(req,res)=>{
     
-    const categorys = await category.find({});
-    let list=categorys.map(x=>x._id);
+    const categories = await category.find({});
+    let list=categories.map(x=>x._id);
     if(list.length==0){
         res.status(200).json({message:"Chưa có category"});
     }
-    res.status(200).json({category:categorys});
+    res.status(200).json({category:categories});
 }
 const getAllProduct=async(req,res)=>{
     const category=req.body;
@@ -55,4 +55,4 @@ const updateCategory=async(req,res)=>{
         res.status(400).json({Error:error});
     }
 }
-export default {addCategory,deleteCategory,getListCatagory,updateCategory,getAllProduct}
+export default {addCategory,deleteCategory,getListCategory,updateCategory,getAllProduct}

@@ -10,14 +10,17 @@ import searchRoute from "./components/search/search.route";
 import imageRoute from "./components/image/image.route";
 import orderRoute from "./components/order/order.route";
 import reportRoute from "./components/report/report.route";
-import databse from "./config/connectdb";
+import database from "./config/connectDb";
 import http from "http";
 
 
 
-databse();
+database();
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -35,6 +38,6 @@ app.use("/report",reportRoute);
 
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {
-  console.log(`Server is running .`);
+  console.log(`Server is running on port ${PORT}`);
 });
 export default app;

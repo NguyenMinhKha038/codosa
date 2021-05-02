@@ -1,10 +1,11 @@
 import auth from "../common/auth";
 import categoryController from "../category/category.controller";
-import notificationController from "../notification/notification.controller";
-import categoryy from "../category/category.model";
+import notificationController from "../notification/sendMail.controller";
+import staff from "../staffs/staff.model"
 import product from "../products/product.model";
 import cart from "../cart/cart.model";
 import order from "../order/order.model";
+import socketIo from "../common/socket.io";
 import jwt from "jsonwebtoken";
 
 // CRUD order
@@ -32,11 +33,13 @@ const createOrder=async(req,res)=>{
       total:total,
       address:address
     })
-    
+    let content ={email:email,arrProduct:arrProduct,total:total,address:address};
     await orders.save();
     for (const value of staffs) {
-      await notificationController.sendMail(value.email,"Order vừa được tạo",orders)
+      await notificationController.send(value.email,"Order vừa được tạo", content);
     }
+    await socketIo.sendNotification(email);
+    
     res.status(200).json({Message:"Tạo order thành công"})
   } catch (error) {
     res.status(400).json({Error:error});
@@ -64,7 +67,7 @@ const updateOrder = async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const address = req.body.address;
   const orders = await order.findOne({_id:id,id:email});
   const status =orders.status;
@@ -85,7 +88,7 @@ const userDeleteOrder=async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const orders = await order.findOne({_id:id,id:email});
   const status = orders.status;
   if(status!="Waiting"){
@@ -103,7 +106,7 @@ const adminDeleteOrder=async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const orders = await order.findOne({_id:id,id:email});
   const status = orders.status;
   if(status=="Finish"){
@@ -124,7 +127,7 @@ const processingUpdate=async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = req.body.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const orders = await order.findOne({_id:id,id:email});
   const status = orders.status;
   if(status=="Waiting")
@@ -144,7 +147,7 @@ const shippingUpdate=async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = req.body.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const orders = await order.findOne({_id:id,id:email});
   const status = orders.status;
   if(status=="Processing")
@@ -164,7 +167,7 @@ const finishUpdate= async(req,res)=>{
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = req.body.email;
-  const id= req.body.id;
+  const id= req.body._id;
   const orders = await order.findOne({_id:id,id:email});
   const status = orders.status;
   if(status=="Shipping")

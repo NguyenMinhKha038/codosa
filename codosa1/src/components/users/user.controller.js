@@ -18,7 +18,7 @@ const userRegister = async (req, res) => {
     }); //ok
     let carts = new cart({
       id:email,
-      producName:[],
+      productName:[],
       total:0
     })
     try {

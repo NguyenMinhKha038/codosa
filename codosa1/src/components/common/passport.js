@@ -1,10 +1,10 @@
 import passport from "passport";
-import passportjwt from "passport-jwt";
+import passportJwt from "passport-jwt";
 import user from "../users/user.model";
 import dotenv from "dotenv";
 dotenv.config();
-const JwtStrategy = passportjwt.Strategy;
-const ExtractJwt = passportjwt.ExtractJwt;
+const JwtStrategy = passportJwt.Strategy;
+const ExtractJwt = passportJwt.ExtractJwt;
 
 let opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
