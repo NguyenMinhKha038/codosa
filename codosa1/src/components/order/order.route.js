@@ -5,6 +5,7 @@ import orderController from "./order.controller";
 const orderRouter = Router();
 orderRouter.get("/create", auth.isUser, orderController.createOrder);
 orderRouter.get("/get", orderController.getOrder);
+orderRouter.post("/get", auth.checkAuth, orderController.getOrder);
 orderRouter.post("/update", auth.isUser, orderController.updateOrder);
 orderRouter.post(
   "/admin/delete",

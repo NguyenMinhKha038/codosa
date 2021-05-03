@@ -14,53 +14,60 @@ const createOrder = async (req, res) => {
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
   const carts = await cart.findOne({ id: email });
-  const staffs = await staff.find();
-  const productName = carts.productName;
-  const address = req.body.address;
-  let arrProduct = [];
-  for (const value of productName) {
-    let products = await product.findOne({ name: value.Product });
-    arrProduct.push({
-      product: value.Product,
-      price: products.price,
-      amount: value.Amount,
-    });
-    await product.findOneAndUpdate(
-      { name: value.Product },
-      { amount: products.amount - value.Amount }
-    );
-  }
-  const total = arrProduct.reduce((total, value) => {
-    return (total += value.price * value.amount);
-  }, 0);
-  try {
-    let orders = new order({
-      id: email,
-      product: arrProduct,
-      status: "Waiting",
-      createDay: Date.now(),
-      total: total,
-      address: address,
-    });
-    let content = {
-      email: email,
-      arrProduct: arrProduct,
-      total: total,
-      address: address,
-    };
-    await orders.save();
-    for (const value of staffs) {
-      await notificationController.send(
-        value.email,
-        "Order vừa được tạo",
-        content
+  if (carts.total == 0) {
+    res.status(400).json({ Message: "Giỏ hàng trống" });
+  } else {
+    const staffs = await staff.find();
+    const productName = carts.productName;
+    const address = req.body.address;
+    if (!address) {
+      res.status(400).json({ Message: "Địa chỉ trống" });
+    }
+    let arrProduct = [];
+    for (const value of productName) {
+      let products = await product.findOne({ name: value.Product });
+      arrProduct.push({
+        product: value.Product,
+        price: products.price,
+        amount: value.Amount,
+      });
+      await product.findOneAndUpdate(
+        { name: value.Product },
+        { amount: products.amount - value.Amount }
       );
     }
-    await socketIo.sendNotification(email);
+    const total = arrProduct.reduce((total, value) => {
+      return (total += value.price * value.amount);
+    }, 0);
+    try {
+      let orders = new order({
+        id: email,
+        product: arrProduct,
+        status: "Waiting",
+        createDay: Date.now(),
+        total: total,
+        address: address,
+      });
+      let content = {
+        email: email,
+        arrProduct: arrProduct,
+        total: total,
+        address: address,
+      };
+      await orders.save();
+      for (const value of staffs) {
+        await notificationController.send(
+          value.email,
+          "Order vừa được tạo",
+          content
+        );
+      }
+      await socketIo.sendNotification(email);
 
-    res.status(200).json({ Message: "Tạo order thành công" });
-  } catch (error) {
-    res.status(400).json({ Error: error });
+      res.status(200).json({ Message: "Tạo order thành công" });
+    } catch (error) {
+      res.status(400).json({ Error: error });
+    }
   }
 };
 

@@ -47,6 +47,6 @@ managerRouter.post(
 );
 
 managerRouter.get("/info", auth.isManager, managerController.getInfo);
-managerRouter.post("/getuser", auth.checkAuth, managerController.getUser);
-managerRouter.post("/getstaff", auth.checkAuth, managerController.getStaff);
+managerRouter.post("/getuser", auth.isManager, managerController.getUser);
+managerRouter.post("/getstaff", auth.isManager, managerController.getStaff);
 export default managerRouter;
