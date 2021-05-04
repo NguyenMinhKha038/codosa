@@ -1,5 +1,5 @@
 import { express, Router } from "express";
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import categoryController from "../category/category.controller";
 
 const categoryRouter = Router();

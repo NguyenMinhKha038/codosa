@@ -1,7 +1,7 @@
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
-import auth from "../common/auth";
-import validates from "../common/validate";
+import auth from "../utils/auth";
+import validates from "../utils/validate";
 import managerController from "./manager.controller";
 import product from "../products/product.controller";
 const managerRouter = Router();

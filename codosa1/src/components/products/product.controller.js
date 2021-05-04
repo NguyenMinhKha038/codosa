@@ -6,7 +6,7 @@ const addProduct = async (req, res) => {
     name: name,
     amount: amount,
     price: price,
-    category: category,
+    category: categoryName,
     description: description,
   });
 
@@ -14,7 +14,7 @@ const addProduct = async (req, res) => {
     const checkCategory = await category.findOne({ name: categoryName });
     if (!checkCategory) {
       let categories = new category({
-        name: category,
+        name: categoryName,
       });
       await categories.save();
     }
@@ -28,24 +28,19 @@ const addProduct = async (req, res) => {
 
 const getProduct = async (req, res) => {
   const name = req.body.name;
-  const products = await product.find({ name: name });
-  // if (products) {
-  //   res.status(200).json({
-  //     name: products.name,
-  //     amount: products.amount,
-  //     price: products.price,
-  //   });
-  // } else {
-  //   res.status(400).json({ message: "Không tồn tại sản phẩm" });
-  // }
-  if (products) {
-    res.status(200).json({
-      name: products[0].name,
-      amount: products[0].amount,
-      price: products[0].price,
-    });
+  if (!name) {
+    res.status(400).json({ message: "Tên sản phẩm trống" });
   } else {
-    res.status(400).json({ message: "Không tồn tại sản phẩm" });
+    const products = await product.find({ name: name });
+    if (products) {
+      res.status(200).json({
+        name: products[0].name,
+        amount: products[0].amount,
+        price: products[0].price,
+      });
+    } else {
+      res.status(400).json({ message: "Không tồn tại sản phẩm" });
+    }
   }
 };
 const deleteProduct = async (req, res) => {

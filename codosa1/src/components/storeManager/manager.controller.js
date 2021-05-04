@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import manager from "./manager.model";
 import user from "../users/user.model";
 import staff from "../staffs/staff.model";

@@ -31,7 +31,7 @@ const getListCategory = async (req, res) => {
   res.status(200).json({ category: categories });
 };
 const getAllProduct = async (req, res) => {
-  const category = req.body;
+  const category = req.body.category;
   try {
     const listProduct = await product.findMany({ category: category });
     if (listProduct.length == 0) {

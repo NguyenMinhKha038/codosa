@@ -44,11 +44,12 @@ const addAvatar = async (req, res) => {
 };
 const addProductImage = async (req, res) => {
   const products = req.body.name;
+  const categories = req.body.category;
   const img = req.files;
   const arrImage = img.map((x) => "uploads/" + x.originalname);
   try {
     await product.findOneAndUpdate({ name: products }, { image: arrImage });
-    await category.findOneAndUpdate({ name: products }, { image: arrImage });
+    await category.findOneAndUpdate({ name: categories }, { image: arrImage });
     res.status(200).json({ Message: "Upload thành công" });
   } catch (error) {
     res.status(400).json({ Error: error });

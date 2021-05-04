@@ -1,11 +1,11 @@
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import categoryController from "../category/category.controller";
 import notificationController from "../notification/sendMail.controller";
 import staff from "../staffs/staff.model";
 import product from "../products/product.model";
 import cart from "../cart/cart.model";
 import order from "../order/order.model";
-import socketIo from "../common/socket.io";
+import socketIo from "../utils/socket.io";
 import jwt from "jsonwebtoken";
 
 // CRUD order
@@ -55,6 +55,7 @@ const createOrder = async (req, res) => {
         address: address,
       };
       await orders.save();
+      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 }); //new
       for (const value of staffs) {
         await notificationController.send(
           value.email,
@@ -75,6 +76,21 @@ const getOrder = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email || req.body.email;
+  try {
+    const orders = await order.find({ id: email });
+    if (!orders) {
+      res.status(400).json({ Message: "Không tồn tại order nào" });
+    } else {
+      res.status(400).json({ Message: orders });
+    }
+  } catch (error) {
+    res.status(400).json({ Message: error });
+  }
+};
+const getUserOrder = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const payload = await jwt.verify(token, process.env.privateKey);
+  const email = req.body.email;
   try {
     const orders = await order.find({ id: email });
     if (!orders) {
@@ -140,16 +156,13 @@ const adminDeleteOrder = async (req, res) => {
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
   const id = req.body._id;
-  const orders = await order.findOne({ _id: id, id: email });
+  const orders = await order.findOne({ _id: id });
   const status = orders.status;
   if (status == "Finish") {
     res.status(400).json({ Message: "Đã giao hàng thành công, không thể xóa" });
   } else {
     try {
-      await order.findOneAndUpdate(
-        { _id: id, id: email },
-        { status: "Delete" }
-      );
+      await order.findOneAndUpdate({ _id: id }, { status: "Delete" });
       res.status(200).json({ Message: "Đã xóa thành công" });
     } catch (error) {
       res.status(400).json({ Error: error });
@@ -162,16 +175,13 @@ const adminDeleteOrder = async (req, res) => {
 const processingUpdate = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
-  const email = req.body.email;
   const id = req.body._id;
-  const orders = await order.findOne({ _id: id, id: email });
+  const orders = await order.findOne({ _id: id });
   const status = orders.status;
+
   if (status == "Waiting") {
     try {
-      await order.findOneAndUpdate(
-        { _id: id, id: email },
-        { status: "Processing" }
-      );
+      await order.findOneAndUpdate({ _id: id }, { status: "Processing" });
       res.status(200).json({ Message: "Update thành công" });
     } catch (error) {
       res.status(400).json({ Error: error });
@@ -184,15 +194,14 @@ const processingUpdate = async (req, res) => {
 const shippingUpdate = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
-  const email = req.body.email;
   const id = req.body._id;
-  const orders = await order.findOne({ _id: id, id: email });
+  const orders = await order.findOne({ _id: id });
   const status = orders.status;
   if (status == "Processing") {
     try {
       await order.findOneAndUpdate(
-        { _id: id, id: email },
-        { status: "Shipping" }
+        { _id: id },
+        { status: "Shipping", deliveryDay: Date.now() }
       );
       res.status(200).json({ Message: "Update thành công" });
     } catch (error) {
@@ -206,15 +215,15 @@ const shippingUpdate = async (req, res) => {
 const finishUpdate = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
-  const email = req.body.email;
+
   const id = req.body._id;
-  const orders = await order.findOne({ _id: id, id: email });
+  const orders = await order.findOne({ _id: id });
   const status = orders.status;
   if (status == "Shipping") {
     try {
       await order.findOneAndUpdate(
-        { _id: id, id: email },
-        { status: "Finish" }
+        { _id: id },
+        { status: "Finish", finishDay: Date.now() }
       );
       res.status(200).json({ Message: "Update thành công" });
     } catch (error) {
@@ -287,4 +296,5 @@ export default {
   getFinishOrder,
   getFinishOrder,
   getDeleteOrder,
+  getUserOrder,
 };

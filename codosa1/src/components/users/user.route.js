@@ -2,8 +2,8 @@ import userController from "../users/user.controller";
 import cartController from "../cart/cart.controller";
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
-import auth from "../common/auth";
-import validates from "../common/validate";
+import auth from "../utils/auth";
+import validates from "../utils/validate";
 const userRouter = Router();
 userRouter.post(
   "/login",
@@ -17,11 +17,14 @@ userRouter.post(
   userController.userRegister
 );
 userRouter.post(
-  "/updatecart",
+  "/addcart",
   auth.isUser,
   auth.checkUpdateCart,
-  cartController.updateCart
+  cartController.addCart
 );
 userRouter.get("/info", auth.isUser, userController.getInfo);
+userRouter.get("/cart", auth.isUser, cartController.getCart);
+userRouter.post("/updatecart", auth.isUser, cartController.updateCart);
+userRouter.post("/addcart", auth.isUser, cartController.addCart);
 
 export default userRouter;

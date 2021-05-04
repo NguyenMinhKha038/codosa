@@ -1,5 +1,5 @@
 import { express, Router } from "express";
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import imageController from "./image.controller";
 import multer from "multer";
 var storage = multer.diskStorage({

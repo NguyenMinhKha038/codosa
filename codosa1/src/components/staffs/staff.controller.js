@@ -7,7 +7,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;
-  res.status(200).json({ info: req.body });
   try {
     const hash = await bcrypt.hash(password, 10);
     let staffs = await new staff({
@@ -15,7 +14,6 @@ const staffRegister = async (req, res) => {
       password: hash,
       email: email,
       role: "staff",
-      avatar: images,
     });
     try {
       await staffs.save();
@@ -92,12 +90,14 @@ const getUser = async (req, res) => {
 
 const getInfo = async (req, res) => {
   try {
-    const { name, role, email, avatar } = req.user;
-    res
-      .status(200)
-      .json({ Name: name, Role: role, Email: email, avatar: avatar });
+    const token = req.headers.authorization.split(" ")[1];
+    const payload = await jwt.verify(token, process.env.privateKey);
+    const email = payload.email;
+    const name = payload.name;
+    const role = payload.role;
+    res.status(200).json({ Name: name, Role: role, Email: email });
   } catch (error) {
-    res.status.json({ message: error });
+    res.status(400).json({ message: error });
   }
 };
 export default {

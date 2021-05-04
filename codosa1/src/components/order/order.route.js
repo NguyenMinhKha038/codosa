@@ -1,11 +1,11 @@
 import { express, Router } from "express";
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import orderController from "./order.controller";
 
 const orderRouter = Router();
 orderRouter.get("/create", auth.isUser, orderController.createOrder);
 orderRouter.get("/get", orderController.getOrder);
-orderRouter.post("/get", auth.checkAuth, orderController.getOrder);
+orderRouter.post("/get", auth.checkAuth, orderController.getUserOrder);
 orderRouter.post("/update", auth.isUser, orderController.updateOrder);
 orderRouter.post(
   "/admin/delete",
@@ -31,6 +31,12 @@ orderRouter.post(
 );
 
 //get
-orderRouter.get("/waiting", orderController.getWaitingOrder);
-
+orderRouter.get("/waiting", auth.checkAuth, orderController.getWaitingOrder);
+orderRouter.get(
+  "/processing",
+  auth.checkAuth,
+  orderController.getProcessingOrder
+);
+orderRouter.get("/shipping", auth.checkAuth, orderController.getShippingOrder);
+orderRouter.get("/finish", auth.checkAuth, orderController.getFinishOrder);
 export default orderRouter;

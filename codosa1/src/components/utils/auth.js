@@ -4,7 +4,7 @@ import manager from "../storeManager/manager.model";
 import product from "../products/product.model";
 import category from "../category/category.model";
 import { validate, ValidationError, Joi } from "express-validation";
-import passport from "../common/passport";
+import passport from "../utils/passport";
 import jwt from "jsonwebtoken";
 
 const isStaff = async (req, res, next) => {
@@ -103,12 +103,17 @@ const checkExitsCategory = async (req, res, next) => {
 };
 const checkUpdateCart = async (req, res, next) => {
   const productName = req.body.productName;
+  const amount = req.body.amount;
   try {
     const products = await product.findOne({ name: productName });
-    if (products) {
-      next();
-    } else {
+
+    if (!products) {
       res.status(400).json({ message: "Không tồn tại sản phẩm này" });
+    }
+    if (amount > products.amount) {
+      res.status(400).json({ Message: "Số lượng vượt quá số lượng tồn kho" });
+    } else {
+      next();
     }
   } catch (error) {
     res.status(400).json({ Error: error });

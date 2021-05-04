@@ -2,7 +2,7 @@ import user from "./user.model";
 import cart from "../cart/cart.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import auth from "../common/auth";
+import auth from "../utils/auth";
 import dotenv from "dotenv";
 dotenv.config();
 
