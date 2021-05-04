@@ -15,6 +15,7 @@ const userRegister = async (req, res) => {
       password: hash,
       email: email,
       role: "user",
+      status:"Active"
     }); //ok
     let carts = new cart({
       id: email,

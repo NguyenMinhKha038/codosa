@@ -14,6 +14,7 @@ const managerRegister = async (req, res) => {
       password: hash,
       email: email,
       role: "manager",
+      status:"Active"
     });
     try {
       await managers.save();
@@ -48,7 +49,7 @@ const managerLogin = async (req, res) => {
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.findOneAndDelete({ email: email });
+    await user.findOneAndUpdate({ email: email },{status:"Disable"});
     res.status(200).json({ message: "Xóa thành công" });
   } catch (error) {
     req.status(400).json({ message: "Xóa không thành công" });
@@ -57,7 +58,7 @@ const deleteUser = async (req, res) => {
 const deleteStaff = async (req, res) => {
   const email = req.body.email;
   try {
-    await staff.findOneAndDelete({ email: email });
+    await staff.findOneAndUpdate({ email: email },{status:"Disable"});
     res.status(200).json({ message: "Xóa thành công" });
   } catch (error) {
     req.status(400).json({ message: "Xóa không thành công" });

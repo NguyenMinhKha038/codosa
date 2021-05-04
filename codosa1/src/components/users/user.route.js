@@ -23,8 +23,6 @@ userRouter.post(
   cartController.addCart
 );
 userRouter.get("/info", auth.isUser, userController.getInfo);
-userRouter.get("/cart", auth.isUser, cartController.getCart);
-userRouter.post("/updatecart", auth.isUser, cartController.updateCart);
-userRouter.post("/addcart", auth.isUser, cartController.addCart);
+
 
 export default userRouter;

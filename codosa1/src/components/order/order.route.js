@@ -1,32 +1,36 @@
 import { express, Router } from "express";
 import auth from "../utils/auth";
 import orderController from "./order.controller";
+import orderValidate from "./order.validate"
 
 const orderRouter = Router();
 orderRouter.get("/create", auth.isUser, orderController.createOrder);
 orderRouter.get("/get", orderController.getOrder);
-orderRouter.post("/get", auth.checkAuth, orderController.getUserOrder);
-orderRouter.post("/update", auth.isUser, orderController.updateOrder);
+orderRouter.post("/get", auth.checkAuth, orderValidate.checkEmail,orderController.getUserOrder);
+orderRouter.post("/update", auth.isUser, orderValidate.checkAddress,orderController.updateOrder);
 orderRouter.post(
   "/admin/delete",
   auth.checkAuth,
   orderController.adminDeleteOrder
 );
-orderRouter.post("/user/delete", auth.isUser, orderController.userDeleteOrder);
+orderRouter.post("/user/delete", auth.isUser, orderValidate.checkID,orderController.userDeleteOrder);
 //status update
 orderRouter.post(
   "/status/processing",
   auth.checkAuth,
+  orderValidate.checkID,
   orderController.processingUpdate
 );
 orderRouter.post(
   "/status/shipping",
   auth.checkAuth,
+  orderValidate.checkID,
   orderController.shippingUpdate
 );
 orderRouter.post(
   "/status/finish",
   auth.checkAuth,
+  orderValidate.checkID,
   orderController.finishUpdate
 );
 

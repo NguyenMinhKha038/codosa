@@ -13,15 +13,18 @@ const createOrder = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const payload = await jwt.verify(token, process.env.privateKey);
   const email = payload.email;
+  const session = client.startSession(); 
+  session.startTransaction();//start transaction
+  const opts = { session, returnOriginal: false };
   const carts = await cart.findOne({ id: email });
   if (carts.total == 0) {
-    res.status(400).json({ Message: "Giỏ hàng trống" });
+    res.status(400).json({ Message: "Cart is Emty" });
   } else {
     const staffs = await staff.find();
     const productName = carts.productName;
     const address = req.body.address;
     if (!address) {
-      res.status(400).json({ Message: "Địa chỉ trống" });
+      res.status(400).json({ Message: "Address is Emty" });
     }
     let arrProduct = [];
     for (const value of productName) {
@@ -33,7 +36,7 @@ const createOrder = async (req, res) => {
       });
       await product.findOneAndUpdate(
         { name: value.Product },
-        { amount: products.amount - value.Amount }
+        { amount: products.amount - value.Amount },opts
       );
     }
     const total = arrProduct.reduce((total, value) => {
@@ -55,7 +58,7 @@ const createOrder = async (req, res) => {
         address: address,
       };
       await orders.save();
-      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 }); //new
+      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 }),opts; //new
       for (const value of staffs) {
         await notificationController.send(
           value.email,
@@ -64,9 +67,12 @@ const createOrder = async (req, res) => {
         );
       }
       await socketIo.sendNotification(email);
-
+      await session.commitTransaction();
+      session.endSession(); //end transaction
       res.status(200).json({ Message: "Tạo order thành công" });
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       res.status(400).json({ Error: error });
     }
   }

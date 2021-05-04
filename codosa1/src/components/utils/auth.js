@@ -9,9 +9,10 @@ import jwt from "jsonwebtoken";
 
 const isStaff = async (req, res, next) => {
   await passport.authenticate("jwt", { session: false });
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
-  if (payload && payload.role == "staff") {
+  //const token = req.headers.authorization.split(" ")[1];
+  //const payload = await jwt.verify(token, process.env.privateKey);
+  const role = req.user
+  if (role && role == "staff") {
     return next();
   } else {
     res.status(401).json({ message: "không có quyền staff" });

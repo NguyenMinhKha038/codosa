@@ -2,12 +2,17 @@ import category from "../category/category.model";
 import product from "../products/product.model";
 const addProduct = async (req, res) => {
   const { name, amount, price, categoryName, description } = req.body;
+  const products = await product.findOne({ name: name });
+  if (products) {
+    res.status(403).json({ message: "Đã tồn tại" });
+  }
   let products = new product({
     name: name,
     amount: amount,
     price: price,
     category: categoryName,
     description: description,
+    status:"Active"
   });
 
   try {
@@ -46,7 +51,7 @@ const getProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   const name = req.body.name;
   try {
-    await product.findOneAndDelete({ name: name });
+    await product.findOneAndUpdate({ name: name },{status:"Disable"});
     res.status(200).json({ message: "Xóa thành công" });
   } catch (error) {
     res.status(400).json({ Error: error });

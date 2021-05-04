@@ -14,6 +14,7 @@ const staffRegister = async (req, res) => {
       password: hash,
       email: email,
       role: "staff",
+      status:"Active"
     });
     try {
       await staffs.save();
@@ -37,10 +38,10 @@ const staffLogin = async (req, res) => {
       let payload = {
         name: staffs.name,
         role: staffs.role,
-        email: email,
-        avatar: staff.avatar,
+        email: email
+       
       };
-      let token = jwt.sign(payload, process.env.PrivateKey);
+      let token = jwt.sign(payload, process.env.privateKey);
       req.header.authorization = token;
       res.status(200).json({ token: token });
     } catch (error) {
@@ -52,7 +53,7 @@ const staffLogin = async (req, res) => {
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.deleteOne({ email: email });
+    await user.findOneAndUpdate({ email: email },{status:"Disable"});
     res.status(200).json({ message: "Xóa thành công" });
   } catch (error) {
     req.status(400).json({ message: "Xóa không thành công" });

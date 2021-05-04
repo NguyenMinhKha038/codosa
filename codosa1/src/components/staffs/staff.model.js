@@ -17,6 +17,7 @@ const staffSchema = new Schema({
     type: String,
     unique: true,
   },
+  status:String,
   image: String,
 });
 module.exports = mongoose.model("staff", staffSchema);

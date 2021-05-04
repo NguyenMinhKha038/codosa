@@ -6,7 +6,7 @@ const getCart = async (req, res) => {
   try {
     const carts = await cart.findOne({ id: email });
     if (!carts) {
-      res.status(200).json({ Cart: "Giỏ hàng rỗng" });
+      res.status(200).json({ Message: "Cart is Emty" });
     } else {
       res.status(200).json({ Cart: carts });
     }
@@ -17,8 +17,10 @@ const getCart = async (req, res) => {
 const addCart = async (req, res) => {
   const { productName, amount } = req.body;
   const email = req.user.email;
+  const session = client.startSession(); 
+  session.startTransaction();//start transaction
+  const opts = { session, returnOriginal: false };
   const products = await product.findOne({ name: productName });
-
   const carts = await cart.findOne({ id: email });
   const total = carts.total + products.price * amount;
   const arrProduct = [...carts.productName];
@@ -27,11 +29,18 @@ const addCart = async (req, res) => {
     arrProduct.push({ Product: productName, Amount: amount });
     await cart.findOneAndUpdate(
       { id: email },
-      { total: total, productName: arrProduct }
+      { total: total, productName: arrProduct },
+      opts
     );
-    res.status(200).json({ Message: "Cập nhật giỏ hàng thành công" });
+    res.status(200).json({ Cart: arrProduct, Total: total });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res.status(400).json({ Error: error });
+  }
+  finally {
+    await session.commitTransaction();
+    session.endSession(); //end transaction
   }
 };
 
@@ -51,16 +60,14 @@ const updateCart = async (req, res) => {
       total =
         carts.total - products.price * oldAmount + products.price * amount;
       arrProduct.push({ Product: productName, Amount: amount });
-      //newArrProduct.push({ Product: arrProduct[index].Amount });
     }
   }
-  //res.status(200).json({ Message: newArrProduct });
   try {
     await cart.findOneAndUpdate(
       { id: email },
       { total: total, productName: arrProduct }
     );
-    res.status(200).json({ Message: "Cập nhật giỏ hàng thành công" });
+    res.status(200).json({ Cart: arrProduct, Total: total });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
