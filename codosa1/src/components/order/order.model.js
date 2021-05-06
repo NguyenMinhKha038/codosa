@@ -4,12 +4,11 @@ const Schema = mongoose.Schema;
 const orderSchema = new Schema({
   id: {
     type: String,
-    unique: true,
     require: true,
   },
   product: Array,
   status: {
-    type: String,
+    type: Number,
     require: true,
   },
   createDay: {
@@ -19,7 +18,13 @@ const orderSchema = new Schema({
   updateDay: Date,
   deliveryDay: Date,
   finishDay: Date,
-  total: Number,
-  address: String,
+  total: {
+    type:Number,
+    min:0
+  },
+  address: {
+    type:String,
+    require:true
+  },
 });
 module.exports = mongoose.model("order", orderSchema);

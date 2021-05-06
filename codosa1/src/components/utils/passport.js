@@ -1,12 +1,13 @@
-import passport from "passport";
+//import passport from "passport";
 import passportJwt from "passport-jwt";
 import user from "../users/user.model";
 import dotenv from "dotenv";
+import passport from "passport";
 dotenv.config();
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
 
-let opts = {};
+  let opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.privateKey;
 passport.use(
@@ -24,4 +25,7 @@ passport.use(
     });
   })
 );
-export default passport;
+
+
+
+export default {passport};

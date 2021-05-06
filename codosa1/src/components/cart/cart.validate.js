@@ -1,11 +1,13 @@
-import { check, validationResult } from 'express-validator';
+import { validate, ValidationError, Joi } from "express-validation";
+const cartValidate ={
+    body: Joi.object({
+        productName: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+        amount:Joi.number()
+          .required()
+      }),
+}
 
-const cartValidate = ()=>{
-    
-    check('productname').isLength({min:3,max:30}).withMessage('ProductName must be a String'),
-    check('amount').isNumeric().withMessage('Amount is a Number')
 
-};
-
-
-export default {cartValidate}
+export default {cartValidate};

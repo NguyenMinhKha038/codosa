@@ -1,16 +1,20 @@
-import { check, validationResult } from 'express-validator';
+import { validate, ValidationError, Joi } from "express-validation";
+const categoryValidate ={
+    body: Joi.object({
+        category: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+      }),
+}
 
-const categoryValidate = ()=>{
-    
-    check('category').isLength({min:3,max:30}).not().isEmpty().withMessage('Category must be a String')
-
-};
-const categoryUpdateValidate = ()=>{
-    
-    check('name').isLength({min:3,max:30}).not().isEmpty().withMessage('Category must be a String'),
-    check('Newname').isLength({min:3,max:30}).not().isEmpty().withMessage('Category must be a String')
-
-};
-
-
-export default {categoryValidate,categoryUpdateValidate}
+const updateCategory ={
+    body: Joi.object({
+        name: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+        newname: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),  
+      }),
+}
+export default {categoryValidate,updateCategory};

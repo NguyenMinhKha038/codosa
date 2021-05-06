@@ -2,16 +2,19 @@ import user from "../users/user.model";
 import staff from "../staffs/staff.model";
 import manager from "../storeManager/manager.model";
 import product from "../products/product.model";
+import passport from "passport";
+import passportMiddleware from "./passport";
 import category from "../category/category.model";
-import { validate, ValidationError, Joi } from "express-validation";
-import passport from "../utils/passport";
-import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+//import jwt from "jsonwebtoken";
+
+const authen = (req, res, next) => {
+  return passport.authenticate("jwt", { session: false })(req, res, next);
+};
 
 const isStaff = async (req, res, next) => {
-  await passport.authenticate("jwt", { session: false });
-  //const token = req.headers.authorization.split(" ")[1];
-  //const payload = await jwt.verify(token, process.env.privateKey);
-  const role = req.user
+  const role = req.user.role;
   if (role && role == "staff") {
     return next();
   } else {
@@ -19,23 +22,16 @@ const isStaff = async (req, res, next) => {
   }
 };
 const isUser = async (req, res, next) => {
-  await passport.authenticate("jwt", { session: false });
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
-
-  if (payload && payload.role == "user") {
-    req.user = payload;
+  const role = req.user.role;
+  if (role && role == "user") {
     next();
   } else {
-    // Nếu token tồn tại nhưng không hợp lệ, server sẽ response status code 401 với msg bên dưới
-    res.status(401).json({ message: "Không có quyền user" });
+    res.status(401).json({ Message: "Must be User" });
   }
 };
 const isManager = async (req, res, next) => {
-  await passport.authenticate("jwt", { session: false });
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
-  if (payload && payload.role == "manager") {
+  const role = req.user.role;
+  if (role && role == "manager") {
     req.user = payload;
     return next();
   } else {
@@ -73,18 +69,13 @@ const checkManagerExist = async (req, res, next) => {
 };
 
 const checkAuth = async (req, res, next) => {
-  await passport.authenticate("jwt", { session: false });
-  if (req.headers.authorization) {
-    const token = req.headers.authorization.split(" ")[1];
-    const payload = await jwt.verify(token, process.env.privateKey);
-    if (payload.role == "staff" || payload.role == "manager") {
+  const role = req.user.role;
+    if (role == "staff" || role == "manager") {
       next();
     } else {
       res.status(401).json({ message: "không có quyền " });
     }
-  } else {
-    res.status(400).json({ message: "Cần đăng nhập " });
-  }
+  
 };
 const checkExitsProduct = async (req, res, next) => {
   const name = req.body.name;
@@ -132,4 +123,5 @@ export default {
   checkExitsProduct,
   checkExitsCategory,
   checkUpdateCart,
+  authen
 };

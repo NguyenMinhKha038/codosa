@@ -18,8 +18,14 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
-  description: String,
-  status:String,
+  description: {
+    type:String,
+    require:true
+  },
+  status:{
+    type:Number,
+    require:true
+  },
   image: Array,
 });
 module.exports = mongoose.model("product", productSchema);

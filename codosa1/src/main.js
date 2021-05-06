@@ -13,15 +13,17 @@ import reportRoute from "./components/report/report.route";
 import database from "./config/connectDb";
 import http from "http";
 
+import passport from "passport";
+
 database();
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.server = http.createServer(app);
 app.use("/user", userRoute);
 app.use("/staff", staffRoute);

@@ -1,10 +1,11 @@
 import category from "../category/category.model";
 import product from "../products/product.model";
+import statusMiddleWare from "../utils/status";
 const addProduct = async (req, res) => {
   const { name, amount, price, categoryName, description } = req.body;
-  const products = await product.findOne({ name: name });
-  if (products) {
-    res.status(403).json({ message: "Đã tồn tại" });
+  const checkProduct = await product.findOne({ name: name });
+  if (checkProduct) {
+    res.status(403).json({ message: "Already exist " });
   }
   let products = new product({
     name: name,
@@ -12,7 +13,7 @@ const addProduct = async (req, res) => {
     price: price,
     category: categoryName,
     description: description,
-    status:"Active"
+    status:statusMiddleWare.productStatus
   });
 
   try {
@@ -25,7 +26,7 @@ const addProduct = async (req, res) => {
     }
     await products.save();
 
-    res.status(200).json({ message: "Tạo thành công" });
+    res.status(200).json({ message: "Successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
@@ -33,10 +34,9 @@ const addProduct = async (req, res) => {
 
 const getProduct = async (req, res) => {
   const name = req.body.name;
-  if (!name) {
-    res.status(400).json({ message: "Tên sản phẩm trống" });
-  } else {
-    const products = await product.find({ name: name });
+  
+    try {
+      const products = await product.find({ name: name });
     if (products) {
       res.status(200).json({
         name: products[0].name,
@@ -44,15 +44,18 @@ const getProduct = async (req, res) => {
         price: products[0].price,
       });
     } else {
-      res.status(400).json({ message: "Không tồn tại sản phẩm" });
+      res.status(400).json({ message: "Product not found" });
     }
-  }
+    } catch (error) {
+      res.status(400).json({ Error: error});
+    }
+
 };
 const deleteProduct = async (req, res) => {
   const name = req.body.name;
   try {
-    await product.findOneAndUpdate({ name: name },{status:"Disable"});
-    res.status(200).json({ message: "Xóa thành công" });
+    await product.findOneAndUpdate({ name: name },{status:statusMiddleWare.productStatus.DISABLE});
+    res.status(200).json({ message: "Delete successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
@@ -64,7 +67,7 @@ const updateProduct = async (req, res) => {
       { name: name },
       { name: newName, amount: amount, price: price }
     );
-    res.status(200).json({ message: "Update thành công" });
+    res.status(200).json({ message: "Update successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }

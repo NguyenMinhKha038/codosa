@@ -1,15 +1,31 @@
-import { check, validationResult } from 'express-validator';
-
-const checkEmail = ()=>{
-    
-    check('email').isEmail().withMessage('Must be a Email')
-
-
-};
-const checkAddress =()=>{
-    check('address').isLength({min:10,max:50}).withMessage('Address must be more than 10 chars')
+import { validate, ValidationError, Joi } from "express-validation";
+const checkEmail = {
+    body: Joi.object({
+        email: Joi.string().email().required(),
+      }),
 }
-const checkID = ()=>{
-    check('_id').isString().withMessage('ID must be a String')
+
+const checkAddress ={
+    body: Joi.object({
+        name: Joi.string()
+          .regex(/[a-zA-Z0-9]{20,50}/)
+          .required(),
+      }),
 }
-export default {checkEmail,checkAddress,checkID}
+const checkID ={
+    body: Joi.object({
+        _id: Joi.string()
+          .required(),
+      }),
+
+}
+const checkIdAddress ={
+    body: Joi.object({
+        name: Joi.string()
+          .regex(/[a-zA-Z0-9]{20,50}/)
+          .required(),
+        _id: Joi.string()
+          .required(),
+      }),
+}
+export default {checkEmail,checkAddress,checkID,checkIdAddress}

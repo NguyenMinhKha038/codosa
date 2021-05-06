@@ -8,51 +8,54 @@ const managerRouter = Router();
 
 managerRouter.post(
   "/register",
-  // validate(validates.validateRegister, {}, {}),
-  managerValidate.checkEmailNamePass,
+  validate(managerValidate.checkEmailNamePass, {}, {}),
   auth.checkManagerExist,
   managerController.managerRegister
 );
 
 managerRouter.post(
   "/login",
-  // validate(validates.validateLogin, {}, {}),
-  managerValidate.checkEmailPass,
+  validate(managerValidate.checkEmailPass, {}, {}),
+  //managerValidate.checkEmailPass,
   managerController.managerLogin
 );
 
 managerRouter.post(
   "/deleteuser",
+  auth.authen,
   auth.isManager,
-  // validate(validates.validateEmail, {}, {}),
-  managerValidate.checkEmail,
+  validate(managerValidate.checkEmail, {}, {}),
+  //managerValidate.checkEmail,
   managerController.deleteUser
 );
 
 managerRouter.post(
   "/deletestaff",
+  auth.authen,
   auth.isManager,
-  // validate(validates.validateEmail, {}, {}),
-  managerValidate.checkEmail,
+  validate(managerValidate.checkEmail, {}, {}),
+  //managerValidate.checkEmail,
   managerController.deleteStaff
 );
 
 managerRouter.post(
   "/updateuser",
+  auth.authen,
   auth.isManager,
-  // validate(validates.validateRegister, {}, {}),
-  managerValidate.checkEmailNamePass,
+  validate(managerValidate.checkEmailNamePass, {}, {}),
+  //managerValidate.checkEmailNamePass,
   managerController.updateUser
 );
 managerRouter.post(
   "/updatestaff",
+  auth.authen,
   auth.isManager,
-  // validate(validates.validateRegister, {}, {}),
-  managerValidate.checkEmailNamePass,
+  validate(managerValidate.checkEmailNamePass, {}, {}),
+  //managerValidate.checkEmailNamePass,
   managerController.updateStaff
 );
 
 managerRouter.get("/info", auth.isManager, managerController.getInfo);
-managerRouter.post("/getuser", auth.isManager,managerValidate.checkEmail, managerController.getUser);
-managerRouter.post("/getstaff", auth.isManager,managerValidate.checkEmail, managerController.getStaff);
+managerRouter.post("/getuser",auth.authen, auth.isManager,validate(managerValidate.checkEmail, {}, {}), managerController.getUser);
+managerRouter.post("/getstaff", auth.authen,auth.isManager,validate(managerValidate.checkEmail, {}, {}), managerController.getStaff);
 export default managerRouter;

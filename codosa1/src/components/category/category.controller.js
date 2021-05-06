@@ -1,20 +1,20 @@
 import category from "./category.model";
 import product from "../products/product.model";
-
+import statusMiddleWare from "../utils/status";
 
 const addCategory = async (req, res) => {
   const categoryName = req.body.category;
-  const categories = await category.findOne({ name: categoryName });
-  if (categories) {
-    res.status(403).json({ message: "Đã tồn tại" });
+  const checkCategory = await category.findOne({ name: categoryName });
+  if (checkCategory) {
+    res.status(403).json({ message: "Already exist" });
   }
   let categories = new category({
     name: categoryName,
-    status:"Active"
+    status:statusMiddleWare.categoryStatus.ACTIVE
   });
   try {
     await categories.save();
-    res.status(200).json({ massage: "Đã tạo thành công" });
+    res.status(200).json({ massage: "Successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
@@ -22,9 +22,9 @@ const addCategory = async (req, res) => {
 const deleteCategory = async (req, res) => {
   const categories = req.body.category;
   try {
-    await category.findOneAndUpdate({ name: categories },{status:"Disable"});
-    await product.updateMany({ category: categories },{status:"Disable"});
-    res.status(200).json({ message: "Xóa thành công" });
+    await category.findOneAndUpdate({ name: categories },{status:statusMiddleWare.categoryStatus.DISABLE});
+    await product.updateMany({ category: categories },{status:statusMiddleWare.categoryStatus.DISABLE});
+    res.status(200).json({ message: "Delete successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }
@@ -33,7 +33,7 @@ const getListCategory = async (req, res) => {
   const categories = await category.find({});
   let list = categories.map((x) => x._id);
   if (list.length == 0) {
-    res.status(200).json({ message: "Chưa có category" });
+    res.status(200).json({ message: "Cant not found" });
   }
   res.status(200).json({ category: categories });
 };
@@ -42,7 +42,7 @@ const getAllProduct = async (req, res) => {
   try {
     const listProduct = await product.findMany({ category: category });
     if (listProduct.length == 0) {
-      res.status(200).json({ Message: "Không tồn tại sản phẩm nào" });
+      res.status(200).json({ Message: "Cant not found" });
     }
     res.status(200).json({ Product: listProduct });
   } catch (error) {
@@ -54,7 +54,7 @@ const updateCategory = async (req, res) => {
   try {
     await category.findOneAndUpdate({ name: name }, { name: newName });
     await product.updateMany({ category: name }, { category: newName });
-    res.status(200).json({ message: "Update thành công" });
+    res.status(200).json({ message: "Update successful" });
   } catch (error) {
     res.status(400).json({ Error: error });
   }

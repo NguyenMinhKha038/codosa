@@ -6,19 +6,18 @@ import userValidate from "./user.validate";
 const userRouter = Router();
 userRouter.post(
   "/login",
-  // validate(validates.validateLogin, {}, {}),
-  userValidate.checkEmailPass,
+  validate(userValidate.checkEmailPass),
   userController.userLogin
 );
 userRouter.post(
   "/register",
-  // validate(validates.validateRegister, {}, {}),
-  userValidate.checkEmailNamePass,
+  validate(userValidate.checkEmailNamePass),
+  
   auth.checkUserExist,
   userController.userRegister
 );
 
-userRouter.get("/info", auth.isUser, userController.getInfo);
+userRouter.get("/info", auth.authen,auth.isUser, userController.getInfo);
 
 
 export default userRouter;

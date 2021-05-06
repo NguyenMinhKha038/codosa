@@ -1,6 +1,10 @@
-import { check, validationResult } from 'express-validator';
-
-const checkNameSearch =()=>{
-    check('name').isLength({min:1,max:20}).withMessage("Product's Name must less than 30 and greater than 1 characters")
+import { validate, ValidationError, Joi } from "express-validation";
+const checkNameSearch ={
+    body: Joi.object({
+        name: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+      }),
 }
+
 export default {checkNameSearch};

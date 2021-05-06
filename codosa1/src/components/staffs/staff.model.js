@@ -12,12 +12,16 @@ const staffSchema = new Schema({
   },
   role: {
     type: String,
+    unique: true,
   },
   email: {
     type: String,
     unique: true,
   },
-  status:String,
+  status:{
+    type:Number,
+    require:true
+  },
   image: String,
 });
 module.exports = mongoose.model("staff", staffSchema);

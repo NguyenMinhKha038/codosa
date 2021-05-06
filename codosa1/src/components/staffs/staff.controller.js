@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import user from "../users/user.model";
 import dotenv from "dotenv";
-
+import statusMiddleWare from "../utils/status"
 dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;
@@ -13,14 +13,14 @@ const staffRegister = async (req, res) => {
       name: name,
       password: hash,
       email: email,
-      role: "staff",
-      status:"Active"
+      role: statusMiddleWare.permission.STAFF,
+      status:statusMiddleWare.permission.USER
     });
     try {
       await staffs.save();
-      res.status(200).json({ message: "Tạo OK" });
+      res.status(200).json({ message: "Successfull" });
     } catch (error) {
-      res.status(400).json({ "Lỗi save": error });
+      res.status(400).json({ Error: error });
     }
   } catch (err) {
     res.status(400).json({ Error: err });
@@ -31,7 +31,7 @@ const staffLogin = async (req, res) => {
   const { email, password } = req.body;
   let staffs = await staff.findOne({ email: email });
   if (!staffs) {
-    res.status(401).json({ msg: "No such user found", staffs });
+    res.status(401).json({ message: "No such user found" });
   } else {
     try {
       await bcrypt.compare(password, staffs.password);
@@ -45,7 +45,7 @@ const staffLogin = async (req, res) => {
       req.header.authorization = token;
       res.status(200).json({ token: token });
     } catch (error) {
-      res.status(400).json({ message: "Không đúng mật khẩu" });
+      res.status(400).json({ message: "Password incorrect" });
     }
   }
 };
@@ -53,10 +53,10 @@ const staffLogin = async (req, res) => {
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.findOneAndUpdate({ email: email },{status:"Disable"});
-    res.status(200).json({ message: "Xóa thành công" });
+    await user.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    res.status(200).json({ message: "Delete successful" });
   } catch (error) {
-    req.status(400).json({ message: "Xóa không thành công" });
+    req.status(400).json({ message: "Delete Failed" });
   }
 };
 
@@ -68,9 +68,9 @@ const updateUser = async (req, res) => {
       { email: email },
       { name: name, password: hash }
     );
-    res.status(200).json({ message: "Update thành công" });
+    res.status(200).json({ message: "Update successful" });
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 
@@ -82,23 +82,22 @@ const getUser = async (req, res) => {
     if (users) {
       res.status(200).json({ Info: users });
     } else {
-      res.status(400).json({ err: "không thấy" });
+      res.status(400).json({ Error: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 
 const getInfo = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const payload = await jwt.verify(token, process.env.privateKey);
+    const payload = req.user
     const email = payload.email;
     const name = payload.name;
     const role = payload.role;
     res.status(200).json({ Name: name, Role: role, Email: email });
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 export default {

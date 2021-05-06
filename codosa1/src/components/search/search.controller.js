@@ -8,7 +8,7 @@ const search = async (req, res) => {
   let arrProduct = products.map((x) => x.name);
 
   if (arrProduct.length == 0) {
-    res.status(200).json({ Message: "Không tìm thấy sản phẩm" });
+    res.status(200).json({ Message: "Product not found" });
   }
   res.status(200).json({ Product: arrProduct });
 };

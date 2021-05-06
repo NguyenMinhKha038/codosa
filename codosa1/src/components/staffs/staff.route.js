@@ -8,37 +8,40 @@ const staffRoute = Router();
 
 staffRoute.post(
   "/register",
-  // validate(validates.validateRegister, {}, {}),
-  staffValidate.checkEmailNamePass,
+  validate(staffValidate.checkEmailNamePass, {}, {}),
+  //staffValidate.checkEmailNamePass,
   auth.checkStaffExist,
   staffController.staffRegister
 );
 staffRoute.post(
   "/login",
-  // validate(validates.validateLogin, {}, {}),
-  staffValidate.checkEmailPass,
+  validate(staffValidate.checkEmailPass, {}, {}),
+  //staffValidate.checkEmailPass,
   staffController.staffLogin
 );
 staffRoute.post(
   "/update",
+  auth.authen,
   auth.isStaff,
-  // validate(validates.validateRegister, {}, {}),
-  staffValidate.checkEmailNamePass,
+  validate(staffValidate.checkEmailNamePass, {}, {}),
+  //staffValidate.checkEmailNamePass,
   staffController.updateUser
 );
 staffRoute.post(
   "/delete",
+  auth.authen,
   auth.isStaff,
-  // validate(validates.validateEmail, {}, {}),
-  staffValidate.checkEmail,
+  validate(staffValidate.checkEmail, {}, {}),
+  //staffValidate.checkEmail,
   staffController.deleteUser
 );
 staffRoute.post(
   "/getuser",
+  auth.authen,
   auth.isStaff,
-  // validate(validates.validateEmail, {}, {}),,
-  staffValidate.checkEmail,
+  validate(staffValidate.checkEmail, {}, {}),
+  //staffValidate.checkEmail,
   staffController.getUser
 );
-staffRoute.get("/info", auth.isStaff, staffController.getInfo);
+staffRoute.get("/info",auth.authen, auth.isStaff, staffController.getInfo);
 export default staffRoute;

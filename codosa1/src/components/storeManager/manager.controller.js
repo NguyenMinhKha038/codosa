@@ -4,6 +4,7 @@ import auth from "../utils/auth";
 import manager from "./manager.model";
 import user from "../users/user.model";
 import staff from "../staffs/staff.model";
+import statusMiddleWare from "../utils/status";
 
 const managerRegister = async (req, res) => {
   const { email, name, password } = req.body;
@@ -13,12 +14,12 @@ const managerRegister = async (req, res) => {
       name: name,
       password: hash,
       email: email,
-      role: "manager",
-      status:"Active"
+      role: statusMiddleWare.permission.MANAGER,
+      status:statusMiddleWare.personStatus.ACTIVE
     });
     try {
       await managers.save();
-      res.status(200).json({ message: "Tạo thành công" });
+      res.status(200).json({ message: "Successfull" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
@@ -49,19 +50,19 @@ const managerLogin = async (req, res) => {
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.findOneAndUpdate({ email: email },{status:"Disable"});
-    res.status(200).json({ message: "Xóa thành công" });
+    await user.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    res.status(200).json({ message: "Successful" });
   } catch (error) {
-    req.status(400).json({ message: "Xóa không thành công" });
+    req.status(400).json({ message: "Failed!" });
   }
 };
 const deleteStaff = async (req, res) => {
   const email = req.body.email;
   try {
-    await staff.findOneAndUpdate({ email: email },{status:"Disable"});
-    res.status(200).json({ message: "Xóa thành công" });
+    await staff.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    res.status(200).json({ message: "Successful" });
   } catch (error) {
-    req.status(400).json({ message: "Xóa không thành công" });
+    req.status(400).json({ message: "Failed!" });
   }
 };
 const updateUser = async (req, res) => {
@@ -74,12 +75,12 @@ const updateUser = async (req, res) => {
         { email: email },
         { name: name, password: hash }
       );
-      res.status(200).json({ message: "Update thành công" });
+      res.status(200).json({ message: "Update successful" });
     } catch (error) {
       res.status(400).json({ message: error });
     }
   } else {
-    res.status(400).json({ message: "Không tìm thấy USer" });
+    res.status(400).json({ message: "User not found" });
   }
 };
 const updateStaff = async (req, res) => {
@@ -93,12 +94,12 @@ const updateStaff = async (req, res) => {
         { email: email },
         { name: name, password: hash }
       );
-      res.status(200).json({ message: "Update thành công" });
+      res.status(200).json({ message: "Update successful" });
     } catch (error) {
       res.status(400).json({ message: error });
     }
   } else {
-    res.status(400).json({ message: "Không tìm thấy USer" });
+    res.status(400).json({ message: "User not found" });
   }
 };
 const getUser = async (req, res) => {
@@ -109,10 +110,10 @@ const getUser = async (req, res) => {
     if (users) {
       res.status(200).json({ Info: users });
     } else {
-      res.status(400).json({ err: "không thấy" });
+      res.status(400).json({ Error: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 
@@ -124,10 +125,10 @@ const getStaff = async (req, res) => {
     if (staffs) {
       res.status(200).json({ Info: staffs });
     } else {
-      res.status(400).json({ err: "không thấy" });
+      res.status(400).json({ err: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 const getInfo = async (req, res) => {
@@ -135,7 +136,7 @@ const getInfo = async (req, res) => {
     const { name, role, email } = req.user;
     res.status(200).json({ Name: name, Role: role, Email: email });
   } catch (error) {
-    res.status(400).json({ message: error });
+    res.status(400).json({ Error: error });
   }
 };
 

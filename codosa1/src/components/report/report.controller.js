@@ -7,9 +7,6 @@ const reportProduct = async (req, res) => {
     const name = req.body.name;
     const toDay = req.body.toDay;
     const fromDay = req.body.fromDay;
-    if (!name || !toDay || !fromDay) {
-      res.status(400).json({ Message: "Dữ liệu không hợp lệ" });
-    }
     const orders = await order.find({
       finishDay: { $gte: fromDay, $lte: toDay },
     });
@@ -38,9 +35,6 @@ const reportCategory = async (req, res) => {
     const name = req.body.name;
     const toDay = req.body.toDay;
     const fromDay = req.body.fromDay;
-    if (!name || !toDay || !fromDay) {
-      res.status(400).json({ Message: "Dữ liệu không hợp lệ" });
-    }
     const products = await product.find({ category: name });
     const orders = await order.find({
       finishDay: { $gte: fromDay, $lte: toDay },

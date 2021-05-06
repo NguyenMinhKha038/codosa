@@ -2,10 +2,9 @@ import user from "./user.model";
 import cart from "../cart/cart.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import auth from "../utils/auth";
+import statusMiddleWare from "../utils/status";
 import dotenv from "dotenv";
 dotenv.config();
-
 const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -14,8 +13,8 @@ const userRegister = async (req, res) => {
       name: name,
       password: hash,
       email: email,
-      role: "user",
-      status:"Active"
+      role: statusMiddleWare.permission.USER,
+      status:statusMiddleWare.personStatus.ACTIVE
     }); //ok
     let carts = new cart({
       id: email,
@@ -25,12 +24,12 @@ const userRegister = async (req, res) => {
     try {
       await users.save();
       await carts.save();
-      res.status(200).json({ message: "Tạo thành công" });
+      res.status(200).json({ message: "Successful" });
     } catch (error) {
-      res.status(400).json({ "Lỗi save": error });
+      res.status(400).json({ Error: error });
     }
   } catch (error) {
-    res.status(400).json({ "Lỗi hash": error });
+    res.status(400).json({ Error: error });
   }
 };
 

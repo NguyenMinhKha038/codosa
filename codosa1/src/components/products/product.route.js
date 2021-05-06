@@ -9,11 +9,11 @@ const productRouter = Router();
 productRouter.post(
   "/add",
   auth.checkAuth,
-  productValidate.checkAddProduct,
+  validate(productValidate.checkAddProduct, {}, {}),
   product.addProduct
 );
-productRouter.post("/delete", auth.checkAuth, productValidate.checkNameProduct,product.deleteProduct);
-productRouter.post("/update", auth.checkAuth,productValidate.checkUpdateProduct,product.updateProduct);
-productRouter.post("/get", auth.checkAuth,productValidate.checkNameProduct, product.getProduct);
+productRouter.post("/delete", auth.authen,auth.checkAuth, validate(productValidate.checkNameProduct, {}, {}),product.deleteProduct);
+productRouter.post("/update", auth.authen,auth.checkAuth,validate(productValidate.checkUpdateProduct, {}, {}),product.updateProduct);
+productRouter.post("/get",auth.authen, auth.checkAuth,validate(productValidate.checkNameProduct, {}, {}), product.getProduct);
 
 export default productRouter;

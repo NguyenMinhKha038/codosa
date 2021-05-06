@@ -1,15 +1,23 @@
-import { check, validationResult } from 'express-validator';
-
-const checkEmailNamePass =()=>{
-    check('email').isEmail().withMessage("Must be an email"),
-    check('name').isLength({max:20,min:2}).withMessage("Name must less than 20 and greater than 2 characters"),
-    check('password').isLength({min:1}).withMessage("Paaword is require")
+import { validate, ValidationError, Joi } from "express-validation";
+const checkEmailNamePass ={
+    body: Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+      }),
 }
-const checkEmail = ()=>{
-    check('email').isEmail().withMessage("Must be an email")
+const checkEmail = {
+    body: Joi.object({
+        email: Joi.string().email().required(),
+      }),
 }
-const checkEmailPass = ()=>{
-    check('email').isEmail().withMessage("Must be an email"),
-    check('password').isLength({min:1}).withMessage("Paaword is require")
+const checkEmailPass ={
+    body: Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string()
+          .regex(/[a-zA-Z0-9]{3,30}/)
+          .required(),
+      }),
 }
 export default { checkEmailNamePass,checkEmail,checkEmailPass};

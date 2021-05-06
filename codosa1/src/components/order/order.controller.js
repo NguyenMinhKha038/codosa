@@ -1,17 +1,13 @@
-import auth from "../utils/auth";
-import categoryController from "../category/category.controller";
-import notificationController from "../notification/sendMail.controller";
 import staff from "../staffs/staff.model";
 import product from "../products/product.model";
 import cart from "../cart/cart.model";
 import order from "../order/order.model";
 import socketIo from "../utils/socket.io";
 import jwt from "jsonwebtoken";
-
+import statusMiddleWare from "../utils/status";
 // CRUD order
 const createOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user;
   const email = payload.email;
   const session = client.startSession(); 
   session.startTransaction();//start transaction
@@ -59,17 +55,17 @@ const createOrder = async (req, res) => {
       };
       await orders.save();
       await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 }),opts; //new
-      for (const value of staffs) {
-        await notificationController.send(
-          value.email,
-          "Order vừa được tạo",
-          content
-        );
-      }
-      await socketIo.sendNotification(email);
+      // for (const value of staffs) {
+      //   await notificationController.send(
+      //     value.email,
+      //     "Order vừa được tạo",
+      //     content
+      //   );
+      // }
+      //await socketIo.sendNotification(email);
       await session.commitTransaction();
       session.endSession(); //end transaction
-      res.status(200).json({ Message: "Tạo order thành công" });
+      res.status(200).json({ Message: "Create order successful" });
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
@@ -79,13 +75,13 @@ const createOrder = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
-  const email = payload.email || req.body.email;
+ 
+  const payload = req.user;
+  const email = payload.email;
   try {
     const orders = await order.find({ id: email });
     if (!orders) {
-      res.status(400).json({ Message: "Không tồn tại order nào" });
+      res.status(400).json({ Message: "何でもない" });
     } else {
       res.status(400).json({ Message: orders });
     }
@@ -94,13 +90,12 @@ const getOrder = async (req, res) => {
   }
 };
 const getUserOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user;
   const email = req.body.email;
   try {
     const orders = await order.find({ id: email });
     if (!orders) {
-      res.status(400).json({ Message: "Không tồn tại order nào" });
+      res.status(400).json({ Message: "何でもない" });
     } else {
       res.status(400).json({ Message: orders });
     }
@@ -110,14 +105,13 @@ const getUserOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user;
   const email = payload.email;
   const id = req.body._id;
   const address = req.body.address;
   const orders = await order.findOne({ _id: id, id: email });
   const status = orders.status;
-  if (status != "Processing" || status != "Waiting") {
+  if (status >2) {
     res
       .status(400)
       .json({ Message: "Order đang được giao, không thể cập nhật" });
@@ -135,41 +129,39 @@ const updateOrder = async (req, res) => {
 };
 
 const userDeleteOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user
   const email = payload.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id, id: email });
   const status = orders.status;
-  if (status != "Waiting") {
+  if (status != 1) {
     res
       .status(400)
-      .json({ Message: "Order đang được xử lý, không thể cập nhật" });
+      .json({ Message: "Order is handing, can't update" });
   } else {
     try {
       await order.findOneAndUpdate(
         { _id: id, id: email },
-        { status: "Delete" }
+        { status: statusMiddleWare.orderStatus.DELETE}
       );
-      res.status(200).json({ Message: "Đã xóa thành công" });
+      res.status(200).json({ Message: "Delete Successful" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
   }
 };
 const adminDeleteOrder = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user
   const email = payload.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
   const status = orders.status;
-  if (status == "Finish") {
-    res.status(400).json({ Message: "Đã giao hàng thành công, không thể xóa" });
+  if (status == 4) {
+    res.status(400).json({ Message: "Order is finsh, can't delete" });
   } else {
     try {
-      await order.findOneAndUpdate({ _id: id }, { status: "Delete" });
-      res.status(200).json({ Message: "Đã xóa thành công" });
+      await order.findOneAndUpdate({ _id: id }, { status: statusMiddleWare.orderStatus.DELETE});
+      res.status(200).json({ Message: "Delete successful" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
@@ -179,71 +171,67 @@ const adminDeleteOrder = async (req, res) => {
 //Update status
 
 const processingUpdate = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
   const status = orders.status;
 
-  if (status == "Waiting") {
+  if (status == 1) {
     try {
-      await order.findOneAndUpdate({ _id: id }, { status: "Processing" });
-      res.status(200).json({ Message: "Update thành công" });
+      await order.findOneAndUpdate({ _id: id }, { status: statusMiddleWare.orderStatus.PROCESSING });
+      res.status(200).json({ Message: "Update Sucessful" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
   } else {
-    res.status(400).json({ Message: "Order hiện tại không thể xử lý" });
+    res.status(400).json({ Message: "This Order can not processing" });
   }
 };
 
 const shippingUpdate = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
+  const payload = req.user;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
   const status = orders.status;
-  if (status == "Processing") {
+  if (status == 2) {
     try {
       await order.findOneAndUpdate(
         { _id: id },
-        { status: "Shipping", deliveryDay: Date.now() }
+        { status: statusMiddleWare.orderStatus.SHIPPING, deliveryDay: Date.now() }
       );
-      res.status(200).json({ Message: "Update thành công" });
+      res.status(200).json({ Message: "Update Sucessful" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
   } else {
-    res.status(400).json({ Message: "Order hiện tại không thể xử lý" });
+    res.status(400).json({ Message: "This Order can not processing" });
   }
 };
 
 const finishUpdate = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwt.verify(token, process.env.privateKey);
-
+  const payload = req.user;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
   const status = orders.status;
-  if (status == "Shipping") {
+  if (status == 3) {
     try {
       await order.findOneAndUpdate(
         { _id: id },
-        { status: "Finish", finishDay: Date.now() }
+        { status: statusMiddleWare.orderStatus.FINISH, finishDay: Date.now() }
       );
-      res.status(200).json({ Message: "Update thành công" });
+      res.status(200).json({ Message: "Update Sucessful" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
   } else {
-    res.status(400).json({ Message: "Order hiện tại không thể xử lý" });
+    res.status(400).json({ Message: "This Order can not processing" });
   }
 };
 
 //get Order
 const getWaitingOrder = async (req, res) => {
   try {
-    const orders = await order.find({ status: "Waiting" });
+    const orders = await order.find({ status: 1 });
     res.status(200).json({ Message: orders });
   } catch (error) {
     res.status(400).json({ Error: error });
@@ -252,7 +240,7 @@ const getWaitingOrder = async (req, res) => {
 
 const getProcessingOrder = async (req, res) => {
   try {
-    const orders = await order.find({ status: "Processing" });
+    const orders = await order.find({ status: 2 });
     res.status(200).json({ Message: orders });
   } catch (error) {
     res.status(400).json({ Error: error });
@@ -261,7 +249,7 @@ const getProcessingOrder = async (req, res) => {
 
 const getShippingOrder = async (req, res) => {
   try {
-    const orders = await order.find({ status: "Shipping" });
+    const orders = await order.find({ status: 3 });
     res.status(200).json({ Message: orders });
   } catch (error) {
     res.status(400).json({ Error: error });
@@ -270,7 +258,7 @@ const getShippingOrder = async (req, res) => {
 
 const getFinishOrder = async (req, res) => {
   try {
-    const orders = await order.find({ status: "Finish" });
+    const orders = await order.find({ status: 4 });
     res.status(200).json({ Message: orders });
   } catch (error) {
     res.status(400).json({ Error: error });
@@ -279,7 +267,7 @@ const getFinishOrder = async (req, res) => {
 
 const getDeleteOrder = async (req, res) => {
   try {
-    const orders = await order.find({ status: "Delete" });
+    const orders = await order.find({ status: 0 });
     res.status(200).json({ Message: orders });
   } catch (error) {
     res.status(400).json({ Error: error });
