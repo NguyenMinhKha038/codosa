@@ -15,7 +15,7 @@ const authen = (req, res, next) => {
 
 const isStaff = async (req, res, next) => {
   const role = req.user.role;
-  if (role && role == "staff") {
+  if (role && role == 1) {
     return next();
   } else {
     res.status(401).json({ message: "không có quyền staff" });
@@ -23,7 +23,7 @@ const isStaff = async (req, res, next) => {
 };
 const isUser = async (req, res, next) => {
   const role = req.user.role;
-  if (role && role == "user") {
+  if (role && role == 0) {
     next();
   } else {
     res.status(401).json({ Message: "Must be User" });
@@ -31,11 +31,11 @@ const isUser = async (req, res, next) => {
 };
 const isManager = async (req, res, next) => {
   const role = req.user.role;
-  if (role && role == "manager") {
+  if (role && role == 2) {
     req.user = payload;
     return next();
   } else {
-    res.status(401).json({ message: "không có quyền manager" });
+    res.status(401).json({ message: req.user});
   }
 };
 

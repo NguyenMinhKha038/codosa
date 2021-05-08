@@ -15,12 +15,12 @@ const getCart = async (req, res) => {
   }
 };
 const addCart = async (req, res) => {
-  const { productName, amount } = req.body;
+  const { productName, amount ,id} = req.body;
   const email = req.user.email;
   const session = client.startSession(); 
   session.startTransaction();//start transaction
   const opts = { session, returnOriginal: false };
-  const products = await product.findOne({ name: productName });
+  const products = await product.findOne({ name: productName,_id:id });
   const carts = await cart.findOne({ id: email });
   const total = carts.total + products.price * amount;
   const arrProduct = [...carts.productName];

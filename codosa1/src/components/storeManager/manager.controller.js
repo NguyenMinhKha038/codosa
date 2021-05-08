@@ -19,7 +19,7 @@ const managerRegister = async (req, res) => {
     });
     try {
       await managers.save();
-      res.status(200).json({ message: "Successfull" });
+      res.status(200).json({ message: {name:name,email:email} });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
@@ -38,9 +38,9 @@ const managerLogin = async (req, res) => {
     try {
       await bcrypt.compare(password, managers.password);
       let payload = { name: managers.name, role: managers.role, email: email };
-      let token = jwt.sign(payload, process.env.PrivateKey);
+      let token = jwt.sign(payload, process.env.privateKey);
       req.header.authorization = token;
-      res.status(200).json({ token: token });
+      res.status(200).json({ token: token,role:managers.role });
     } catch (error) {
       res.status(400).json({ Error: error });
     }

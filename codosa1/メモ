@@ -1,6 +1,7 @@
 Áp dụng transaction (cart,order) ok
 Validate cho tất cả API ok
-Report sử dụng aggregate
-Sửa lại thông báo
-Sử dụng Ref
+Report sử dụng aggregate ok
+Sửa lại thông báo ok
+Sử dụng Ref ok
 Error Handller
+Sửa lại addCart

@@ -1,44 +1,53 @@
-import staff from "../staffs/staff.model";
 import product from "../products/product.model";
 import cart from "../cart/cart.model";
 import order from "../order/order.model";
-import socketIo from "../utils/socket.io";
-import jwt from "jsonwebtoken";
 import statusMiddleWare from "../utils/status";
+import notification from "../notification/notification.model";
+import startSession from "mongoose";
 // CRUD order
 const createOrder = async (req, res) => {
   const payload = req.user;
   const email = payload.email;
-  const session = client.startSession(); 
-  session.startTransaction();//start transaction
-  const opts = { session, returnOriginal: false };
   const carts = await cart.findOne({ id: email });
   if (carts.total == 0) {
-    res.status(400).json({ Message: "Cart is Emty" });
+    res.status(400).json({ Message: "Cart is Empty" });
   } else {
-    const staffs = await staff.find();
-    const productName = carts.productName;
-    const address = req.body.address;
-    if (!address) {
-      res.status(400).json({ Message: "Address is Emty" });
-    }
-    let arrProduct = [];
-    for (const value of productName) {
-      let products = await product.findOne({ name: value.Product });
-      arrProduct.push({
-        product: value.Product,
-        price: products.price,
-        amount: value.Amount,
-      });
-      await product.findOneAndUpdate(
-        { name: value.Product },
-        { amount: products.amount - value.Amount },opts
-      );
-    }
-    const total = arrProduct.reduce((total, value) => {
-      return (total += value.price * value.amount);
-    }, 0);
     try {
+      const session = await startSession();
+      session.startTransaction(); //start transaction
+      const productName = carts.productName;
+      const address = req.body.address;
+      if (!address) {
+        res.status(400).json({ Message: "Address is Empty" });
+      }
+      let arrProduct = [];
+      for (const value of productName) {
+        let products = await product.findOne({ name: value.Product });
+        arrProduct.push({
+          product: value.Product,
+          price: products.price,
+          amount: value.Amount,
+        });
+        await product.findOneAndUpdate(
+          { name: value.Product },
+          { amount: products.amount - value.Amount }
+        );
+      }
+      // const arr = productName.map(value=>{
+      //   let products = await product.findOne({ name: value.Product });
+      //   arrProduct.push({
+      //         product: value.Product,
+      //         price: products.price,
+      //         amount: value.Amount,
+      //       });
+      //       await product.findOneAndUpdate(
+      //             { name: value.Product },
+      //             { amount: products.amount - value.Amount }
+      //           );
+      // })
+      const total = arrProduct.reduce((total, value) => {
+        return (total += value.price * value.amount);
+      }, 0);
       let orders = new order({
         id: email,
         product: arrProduct,
@@ -47,22 +56,15 @@ const createOrder = async (req, res) => {
         total: total,
         address: address,
       });
-      let content = {
-        email: email,
-        arrProduct: arrProduct,
-        total: total,
-        address: address,
-      };
-      await orders.save();
-      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 }),opts; //new
-      // for (const value of staffs) {
-      //   await notificationController.send(
-      //     value.email,
-      //     "Order vừa được tạo",
-      //     content
-      //   );
-      // }
-      //await socketIo.sendNotification(email);
+      const notifications = new notification({
+        title:"Order mới vừa được tạo",
+        content:JSON.stringify(orders),
+        Date:Date.now()
+      })
+      //await notification.save({session});
+      //await orders.save({session});
+      Promise.all(notification.save({session}),orders.save({session}));
+      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 },{session}); //new
       await session.commitTransaction();
       session.endSession(); //end transaction
       res.status(200).json({ Message: "Create order successful" });
@@ -75,7 +77,6 @@ const createOrder = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
- 
   const payload = req.user;
   const email = payload.email;
   try {
@@ -111,7 +112,7 @@ const updateOrder = async (req, res) => {
   const address = req.body.address;
   const orders = await order.findOne({ _id: id, id: email });
   const status = orders.status;
-  if (status >2) {
+  if (status > 2) {
     res
       .status(400)
       .json({ Message: "Order đang được giao, không thể cập nhật" });
@@ -129,20 +130,18 @@ const updateOrder = async (req, res) => {
 };
 
 const userDeleteOrder = async (req, res) => {
-  const payload = req.user
+  const payload = req.user;
   const email = payload.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id, id: email });
   const status = orders.status;
   if (status != 1) {
-    res
-      .status(400)
-      .json({ Message: "Order is handing, can't update" });
+    res.status(400).json({ Message: "Order is handing, can't update" });
   } else {
     try {
       await order.findOneAndUpdate(
         { _id: id, id: email },
-        { status: statusMiddleWare.orderStatus.DELETE}
+        { status: statusMiddleWare.orderStatus.DELETE }
       );
       res.status(200).json({ Message: "Delete Successful" });
     } catch (error) {
@@ -151,7 +150,7 @@ const userDeleteOrder = async (req, res) => {
   }
 };
 const adminDeleteOrder = async (req, res) => {
-  const payload = req.user
+  const payload = req.user;
   const email = payload.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
@@ -160,7 +159,10 @@ const adminDeleteOrder = async (req, res) => {
     res.status(400).json({ Message: "Order is finsh, can't delete" });
   } else {
     try {
-      await order.findOneAndUpdate({ _id: id }, { status: statusMiddleWare.orderStatus.DELETE});
+      await order.findOneAndUpdate(
+        { _id: id },
+        { status: statusMiddleWare.orderStatus.DELETE }
+      );
       res.status(200).json({ Message: "Delete successful" });
     } catch (error) {
       res.status(400).json({ Error: error });
@@ -178,7 +180,10 @@ const processingUpdate = async (req, res) => {
 
   if (status == 1) {
     try {
-      await order.findOneAndUpdate({ _id: id }, { status: statusMiddleWare.orderStatus.PROCESSING });
+      await order.findOneAndUpdate(
+        { _id: id },
+        { status: statusMiddleWare.orderStatus.PROCESSING }
+      );
       res.status(200).json({ Message: "Update Sucessful" });
     } catch (error) {
       res.status(400).json({ Error: error });
@@ -197,7 +202,10 @@ const shippingUpdate = async (req, res) => {
     try {
       await order.findOneAndUpdate(
         { _id: id },
-        { status: statusMiddleWare.orderStatus.SHIPPING, deliveryDay: Date.now() }
+        {
+          status: statusMiddleWare.orderStatus.SHIPPING,
+          deliveryDay: Date.now(),
+        }
       );
       res.status(200).json({ Message: "Update Sucessful" });
     } catch (error) {

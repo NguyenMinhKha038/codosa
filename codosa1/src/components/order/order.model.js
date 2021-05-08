@@ -6,7 +6,10 @@ const orderSchema = new Schema({
     type: String,
     require: true,
   },
-  product: Array,
+  product: [{
+    type:Array,
+    require: true,
+  }],
   status: {
     type: Number,
     require: true,

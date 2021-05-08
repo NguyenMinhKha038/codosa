@@ -7,11 +7,33 @@ const reportProduct = async (req, res) => {
     const name = req.body.name;
     const toDay = req.body.toDay;
     const fromDay = req.body.fromDay;
-    const orders = await order.find({
-      finishDay: { $gte: fromDay, $lte: toDay },
-    });
+    // const orders = await order.find({
+    //   finishDay: { $gte: fromDay, $lte: toDay },
+    // });
     const products = await product.findOne({ name: name });
     const price = products.price;
+    const orders = await order.aggregate([
+      {
+        $match: {
+          finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
+        },
+      },
+      {
+        $project:{
+          product:1,
+          price:1,
+          amount:1
+        }
+      },
+      // {
+      //   $group:{
+      //     name:"$product[product]"
+      //   }
+      // }
+      
+    ]);
+    
+    
     for (const oneOrder of orders) {
       const listProduct = oneOrder.product;
       for (const ord of listProduct) {
@@ -20,8 +42,11 @@ const reportProduct = async (req, res) => {
         }
       }
     }
+    //const orders = await order.aggregate([{$match:{finishDay: { $gte: fromDay, $lte: toDay }}}]);
+
     const revenue = price * total;
-    res.status(200).json({ Total: total, Revenue: revenue });
+    res.status(200).json({ Result:orders,Total: total, Revenue: revenue });
+    //res.status(200).json({ order:orders});
   } catch (error) {
     res.status(400).json({ Error: error });
   }

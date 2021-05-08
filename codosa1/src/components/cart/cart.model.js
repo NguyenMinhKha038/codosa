@@ -7,7 +7,12 @@ const cartModel = new Schema({
     require: true,
     unique: true,
   },
-  productName: Array,
+  productIds:[{
+    type: mongoose.Types.ObjectId,
+    ref:'product'
+  }
+  ]
+  ,
   total: {
     type: Number,
     default: 0,
