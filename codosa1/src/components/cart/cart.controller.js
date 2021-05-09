@@ -24,9 +24,8 @@ const addCart = async (req, res) => {
   const carts = await cart.findOne({ id: email });
   const total = carts.total + products.price * amount;
   const arrProduct = [...carts.productName];
-
   try {
-    arrProduct.push({ Product: productName, Amount: amount });
+    arrProduct.push({id:id, Product: productName, Amount: amount });
     await cart.findOneAndUpdate(
       { id: email },
       { total: total, productName: arrProduct },

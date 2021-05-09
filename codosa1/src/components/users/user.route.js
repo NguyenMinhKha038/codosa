@@ -3,6 +3,7 @@ import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../utils/auth";
 import userValidate from "./user.validate";
+import errorHandller from "../utils/errorHandller";
 const userRouter = Router();
 userRouter.post(
   "/login",
@@ -14,7 +15,8 @@ userRouter.post(
   validate(userValidate.checkEmailNamePass),
   
   auth.checkUserExist,
-  userController.userRegister
+  errorHandller(userController.userRegister)
+  
 );
 
 userRouter.get("/info", auth.authen,auth.isUser, userController.getInfo);

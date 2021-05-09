@@ -24,13 +24,7 @@ const reportProduct = async (req, res) => {
           price:1,
           amount:1
         }
-      },
-      // {
-      //   $group:{
-      //     name:"$product[product]"
-      //   }
-      // }
-      
+      }  
     ]);
     
     

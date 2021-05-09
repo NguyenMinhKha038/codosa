@@ -14,7 +14,7 @@ const addAvatar = async (req, res) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
     const payload = await jwt.verify(token, process.env.privateKey);
-    if (email && payload.role == "user") {
+    if (payload.email && payload.role == "user") {
       try {
         await user.findOneAndUpdate({ email: email }, { image: imgPath });
         res.status(200).json({ Message: "Upload thành công" });
@@ -39,8 +39,10 @@ const addAvatar = async (req, res) => {
         res.status(400).json({ Error: error });
       }
     }
+  }else{
+    res.status(400).json({ Message: "Cần đăng nhập" });
   }
-  res.status(400).json({ Message: "Cần đăng nhập" });
+  
 };
 const addProductImage = async (req, res) => {
   const products = req.body.name;
