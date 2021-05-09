@@ -13,8 +13,6 @@ import reportRoute from "./components/report/report.route";
 import database from "./config/connectDb";
 import http from "http";
 
-import passport from "passport";
-
 database();
 dotenv.config();
 const app = express();
@@ -35,8 +33,19 @@ app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
 
-
-
+app.use((req, res, next) => {
+  const error = new Error("Not found");
+  error.status = 404;
+  next(error);
+ });
+ app.use((error, req, res, next) => {
+  res.status(error.status || 500).json({
+    error: {
+      status: error.status || 500,
+      message: error.message || 'Internal Server Error',
+    },
+  });
+});
 
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {

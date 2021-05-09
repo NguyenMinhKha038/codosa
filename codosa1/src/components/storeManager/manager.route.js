@@ -4,20 +4,21 @@ import auth from "../utils/auth";
 import validates from "../utils/validate";
 import managerController from "./manager.controller";
 import managerValidate from "./manager.validate";
+import errorHandller from "../utils/errorHandller";
 const managerRouter = Router();
 
 managerRouter.post(
   "/register",
   validate(managerValidate.checkEmailNamePass, {}, {}),
   auth.checkManagerExist,
-  managerController.managerRegister
+  errorHandller(managerController.managerRegister)
 );
 
 managerRouter.post(
   "/login",
   validate(managerValidate.checkEmailPass, {}, {}),
   //managerValidate.checkEmailPass,
-  managerController.managerLogin
+  errorHandller(managerController.managerLogin)
 );
 
 managerRouter.post(
@@ -26,7 +27,7 @@ managerRouter.post(
   auth.isManager,
   validate(managerValidate.checkEmail, {}, {}),
   //managerValidate.checkEmail,
-  managerController.deleteUser
+  errorHandller(managerController.deleteUser)
 );
 
 managerRouter.post(
@@ -35,7 +36,7 @@ managerRouter.post(
   auth.isManager,
   validate(managerValidate.checkEmail, {}, {}),
   //managerValidate.checkEmail,
-  managerController.deleteStaff
+  errorHandller(managerController.deleteStaff)
 );
 
 managerRouter.post(
@@ -44,7 +45,7 @@ managerRouter.post(
   auth.isManager,
   validate(managerValidate.checkEmailNamePass, {}, {}),
   //managerValidate.checkEmailNamePass,
-  managerController.updateUser
+  errorHandller(managerController.updateUser)
 );
 managerRouter.post(
   "/updatestaff",
@@ -52,7 +53,7 @@ managerRouter.post(
   auth.isManager,
   validate(managerValidate.checkEmailNamePass, {}, {}),
   //managerValidate.checkEmailNamePass,
-  managerController.updateStaff
+  errorHandller(managerController.updateStaff)
 );
 
 managerRouter.get("/info", auth.isManager, managerController.getInfo);

@@ -8,18 +8,17 @@ const userRouter = Router();
 userRouter.post(
   "/login",
   validate(userValidate.checkEmailPass),
-  userController.userLogin
+  errorHandller(userController.userLogin)
 );
 userRouter.post(
   "/register",
   validate(userValidate.checkEmailNamePass),
-  
   auth.checkUserExist,
   errorHandller(userController.userRegister)
   
 );
 
-userRouter.get("/info", auth.authen,auth.isUser, userController.getInfo);
+userRouter.get("/info", auth.authen,auth.isUser, errorHandller(userController.getInfo));
 
 
 export default userRouter;

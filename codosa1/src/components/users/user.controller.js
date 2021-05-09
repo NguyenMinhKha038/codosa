@@ -15,7 +15,7 @@ const userRegister = async (req, res) => {
       email: email,
       role: statusMiddleWare.permission.USER,
       status:statusMiddleWare.personStatus.ACTIVE
-    }); //ok
+    }); 
     let carts = new cart({
       id: email,
       productName: [],
@@ -37,13 +37,13 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
   let users = await user.findOne({ email: email });
   if (!users) {
-    res.status(401).json({ msg: "No such user found", users });
+    res.status(401).json({ message: "No such user found"});
   } else {
     try {
       await bcrypt.compare(password, users.password);
       let payload = { name: users.name, role: users.role, email: email };
       let token = jwt.sign(payload, process.env.privateKey);
-      req.header.authorization = token;
+      req.user= token;
       res.status(200).json({ token: token });
     } catch (error) {
       res.status(400).json({ Error: error });
