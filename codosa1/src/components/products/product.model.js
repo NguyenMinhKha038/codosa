@@ -9,10 +9,12 @@ const productSchema = new Schema({
   amount: {
     type: Number,
     required: true, 
+    min:0
   },
   price: {
     type: Number,
     required: true,
+    min:0
   },
   category: {
     type: String,

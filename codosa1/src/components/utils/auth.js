@@ -3,22 +3,28 @@ import staff from "../staffs/staff.model";
 import manager from "../storeManager/manager.model";
 import product from "../products/product.model";
 import passport from "passport";
-import passportMiddleware from "./passport";
+import {users,staffs,managers} from "./passport";
 import category from "../category/category.model";
 import dotenv from "dotenv";
 dotenv.config();
 //import jwt from "jsonwebtoken";
 
-const authen = (req, res, next) => {
-  return passport.authenticate("jwt", { session: false })(req, res, next);
+const passportUser = (req, res, next) => {
+  return passport.authenticate("user", { session: false })(req, res, next);
 };
 
+const passportStaff = (req, res, next) => {
+  return passport.authenticate("staff", { session: false })(req, res, next);
+};
+const passportManager = (req, res, next) => {
+  return passport.authenticate("manager", { session: false })(req, res, next);
+};
 const isStaff = async (req, res, next) => {
   const role = req.user.role;
   if (role && role == 1) {
     return next();
   } else {
-    res.status(401).json({ message: "không có quyền staff" });
+    res.status(401).json({ message: req.user});
   }
 };
 const isUser = async (req, res, next) => {
@@ -30,7 +36,7 @@ const isUser = async (req, res, next) => {
   }
 };
 const isManager = async (req, res, next) => {
-  const role = req.user.role;
+  const role = req.user;
   if (role && role == 2) {
     req.user = payload;
     return next();
@@ -69,11 +75,11 @@ const checkManagerExist = async (req, res, next) => {
 };
 
 const checkAuth = async (req, res, next) => {
-  const role = req.user.role;
-    if (role == "staff" || role == "manager") {
+  const role = req.user;
+    if (role) {
       next();
     } else {
-      res.status(401).json({ message: "không có quyền " });
+      res.status(401).json({ message: req.user });
     }
   
 };
@@ -123,5 +129,7 @@ export default {
   checkExitsProduct,
   checkExitsCategory,
   checkUpdateCart,
-  authen
+  passportUser,
+  passportStaff,
+  passportManager
 };

@@ -4,32 +4,38 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import statusMiddleWare from "../utils/status";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 dotenv.config();
-const userRegister = async (req, res) => {
+const userRegister = async (req, res, next) => {
   const { name, email, password } = req.body;
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction(); //start transaction
+    const options = { session };
     const hash = await bcrypt.hash(password, 10);
-    let users = new user({
+    
+    const userModel = new user({
       name: name,
       password: hash,
       email: email,
       role: statusMiddleWare.permission.USER,
-      status:statusMiddleWare.personStatus.ACTIVE
-    }); 
-    let carts = new cart({
-      id: email,
-      productName: [],
-      total: 0,
+      status: statusMiddleWare.personStatus.ACTIVE,
     });
-    try {
-      await users.save();
-      await carts.save();
-      res.status(200).json({ message: "Successful" });
-    } catch (error) {
-      res.status(400).json({ Error: error });
-    }
+    const users = await userModel.save(options);
+
+    const cartModel = new cart({
+      userId: users._id,
+      product:[],
+      total: 0,
+    })
+    const carts = await cartModel.save(options);
+    await session.commitTransaction();
+    res.status(200).json({ message: { name: name, email: email } });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -37,13 +43,13 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
   let users = await user.findOne({ email: email });
   if (!users) {
-    res.status(401).json({ message: "No such user found"});
+    res.status(401).json({ message: "No such user found" });
   } else {
     try {
       await bcrypt.compare(password, users.password);
-      let payload = { name: users.name, role: users.role, email: email };
+      let payload = { name: users.name, role: users.role, email: email,_id:users._id };
       let token = jwt.sign(payload, process.env.privateKey);
-      req.user= token;
+      req.user = token;
       res.status(200).json({ token: token });
     } catch (error) {
       res.status(400).json({ Error: error });

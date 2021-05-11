@@ -4,6 +4,6 @@ import { express, Router } from "express";
 import reportValidate from "./report.validate";
 import auth from "../utils/auth"
 const reportRouter = Router();
-reportRouter.post("/product", validate(reportValidate.checkReportProduct),auth.authen,reportController.reportProduct);
-reportRouter.post("/category", validate(reportValidate.checkReportCategory),auth.authen,auth.isManager,reportController.reportCategory);
+reportRouter.post("/product", validate(reportValidate.checkReportProduct),auth.passportManager,reportController.reportProduct);
+reportRouter.post("/category", validate(reportValidate.checkReportCategory),auth.passportManager,auth.isManager,reportController.reportCategory);
 export default reportRouter;

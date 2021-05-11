@@ -10,6 +10,7 @@ import searchRoute from "./components/search/search.route";
 import imageRoute from "./components/image/image.route";
 import orderRoute from "./components/order/order.route";
 import reportRoute from "./components/report/report.route";
+import cartRoute from "./components/cart/cart.route"
 import database from "./config/connectDb";
 import http from "http";
 
@@ -32,6 +33,7 @@ app.use("/", searchRoute);
 app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
+app.use("/cart",cartRoute);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

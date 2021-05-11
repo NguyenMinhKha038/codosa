@@ -3,22 +3,31 @@ const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
   id: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref:'user',
     require: true,
   },
-  product: [{
-    type:Array,
-    require: true,
+  products: [{
+    id:{
+      type:Schema.Types.ObjectId,
+      ref:'product',
+      require:true
+    },
+    amount: {
+      type:Number,
+      require:true,
+      min:0
+    },
+    price:{
+      type:Number,
+      min:0
+    }
+    
   }],
   status: {
     type: Number,
     require: true,
   },
-  createDay: {
-    type: Date,
-    require: true,
-  },
-  updateDay: Date,
   deliveryDay: Date,
   finishDay: Date,
   total: {
@@ -29,5 +38,11 @@ const orderSchema = new Schema({
     type:String,
     require:true
   },
-});
+  phone:{
+    type:String,
+    max:10,
+    min:10
+  }
+
+},{timestamps:true});
 module.exports = mongoose.model("order", orderSchema);

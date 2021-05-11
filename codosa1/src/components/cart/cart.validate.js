@@ -1,11 +1,10 @@
 import { validate, ValidationError, Joi } from "express-validation";
 const cartValidate ={
     body: Joi.object({
-        productName: Joi.string()
-          .regex(/[a-zA-Z0-9]{3,30}/)
+        product: Joi.array()
           .required(),
-        amount:Joi.number()
-          .required()
+        
+
       }),
 }
 

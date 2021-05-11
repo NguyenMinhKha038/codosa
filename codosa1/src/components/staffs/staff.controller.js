@@ -42,7 +42,7 @@ const staffLogin = async (req, res) => {
        
       };
       let token = jwt.sign(payload, process.env.privateKey);
-      req.header.authorization = token;
+      req.user = token;
       res.status(200).json({ token: token });
     } catch (error) {
       res.status(400).json({ message: "Password incorrect" });

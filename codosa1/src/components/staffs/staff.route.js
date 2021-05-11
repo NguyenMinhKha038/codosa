@@ -21,7 +21,7 @@ staffRoute.post(
 );
 staffRoute.post(
   "/update",
-  auth.authen,
+  auth.passportStaff,
   auth.isStaff,
   validate(staffValidate.checkEmailNamePass, {}, {}),
   //staffValidate.checkEmailNamePass,
@@ -29,7 +29,7 @@ staffRoute.post(
 );
 staffRoute.post(
   "/delete",
-  auth.authen,
+  auth.passportStaff,
   auth.isStaff,
   validate(staffValidate.checkEmail, {}, {}),
   //staffValidate.checkEmail,
@@ -37,11 +37,11 @@ staffRoute.post(
 );
 staffRoute.post(
   "/getuser",
-  auth.authen,
+  auth.passportStaff,
   auth.isStaff,
   validate(staffValidate.checkEmail, {}, {}),
   //staffValidate.checkEmail,
   staffController.getUser
 );
-staffRoute.get("/info",auth.authen, auth.isStaff, staffController.getInfo);
+staffRoute.get("/info",auth.passportStaff, auth.isStaff, staffController.getInfo);
 export default staffRoute;

@@ -39,7 +39,7 @@ const managerLogin = async (req, res) => {
       await bcrypt.compare(password, managers.password);
       let payload = { name: managers.name, role: managers.role, email: email };
       let token = jwt.sign(payload, process.env.privateKey);
-      req.header.authorization = token;
+      req.user = token;
       res.status(200).json({ token: token,role:managers.role });
     } catch (error) {
       res.status(400).json({ Error: error });

@@ -5,17 +5,17 @@ import orderController from "./order.controller";
 import orderValidate from "./order.validate"
 
 const orderRouter = Router();
-orderRouter.get("/create", auth.isUser, orderController.createOrder);
-orderRouter.get("/get", orderController.getOrder);
-orderRouter.post("/get", auth.checkAuth, validate(orderValidate.checkEmail, {}, {}),orderController.getUserOrder);
-orderRouter.post("/update", auth.isUser, validate(orderValidate.checkIdAddress, {}, {}),orderController.updateOrder);
+orderRouter.post("/create",auth.passportUser, auth.isUser, orderController.createOrder);
+orderRouter.get("/get",auth.passportUser, orderController.getOrder);
+orderRouter.post("/get", auth.checkAuth, validate(orderValidate.checkEmail),orderController.getUserOrder);
+orderRouter.post("/update", auth.passportUser,auth.isUser, validate(orderValidate.checkIdAddress),orderController.updateOrder);
 orderRouter.post(
   "/admin/delete",
   auth.checkAuth,
   validate(orderValidate.checkID, {}, {}),
   orderController.adminDeleteOrder
 );
-orderRouter.post("/user/delete", auth.isUser, validate(orderValidate.checkID, {}, {}),orderController.userDeleteOrder);
+orderRouter.post("/user/delete", auth.isUser, validate(orderValidate.checkID),orderController.userDeleteOrder);
 //status update
 orderRouter.post(
   "/status/processing",

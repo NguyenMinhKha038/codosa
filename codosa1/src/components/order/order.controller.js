@@ -3,70 +3,40 @@ import cart from "../cart/cart.model";
 import order from "../order/order.model";
 import statusMiddleWare from "../utils/status";
 import notification from "../notification/notification.model";
-import startSession from "mongoose";
+import statusMiddleware from "../utils/status";
+import mongoose from "mongoose";
 // CRUD order
-const createOrder = async (req, res) => {
-  const payload = req.user;
-  const email = payload.email;
-  const carts = await cart.findOne({ id: email });
-  if (carts.total == 0) {
+const createOrder = async (req, res,next) => {
+  const {email,_id}= req.user;
+  const {products,address,phone}=req.body;
+  const session = await mongoose.startSession();
+  const carts = await cart.findOne({ userId: _id }).populate('product.id');
+  if (carts.product == null) {
     res.status(400).json({ Message: "Cart is Empty" });
   } else {
     try {
-      const session = await startSession();
       session.startTransaction(); //start transaction
-      const productName = carts.productName;
-      const address = req.body.address;
-      if (!address) {
-        res.status(400).json({ Message: "Address is Empty" });
-      }
-      let arrProduct = [];
-      for (const value of productName) {
-        let products = await product.findOne({ name: value.Product });
-        arrProduct.push({
-          product: value.Product,
-          price: products.price,
-          amount: value.Amount,
-        });
-        await product.findOneAndUpdate(
-          { name: value.Product },
-          { amount: products.amount - value.Amount }
-        );
-      }
-      // const arr = productName.map(value=>{
-      //   let products = await product.findOne({ name: value.Product });
-      //   arrProduct.push({
-      //         product: value.Product,
-      //         price: products.price,
-      //         amount: value.Amount,
-      //       });
-      //       await product.findOneAndUpdate(
-      //             { name: value.Product },
-      //             { amount: products.amount - value.Amount }
-      //           );
-      // })
-      const total = arrProduct.reduce((total, value) => {
-        return (total += value.price * value.amount);
-      }, 0);
-      let orders = new order({
-        id: email,
-        product: arrProduct,
-        status: "Waiting",
-        createDay: Date.now(),
-        total: total,
-        address: address,
-      });
+      const opts ={session,new:true};
+      const productOrder = carts.product;
+      console.log(typeof productOrder);
+      let total = 0;
+      productOrder.map((value)=>{total+=value.amount*value.id.price});
+      console.log(total)
+      const orders = new order({
+          id:_id,
+          products,
+          phone,
+          address,
+          status:statusMiddleWare.orderStatus.WAITING,
+          total
+      })
       const notifications = new notification({
-        title:"Order mới vừa được tạo",
-        content:JSON.stringify(orders),
+        title:"New Order",
+        content:orders,
         Date:Date.now()
       })
-      //await notification.save({session});
-      //await orders.save({session});
-      Promise.all(notification.save({session}),orders.save({session}));
-      await cart.findOneAndUpdate({ id: email }, { productName: [], total: 0 },{session}); //new
+      Promise.all(notifications.save(opts),orders.save(opts),cart.findOneAndUpdate({ userId: _id }, { product: []}),opts);
       await session.commitTransaction();
-      session.endSession(); //end transaction
       res.status(200).json({ Message: "Create order successful" });
     } catch (error) {
       await session.abortTransaction();
@@ -77,12 +47,11 @@ const createOrder = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
-  const payload = req.user;
-  const email = payload.email;
+  const _id = req.user._id;
   try {
-    const orders = await order.find({ id: email });
+    const orders = await order.find({ id: _id });
     if (!orders) {
-      res.status(400).json({ Message: "何でもない" });
+      res.status(400).json({ Message: "Nothing" });
     } else {
       res.status(400).json({ Message: orders });
     }
@@ -96,7 +65,7 @@ const getUserOrder = async (req, res) => {
   try {
     const orders = await order.find({ id: email });
     if (!orders) {
-      res.status(400).json({ Message: "何でもない" });
+      res.status(400).json({ Message: "Nothing" });
     } else {
       res.status(400).json({ Message: orders });
     }
@@ -115,14 +84,14 @@ const updateOrder = async (req, res) => {
   if (status > 2) {
     res
       .status(400)
-      .json({ Message: "Order đang được giao, không thể cập nhật" });
+      .json({ Message: "Order is being delivery, cant not be update" });
   } else {
     try {
       await order.findOneAndUpdate(
         { _id: id },
         { address: address, updateDay: Date.now() }
       );
-      res.status(200).json({ Message: "Đã update thành công" });
+      res.status(200).json({ Message: "Update succesfull" });
     } catch (error) {
       res.status(400).json({ Error: error });
     }
