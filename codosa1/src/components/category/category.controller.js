@@ -10,7 +10,7 @@ const addCategory = async (req, res) => {
   }
   let categories = new category({
     name: categoryName,
-    status:statusMiddleWare.categoryStatus.ACTIVE
+    status: statusMiddleWare.categoryStatus.ACTIVE,
   });
   try {
     await categories.save();
@@ -21,13 +21,23 @@ const addCategory = async (req, res) => {
 };
 const deleteCategory = async (req, res) => {
   const categories = req.body.category;
-  try {
-    await category.findOneAndUpdate({ name: categories },{status:statusMiddleWare.categoryStatus.DISABLE});
-    await product.updateMany({ category: categories },{status:statusMiddleWare.categoryStatus.DISABLE});
-    res.status(200).json({ message: "Delete successful" });
-  } catch (error) {
-    res.status(400).json({ Error: error });
-  }
+
+  Promise.all(
+    category.findOneAndUpdate(
+      { name: categories },
+      { status: statusMiddleWare.categoryStatus.DISABLE }
+    ),
+    product.updateMany(
+      { category: categories },
+      { status: statusMiddleWare.categoryStatus.DISABLE }
+    )
+  )
+    .then((value) => {
+      res.status(200).json({ message: "Delete successful" });
+    })
+    .catch((error) => {
+      res.status(400).json({ Error: error });
+    });
 };
 const getListCategory = async (req, res) => {
   const categories = await category.find({});

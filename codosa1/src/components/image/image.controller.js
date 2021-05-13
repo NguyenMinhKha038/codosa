@@ -39,10 +39,9 @@ const addAvatar = async (req, res) => {
         res.status(400).json({ Error: error });
       }
     }
-  }else{
+  } else {
     res.status(400).json({ Message: "Cần đăng nhập" });
   }
-  
 };
 const addProductImage = async (req, res) => {
   const products = req.body.name;

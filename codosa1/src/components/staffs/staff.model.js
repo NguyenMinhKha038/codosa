@@ -17,11 +17,12 @@ const staffSchema = new Schema({
   email: {
     type: String,
     unique: true,
+    required: true,
   },
-  status:{
-    type:Number,
-    require:true
+  status: {
+    type: Number,
+    required: true,
   },
   image: String,
 });
-module.exports = mongoose.model("staff", staffSchema);
+export default mongoose.model("staff", staffSchema);

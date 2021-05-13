@@ -1,78 +1,76 @@
 import product from "../products/product.model";
 import order from "../order/order.model";
+import category from "../category/category.model";
 
-const reportProduct = async (req, res) => {
+const reportProduct = async (req, res, next) => {
   try {
-    let total = 0;
-    const name = req.body.name;
-    const toDay = req.body.toDay;
-    const fromDay = req.body.fromDay;
-    // const orders = await order.find({
-    //   finishDay: { $gte: fromDay, $lte: toDay },
-    // });
-    const products = await product.findOne({ name: name });
-    const price = products.price;
-    const orders = await order.aggregate([
+    const { _id, toDay, fromDay } = req.body;
+    const report = await order.aggregate([
       {
         $match: {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
+          
+          
         },
       },
       {
-        $project:{
-          product:1,
-          price:1,
-          amount:1
-        }
-      }  
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productArr",
+        },
+      },
+      {
+        $unwind: "$products",
+        //[{$unwind: "$products"}.productId]
+      },
+     
+      {
+        $group: {
+          _id: "$products.productId",
+          amount: { $sum: "$products.amount" },
+          revenue: {
+            $sum: { $multiply: ["$products.price", "$products.amount"] },
+          },
+          product: { $push: "$products" },
+          name: { $push: "$productArr.name" },
+          price:{ $push: "$productArr.price" },
+        
+      
+        },
+      },
+      {
+        $project: {
+          _id: "$_id",
+          products: "$products[0].productId",
+          name: "$name",
+          price:"$price",
+          amount: "$amount",
+          revenue: "$revenue",
+          
+        },
+      },
     ]);
-    
-    
-    for (const oneOrder of orders) {
-      const listProduct = oneOrder.product;
-      for (const ord of listProduct) {
-        if (ord.product == name) {
-          total += ord.amount;
-        }
-      }
-    }
-    //const orders = await order.aggregate([{$match:{finishDay: { $gte: fromDay, $lte: toDay }}}]);
-
-    const revenue = price * total;
-    res.status(200).json({ Result:orders,Total: total, Revenue: revenue });
-    //res.status(200).json({ order:orders});
+    res.status(200).json({ Result: report });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
-const reportCategory = async (req, res) => {
+const reportCategory = async (req, res, next) => {
   try {
-    let productSold = [];
-    let listProduct = [];
-    let total = 0;
-    const name = req.body.name;
-    const toDay = req.body.toDay;
-    const fromDay = req.body.fromDay;
-    const products = await product.find({ category: name });
-    const orders = await order.find({
-      finishDay: { $gte: fromDay, $lte: toDay },
-    });
-    for (const value of products) {
-      listProduct.push(value.name);
-    }
-    for (const oneOrder of orders) {
-      const arrProduct = oneOrder.product;
-      for (const ord of arrProduct) {
-        if (listProduct.includes(ord.product)) {
-          productSold.push({ Product: ord.product, Amount: ord.amount });
-          total += ord.price * ord.amount;
-        }
-      }
-    }
-    res.status(200).json({ Total: productSold, Revenue: total });
+    const { _id, fromDay, toDay } = req.body;
+    const report = await category.aggregate([
+      {
+        $match: {
+          finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
+          
+        },
+      },
+    ]);
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 

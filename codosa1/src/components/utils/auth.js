@@ -36,9 +36,8 @@ const isUser = async (req, res, next) => {
   }
 };
 const isManager = async (req, res, next) => {
-  const role = req.user;
+  const role = req.user.role;
   if (role && role == 2) {
-    req.user = payload;
     return next();
   } else {
     res.status(401).json({ message: req.user});
@@ -75,8 +74,8 @@ const checkManagerExist = async (req, res, next) => {
 };
 
 const checkAuth = async (req, res, next) => {
-  const role = req.user;
-    if (role) {
+  const role = req.user.role;
+    if (role==1||role==2) {
       next();
     } else {
       res.status(401).json({ message: req.user });

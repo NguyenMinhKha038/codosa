@@ -16,11 +16,12 @@ const managerSchema = new Schema({
   email: {
     type: String,
     unique: true,
+    required: true,
   },
-  status:{
-    type:Number,
-    require:true
+  status: {
+    type: Number,
+    require: true,
   },
   image: String,
 });
-module.exports = mongoose.model("manager", managerSchema);
+export default mongoose.model("manager", managerSchema);

@@ -3,13 +3,13 @@ const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
   name: {
-    type:String,
-    require:true
+    type: String,
+    require: true,
   },
   image: Array,
-  status:{
-    type:Number,
-    require:true
-  }
+  status: {
+    type: Number,
+    require: true,
+  },
 });
-module.exports = mongoose.model("category", categorySchema);
+export default mongoose.model("category", categorySchema);

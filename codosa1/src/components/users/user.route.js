@@ -14,10 +14,13 @@ userRouter.post(
   "/register",
   validate(userValidate.checkEmailNamePass),
   errorHandller(userController.userRegister)
-  
 );
 
-userRouter.get("/info", auth.passportUser,auth.isUser, errorHandller(userController.getInfo));
-
+userRouter.get(
+  "/info",
+  auth.passportUser,
+  auth.isUser,
+  errorHandller(userController.getInfo)
+);
 
 export default userRouter;

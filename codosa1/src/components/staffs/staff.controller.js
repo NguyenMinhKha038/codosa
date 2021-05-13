@@ -3,57 +3,57 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import user from "../users/user.model";
 import dotenv from "dotenv";
-import statusMiddleWare from "../utils/status"
+import auth from "../utils/auth";
+import statusMiddleWare from "../utils/status";
 dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;
   try {
+    auth.checkStaffExist;
     const hash = await bcrypt.hash(password, 10);
     let staffs = await new staff({
-      name: name,
+      name,
       password: hash,
-      email: email,
+      email,
       role: statusMiddleWare.permission.STAFF,
-      status:statusMiddleWare.permission.USER
+      status: statusMiddleWare.permission.USER,
     });
-    try {
-      await staffs.save();
-      res.status(200).json({ message: "Successfull" });
-    } catch (error) {
-      res.status(400).json({ Error: error });
-    }
-  } catch (err) {
-    res.status(400).json({ Error: err });
+    await staffs.save();
+    res.status(200).json({ message: staffs });
+  } catch (error) {
+    res.status(400).json({ Error: error });
   }
 };
 
 const staffLogin = async (req, res) => {
   const { email, password } = req.body;
-  let staffs = await staff.findOne({ email: email });
-  if (!staffs) {
-    res.status(401).json({ message: "No such user found" });
-  } else {
-    try {
+  try {
+    let staffs = await staff.findOne({ email: email });
+    if (!staffs) {
+      res.status(401).json({ message: "No such user found" });
+    } else {
       await bcrypt.compare(password, staffs.password);
       let payload = {
         name: staffs.name,
         role: staffs.role,
-        email: email
-       
+        email: email,
       };
       let token = jwt.sign(payload, process.env.privateKey);
       req.user = token;
       res.status(200).json({ token: token });
-    } catch (error) {
-      res.status(400).json({ message: "Password incorrect" });
     }
+  } catch (error) {
+    res.status(400).json({ message: "Password incorrect" });
   }
 };
 
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    await user.findOneAndUpdate(
+      { email: email },
+      { status: statusMiddleWare.personStatus.DISABLE }
+    );
     res.status(200).json({ message: "Delete successful" });
   } catch (error) {
     req.status(400).json({ message: "Delete Failed" });
@@ -75,8 +75,7 @@ const updateUser = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const email = req.body.email; //ok
-
+  const email = req.body.email;
   try {
     const users = await user.findOne({ email: email });
     if (users) {
@@ -91,10 +90,7 @@ const getUser = async (req, res) => {
 
 const getInfo = async (req, res) => {
   try {
-    const payload = req.user
-    const email = payload.email;
-    const name = payload.name;
-    const role = payload.role;
+    const { email, name, role } = req.user;
     res.status(200).json({ Name: name, Role: role, Email: email });
   } catch (error) {
     res.status(400).json({ Error: error });

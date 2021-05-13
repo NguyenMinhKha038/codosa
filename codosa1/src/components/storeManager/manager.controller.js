@@ -9,20 +9,18 @@ import statusMiddleWare from "../utils/status";
 const managerRegister = async (req, res) => {
   const { email, name, password } = req.body;
   try {
+    await auth.checkManagerExist;
     const hash = await bcrypt.hash(password, 10);
     let managers = await new manager({
-      name: name,
+      name,
       password: hash,
-      email: email,
+      email,
       role: statusMiddleWare.permission.MANAGER,
-      status:statusMiddleWare.personStatus.ACTIVE
+      status: statusMiddleWare.personStatus.ACTIVE,
     });
-    try {
-      await managers.save();
-      res.status(200).json({ message: {name:name,email:email} });
-    } catch (error) {
-      res.status(400).json({ Error: error });
-    }
+
+    await managers.save();
+    res.status(200).json({ message: { name: name, email: email } });
   } catch (err) {
     res.status(400).json({ Error: err });
   }
@@ -30,27 +28,29 @@ const managerRegister = async (req, res) => {
 
 const managerLogin = async (req, res) => {
   const { email, password } = req.body;
-  await auth.checkManagerExist;
-  let managers = await manager.findOne({ email: email });
-  if (!managers) {
-    res.status(401).json({ msg: "No such user found" });
-  } else {
-    try {
+  try {
+    let managers = await manager.findOne({ email: email });
+    if (!managers) {
+      res.status(401).json({ msg: "No such user found" });
+    } else {
       await bcrypt.compare(password, managers.password);
       let payload = { name: managers.name, role: managers.role, email: email };
       let token = jwt.sign(payload, process.env.privateKey);
       req.user = token;
-      res.status(200).json({ token: token,role:managers.role });
-    } catch (error) {
-      res.status(400).json({ Error: error });
+      res.status(200).json({ token: token });
     }
+  } catch (error) {
+    res.status(400).json({ Error: error });
   }
 };
 
 const deleteUser = async (req, res) => {
   const email = req.body.email;
   try {
-    await user.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    await user.findOneAndUpdate(
+      { email: email },
+      { status: statusMiddleWare.personStatus.DISABLE }
+    );
     res.status(200).json({ message: "Successful" });
   } catch (error) {
     req.status(400).json({ message: "Failed!" });
@@ -59,7 +59,10 @@ const deleteUser = async (req, res) => {
 const deleteStaff = async (req, res) => {
   const email = req.body.email;
   try {
-    await staff.findOneAndUpdate({ email: email },{status:statusMiddleWare.personStatus.DISABLE});
+    await staff.findOneAndUpdate(
+      { email: email },
+      { status: statusMiddleWare.personStatus.DISABLE }
+    );
     res.status(200).json({ message: "Successful" });
   } catch (error) {
     req.status(400).json({ message: "Failed!" });

@@ -10,7 +10,7 @@ const cartModel = new Schema(
     },
     product: [
       {
-        id: {
+        productId: {
           type: Schema.Types.ObjectId,
           ref: "product",
           default:null
@@ -20,7 +20,7 @@ const cartModel = new Schema(
           min: 0,
           default:0
         }
-      },
+      }
     ],
   },
   { colection: "cart" }

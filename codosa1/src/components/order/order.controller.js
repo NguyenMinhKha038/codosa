@@ -6,42 +6,47 @@ import notification from "../notification/notification.model";
 import statusMiddleware from "../utils/status";
 import mongoose from "mongoose";
 // CRUD order
-const createOrder = async (req, res,next) => {
-  const {email,_id}= req.user;
-  const {products,address,phone}=req.body;
+const createOrder = async (req, res, next) => {
+  const { email, _id } = req.user;
+  const { products, address, phone } = req.body;
   const session = await mongoose.startSession();
-  const carts = await cart.findOne({ userId: _id }).populate('product.id');
-  if (carts.product == null) {
+  session.startTransaction(); //start transaction
+  const opts = { session, new: true };
+  const carts = await cart.findOne({ userId: _id }).populate("product._id");
+  if (carts.product.length == 0) {
+  
     res.status(400).json({ Message: "Cart is Empty" });
   } else {
     try {
-      session.startTransaction(); //start transaction
-      const opts ={session,new:true};
-      const productOrder = carts.product;
-      console.log(typeof productOrder);
+      console.log(products);
       let total = 0;
-      productOrder.map((value)=>{total+=value.amount*value.id.price});
-      console.log(total)
+      products.map((value) => {
+        total += value.amount * value.price;
+      });
       const orders = new order({
-          id:_id,
-          products,
-          phone,
-          address,
-          status:statusMiddleWare.orderStatus.WAITING,
-          total
-      })
+        id: _id,
+        products,
+        phone,
+        address,
+        status: statusMiddleWare.orderStatus.WAITING,
+        total,
+      });
       const notifications = new notification({
-        title:"New Order",
-        content:orders,
-        Date:Date.now()
-      })
-      Promise.all(notifications.save(opts),orders.save(opts),cart.findOneAndUpdate({ userId: _id }, { product: []}),opts);
+        title: "New Order",
+        content: orders,
+        Date: Date.now(),
+      });
+      await Promise.all([
+        notifications.save(opts),
+        orders.save(opts),
+        cart.findOneAndUpdate({ userId: _id }, { product: [] }, opts),
+      ]);
       await session.commitTransaction();
-      res.status(200).json({ Message: "Create order successful" });
+      res.status(200).json({ Message: orders });
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
-      res.status(400).json({ Error: error });
+      next(error);
     }
   }
 };
@@ -143,14 +148,14 @@ const adminDeleteOrder = async (req, res) => {
 
 const processingUpdate = async (req, res) => {
   const payload = req.user;
-  const id = req.body._id;
-  const orders = await order.findOne({ _id: id });
+  const _id = req.body._id;
+  const orders = await order.findOne({ _id: _id });
   const status = orders.status;
 
   if (status == 1) {
     try {
       await order.findOneAndUpdate(
-        { _id: id },
+        { _id: _id },
         { status: statusMiddleWare.orderStatus.PROCESSING }
       );
       res.status(200).json({ Message: "Update Sucessful" });

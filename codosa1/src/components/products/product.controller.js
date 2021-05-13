@@ -1,7 +1,6 @@
 import category from "../category/category.model";
 import product from "../products/product.model";
 import statusMiddleWare from "../utils/status";
-import cart from "../cart/cart.model"
 import mongoose from "mongoose";
 const addProduct = async (req, res) => {
   const { name, amount, price, categoryName, description } = req.body;

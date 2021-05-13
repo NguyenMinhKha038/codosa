@@ -13,11 +13,11 @@ const userRegister = async (req, res, next) => {
     session.startTransaction(); //start transaction
     const options = { session };
     const hash = await bcrypt.hash(password, 10);
-    
+
     const userModel = new user({
-      name: name,
+      name,
       password: hash,
-      email: email,
+      email,
       role: statusMiddleWare.permission.USER,
       status: statusMiddleWare.personStatus.ACTIVE,
     });
@@ -25,9 +25,9 @@ const userRegister = async (req, res, next) => {
 
     const cartModel = new cart({
       userId: users._id,
-      product:[],
+      product: [],
       total: 0,
-    })
+    });
     const carts = await cartModel.save(options);
     await session.commitTransaction();
     res.status(200).json({ message: { name: name, email: email } });
@@ -47,7 +47,12 @@ const userLogin = async (req, res) => {
   } else {
     try {
       await bcrypt.compare(password, users.password);
-      let payload = { name: users.name, role: users.role, email: email,_id:users._id };
+      let payload = {
+        name: users.name,
+        role: users.role,
+        email: email,
+        _id: users._id,
+      };
       let token = jwt.sign(payload, process.env.privateKey);
       req.user = token;
       res.status(200).json({ token: token });
@@ -73,7 +78,9 @@ const deleteAccount = async (req, res) => {
     let users = await user.findOne({ email: email });
     await bcrypt.compare(password, users.password);
     users.remove();
-  } catch (error) {}
+  } catch (error) {
+    req.status(400).json({Error:error});
+  }
 };
 
 export default { userLogin, userRegister, getInfo, deleteAccount };

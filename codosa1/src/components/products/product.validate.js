@@ -2,7 +2,7 @@ import { validate, ValidationError, Joi } from "express-validation";
 const checkAddProduct = {
   body: Joi.object({
     name: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,20}/)
+      .regex(/[a-zA-Z0-9]{3,40}/)
       .required(),
     amount: Joi.number().required(),
     price: Joi.number().required(),
@@ -31,9 +31,7 @@ const checkUpdateProduct = {
       .required(),
     amount: Joi.number().required(),
     price: Joi.number().required(),
-    categoryName: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,10}/)
-      .required(),
+    
     newName: Joi.string()
       .regex(/[a-zA-Z0-9]{3,20}/)
       .required(),

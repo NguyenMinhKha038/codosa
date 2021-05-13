@@ -12,16 +12,17 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    require:true
+    require: true,
   },
   email: {
     type: String,
     unique: true,
-  },
-  status:{
-    type:Number,
     require:true
+  },
+  status: {
+    type: Number,
+    require: true,
   },
   image: String,
 });
-module.exports = mongoose.model("user", userSchema);
+export default mongoose.model("user", userSchema);
