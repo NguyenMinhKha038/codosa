@@ -5,30 +5,30 @@ const productSchema = new Schema({
   name: {
     type: String,
     unique: true,
+    require: true,
   },
   amount: {
     type: Number,
-    required: true, 
-    min:0
+    require: true,
+    min: 0,
   },
   price: {
     type: Number,
-    required: true,
-    min:0
+    require: true,
+    min: 0,
   },
   category: {
-    type:Schema.Types.ObjectId,
-    ref:'category',
-    required: true,
+    type: String,
+    require: true,
   },
   description: {
-    type:String,
-    require:true
+    type: String,
+    require: true,
   },
-  status:{
-    type:Number,
-    require:true
+  status: {
+    type: Number,
+    require: true,
   },
   image: Array,
 });
-module.exports = mongoose.model("product", productSchema);
+export default mongoose.model("product", productSchema);

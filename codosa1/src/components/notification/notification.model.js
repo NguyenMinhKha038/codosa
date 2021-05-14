@@ -15,4 +15,4 @@ const notificationSchema = new Schema({
     require: true,
   },
 });
-module.exports = mongoose.model("notification", notificationSchema);
+export default mongoose.model("notification", notificationSchema);

@@ -1,45 +1,47 @@
-import category from "../category/category.model";
+import categoryModel from "../category/category.model";
 import product from "../products/product.model";
 import statusMiddleWare from "../utils/status";
 import mongoose from "mongoose";
-const addProduct = async (req, res) => {
-  const { name, amount, price, categoryName, description } = req.body;
-  const checkProduct = await product.findOne({ name: name });
-  if (checkProduct) {
-    res.status(403).json({ message: "Already exist " });
-  }
-  let products = new product({
-    name: name,
-    amount: amount,
-    price: price,
-    category: categoryName,
-    description: description,
-    status: statusMiddleWare.productStatus.ACTIVE,
-  });
+const addProduct = async (req, res, next) => {
+  const { name, amount, price, category, description } = req.body;
 
   try {
-    const checkCategory = await category.findOne({ name: categoryName });
+    const checkProduct = await product.findOne({ name: name });
+    if (checkProduct) {
+      res.status(403).json({ message: "Already exist " });
+    }
+    let products = new product({
+      name,
+      amount,
+      price,
+      category:category,
+      description,
+      status: statusMiddleWare.productStatus.ACTIVE,
+    });
+    console.log(products);
+    const checkCategory = await categoryModel.find({ name: category });
+   
     if (!checkCategory) {
-      let categories = new category({
-        name: categoryName,
+      let categories = new categoryModel({
+        name: category,
         status: statusMiddleWare.categoryStatus.ACTIVE,
       });
+      console.log("co1");
       await categories.save();
     }
+    console.log("khong6 co");
     await products.save();
 
-    res
-      .status(200)
-      .json({
-        message: {
-          name: name,
-          amount: amount,
-          price: price,
-          description: description,
-        },
-      });
+    res.status(200).json({
+      message: {
+        name: name,
+        amount: amount,
+        price: price,
+        description: description,
+      },
+    });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 

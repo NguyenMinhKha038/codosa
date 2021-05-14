@@ -28,4 +28,20 @@ const checkIdAddress ={
           .required(),
       }),
 }
-export default {checkEmail,checkAddress,checkID,checkIdAddress}
+const checkOrder ={
+  body: Joi.object({
+      products: Joi.array()
+      .has(JSON)
+      .min(5)
+      .max(5)
+      .required(),
+      phone:Joi.string()
+      .length(10)
+      .required(),
+      address:Joi.string()
+      .regex(/[a-zA-Z0-9]{5,50}/)
+      .required(),
+        
+    }),
+}
+export default {checkEmail,checkAddress,checkID,checkIdAddress,checkOrder}

@@ -9,6 +9,7 @@ orderRouter.post(
   "/create",
   auth.passportUser,
   auth.isUser,
+  //validate(orderValidate.checkOrder),
   orderController.createOrder
 );
 orderRouter.get("/get", auth.passportUser, orderController.getOrder);

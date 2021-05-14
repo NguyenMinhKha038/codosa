@@ -7,6 +7,6 @@ import errorHandller from "../utils/errorHandller"
 const cartRouter = Router();
 
 cartRouter.get("/info", auth.passportUser,auth.isUser, cartController.getCart);
-cartRouter.post("/add", auth.passportUser,auth.isUser, validate(cartValidate.cartValidate),errorHandller(cartController.addCart));
+cartRouter.post("/add", auth.passportUser,auth.isUser,errorHandller(cartController.addCart));
 
 export default cartRouter;

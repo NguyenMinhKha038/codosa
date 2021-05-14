@@ -7,14 +7,13 @@ import errorHandller from "../utils/errorHandller";
 const reportRouter = Router();
 reportRouter.post(
   "/product",
-  validate(reportValidate.checkReportProduct),
+  
   auth.passportManager,
   auth.isManager,
   errorHandller(reportController.reportProduct)
 );
 reportRouter.post(
   "/category",
-  validate(reportValidate.checkReportCategory),
   auth.passportManager,
   auth.isManager,
   errorHandller(reportController.reportCategory)

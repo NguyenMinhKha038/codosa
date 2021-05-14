@@ -8,17 +8,20 @@ import mongoose from "mongoose";
 // CRUD order
 const createOrder = async (req, res, next) => {
   const { email, _id } = req.user;
+  console.log("ok")
   const { products, address, phone } = req.body;
+  console.log(products)
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
   const opts = { session, new: true };
-  const carts = await cart.findOne({ userId: _id }).populate("product._id");
-  if (carts.product.length == 0) {
+  const carts = await cart.findOne({ userId: _id }).populate("product.productId");
+  
+  if (carts.product.length == 1) {
   
     res.status(400).json({ Message: "Cart is Empty" });
   } else {
     try {
-      console.log(products);
+      console.log(carts.product);
       let total = 0;
       products.map((value) => {
         total += value.amount * value.price;

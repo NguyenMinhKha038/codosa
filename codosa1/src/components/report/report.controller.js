@@ -4,28 +4,18 @@ import category from "../category/category.model";
 
 const reportProduct = async (req, res, next) => {
   try {
-    const { _id, toDay, fromDay } = req.body;
+    const { toDay, fromDay } = req.body;
     const report = await order.aggregate([
       {
         $match: {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
-          
-          
         },
       },
-      {
-        $lookup: {
-          from: "products",
-          localField: "products.productId",
-          foreignField: "_id",
-          as: "productArr",
-        },
-      },
+
       {
         $unwind: "$products",
-        //[{$unwind: "$products"}.productId]
       },
-     
+
       {
         $group: {
           _id: "$products.productId",
@@ -33,24 +23,33 @@ const reportProduct = async (req, res, next) => {
           revenue: {
             $sum: { $multiply: ["$products.price", "$products.amount"] },
           },
-          product: { $push: "$products" },
-          name: { $push: "$productArr.name" },
-          price:{ $push: "$productArr.price" },
-        
-      
+          
+          
         },
       },
+     
+      
       {
         $project: {
-          _id: "$_id",
-          products: "$products[0].productId",
-          name: "$name",
-          price:"$price",
+          productId: "$_id",
           amount: "$amount",
           revenue: "$revenue",
           
         },
       },
+      
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $addFields:{"price":"$product.price"}
+      },
+      
     ]);
     res.status(200).json({ Result: report });
   } catch (error) {
@@ -60,15 +59,61 @@ const reportProduct = async (req, res, next) => {
 
 const reportCategory = async (req, res, next) => {
   try {
-    const { _id, fromDay, toDay } = req.body;
-    const report = await category.aggregate([
+    const {fromDay, toDay } = req.body;
+    const report = await order.aggregate([
       {
         $match: {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
+        },
+      },
+
+      {
+        $unwind: "$products",
+      },
+      
+      {
+        $group: {
+          _id: "$products.productId",
+          amount: { $sum: "$products.amount" },
+          revenue: {
+            $sum: { $multiply: ["$products.price", "$products.amount"] },
+          },
+          
           
         },
       },
+      {
+        $project: {
+          productId: "$_id",
+          amount: "$amount",
+          revenue: "$revenue",
+          
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+
+      {
+        $group: {
+          _id: "$product.category",
+          revenue: {
+            $sum: { $add:"$revenue" },
+          },
+          
+        },
+      },
+      
+      {
+        $addFields:{"name":"$product.name"}
+      }
     ]);
+    res.status(200).json({ Result: report });
   } catch (error) {
     next(error);
   }

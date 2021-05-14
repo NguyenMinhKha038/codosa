@@ -13,6 +13,11 @@ const orderSchema = new Schema({
       ref:'product',
       require:true
     },
+    name:{
+      type:String,
+      require:true,
+      max:30,
+    },
     amount: {
       type:Number,
       require:true,
@@ -21,6 +26,10 @@ const orderSchema = new Schema({
     price:{
       type:Number,
       min:0
+    },
+    category:{
+      type:String,
+      require:true
     }
     
   }],
@@ -36,13 +45,14 @@ const orderSchema = new Schema({
   },
   address: {
     type:String,
-    require:true
+    require:true,
+    min:5,
+    max:50
   },
   phone:{
     type:String,
-    max:10,
-    min:10
+    length:10
   }
 
 },{timestamps:true});
-module.exports = mongoose.model("order", orderSchema);
+export default mongoose.model("order", orderSchema);

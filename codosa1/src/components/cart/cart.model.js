@@ -13,7 +13,6 @@ const cartModel = new Schema(
         productId: {
           type: Schema.Types.ObjectId,
           ref: "product",
-          default:null
         },
         amount: {
           type: Number,
