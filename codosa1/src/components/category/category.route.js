@@ -12,13 +12,13 @@ categoryRouter.post(
   validate(categoryValidate.categoryValidate),
   errorHandller(categoryController.addCategory)
 );
-categoryRouter.post(
+categoryRouter.delete(
   "/delete",
   auth.checkAuth,
   validate(categoryValidate.categoryValidate),
   errorHandller(categoryController.deleteCategory)
 );
-categoryRouter.post(
+categoryRouter.put(
   "/update",
   auth.checkAuth,
   validate(categoryValidate.updateCategory),

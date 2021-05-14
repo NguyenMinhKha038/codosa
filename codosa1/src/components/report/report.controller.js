@@ -47,7 +47,7 @@ const reportProduct = async (req, res, next) => {
         },
       },
       {
-        $addFields:{"price":"$product.price"}
+        $addFields:{"buyPrice":"$product.price"}
       },
       
     ]);

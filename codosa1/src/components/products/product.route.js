@@ -14,8 +14,8 @@ productRouter.post(
   validate(productValidate.checkAddProduct),
   product.addProduct
 );
-productRouter.post("/delete", auth.passportStaff,auth.isStaff, validate(productValidate.checkNameProduct),errorHandller(product.deleteProduct));
-productRouter.post("/update", auth.passportStaff,auth.isStaff,validate(productValidate.checkUpdateProduct,),errorHandller(product.updateProduct));
+productRouter.delete("/delete", auth.passportStaff,auth.isStaff, validate(productValidate.checkNameProduct),errorHandller(product.deleteProduct));
+productRouter.put("/update", auth.passportStaff,auth.isStaff,validate(productValidate.checkUpdateProduct,),errorHandller(product.updateProduct));
 productRouter.post("/get",  auth.passportStaff,auth.isStaff,validate(productValidate.checkNameProduct), errorHandller(product.getProduct));
 
 export default productRouter;

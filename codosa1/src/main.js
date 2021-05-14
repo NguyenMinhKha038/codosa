@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
 import userRoute from "../src/components/users/user.route";
 import staffRoute from "../src/components/staffs/staff.route";
 import managerRoute from "../src/components/storeManager/manager.route";
@@ -13,6 +14,7 @@ import reportRoute from "./components/report/report.route";
 import cartRoute from "./components/cart/cart.route"
 import database from "./config/connectDb";
 import http from "http";
+
 
 database();
 dotenv.config();
@@ -34,6 +36,7 @@ app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
 app.use("/cart",cartRoute);
+app.use('/api',apiRoute);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

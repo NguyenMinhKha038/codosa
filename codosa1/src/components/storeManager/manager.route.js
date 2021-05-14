@@ -18,7 +18,7 @@ managerRouter.post(
   errorHandller(managerController.managerLogin)
 );
 
-managerRouter.post(
+managerRouter.delete(
   "/deleteuser",
   auth.passportManager,
   auth.isManager,
@@ -26,7 +26,7 @@ managerRouter.post(
   errorHandller(managerController.deleteUser)
 );
 
-managerRouter.post(
+managerRouter.delete(
   "/deletestaff",
   auth.passportManager,
   auth.isManager,
@@ -34,14 +34,14 @@ managerRouter.post(
   errorHandller(managerController.deleteStaff)
 );
 
-managerRouter.post(
+managerRouter.put(
   "/updateuser",
   auth.passportManager,
   auth.isManager,
   validate(managerValidate.checkEmailNamePass),
   errorHandller(managerController.updateUser)
 );
-managerRouter.post(
+managerRouter.put(
   "/updatestaff",
   auth.passportManager,
   auth.isManager,
