@@ -3,9 +3,9 @@ import product from "../products/product.model";
 import mongoose from "mongoose";
 
 const getCart = async (req, res,next) => {
-  const email = req.user.email;
+  const id = req.user._id;
   try {
-    const carts = await cart.findOne({ id: email }).populate("product.productId");
+    const carts = await cart.findOne({ userId: id }).populate("product.productId");
     if (!carts) {
       res.status(400).json({ Message: "Cart is Emty" });
     } else {
@@ -17,7 +17,6 @@ const getCart = async (req, res,next) => {
 };
 const addCart = async (req, res,next) => {
   const product= req.body;
-  console.log(product.product)
   const { email, _id } = req.user;
   const session = await mongoose.startSession();
   try {

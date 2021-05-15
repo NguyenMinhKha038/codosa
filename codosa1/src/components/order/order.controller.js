@@ -21,9 +21,9 @@ const createOrder = async (req, res, next) => {
     res.status(400).json({ Message: "Cart is Empty" });
   } else {
     try {
-      console.log(carts.product);
       let total = 0;
       products.map((value) => {
+        
         total += value.amount * value.price;
       });
       const orders = new order({

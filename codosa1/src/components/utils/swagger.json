@@ -4,7 +4,7 @@
     "title": "Document API",
     "version": "1.0.0"
   },
-  "host": "localhost:8088",
+  "host": "localhost:8088/",
   "paths": {
     "/user/register": {
       "post": {
@@ -13,7 +13,7 @@
         "parameters": [
           {
             "name": "name",
-            "in": "req.body",
+            "in": "body",
             "description": "User Name",
             "required": true,
             "type": "string",
@@ -22,7 +22,7 @@
           },
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "User Password",
             "required": true,
             "type": "String",
@@ -31,10 +31,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "User Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -74,7 +74,7 @@
         }
       }
     },
-    "user/info":{
+    "/user/info":{
       "get": {
         "summary": "User Info",
         "description": "User Info",
@@ -123,7 +123,7 @@
         "parameters": [
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "User Password",
             "required": true,
             "type": "String",
@@ -132,10 +132,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "User Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -177,7 +177,7 @@
         "parameters": [
           {
             "name": "name",
-            "in": "req.body",
+            "in": "body",
             "description": "Manager Name",
             "required": true,
             "type": "string",
@@ -186,7 +186,7 @@
           },
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "Manager Password",
             "required": true,
             "type": "String",
@@ -195,10 +195,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "Manager Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -287,7 +287,7 @@
         "parameters": [
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "Manager Password",
             "required": true,
             "type": "string",
@@ -296,10 +296,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "Manager Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -563,7 +563,7 @@
         "parameters": [
           {
             "name": "name",
-            "in": "req.body",
+            "in": "body",
             "description": "Staff Name",
             "required": true,
             "type": "string",
@@ -572,7 +572,7 @@
           },
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "Staff Password",
             "required": true,
             "type": "String",
@@ -581,10 +581,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "Staff Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -673,7 +673,7 @@
         "parameters": [
           {
             "name": "password",
-            "in": "req.body",
+            "in": "body",
             "description": "Staff Password",
             "required": true,
             "type": "string",
@@ -682,10 +682,10 @@
           },
           {
             "name": "email",
-            "in": "req.body",
+            "in": "body",
             "description": "Staff Email",
             "required": true,
-            "unique":true,
+            
             "type": "string",
             "format":"email"
           }
@@ -978,7 +978,7 @@
             "type": "string",
             "min":3,
             "max":40,
-            "unique":true,
+            
             "required": true
           },
           {
@@ -1050,7 +1050,7 @@
             "type": "string",
             "min":3,
             "max":40,
-            "unique":true,
+            
             "required": true
           },
           {
@@ -1122,7 +1122,7 @@
             "type": "string",
             "min":3,
             "max":40,
-            "unique":true,
+            
             "required": true
           }
           
@@ -1163,7 +1163,7 @@
             "type": "string",
             "min":3,
             "max":40,
-            "unique":true,
+            
             "required": true
           }
           
@@ -1426,7 +1426,7 @@
         "parameters":[
           {
             "name": "_id",
-            "in":"req.body",
+            "in":"body",
             "description": "Order's id",
             "type": "string",
             "required": true
@@ -1468,7 +1468,7 @@
         "parameters":[
           {
             "name": "_id",
-            "in":"req.body",
+            "in":"body",
             "description": "Order's id",
             "type": "string",
             "required": true
@@ -1502,7 +1502,7 @@
         "parameters":[
           {
             "name": "_id",
-            "in":"req.body",
+            "in":"body",
             "description": "Order's id",
             "type": "string",
             "required": true
@@ -1536,7 +1536,7 @@
         "parameters":[
           {
             "name": "_id",
-            "in":"req.body",
+            "in":"body",
             "description": "Order's id",
             "type": "string",
             "required": true
@@ -1740,7 +1740,7 @@
         "parameters":[
           {
             "name": "image",
-            "in":"req.body",
+            "in":"body",
             "description": "Product's Image",
             "type": "file",
             "required": true
@@ -1785,7 +1785,7 @@
         "parameters":[
           {
             "name": "image",
-            "in":"req.body",
+            "in":"body",
             "description": "Product's Image",
             "type": "file",
             "required": true
@@ -1836,7 +1836,7 @@
         "parameters":[
           {
             "name": "category",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's Name",
             "type": "string",
             "required": true
@@ -1882,14 +1882,14 @@
         "parameters":[
           {
             "name": "name",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's Name",
             "type": "string",
             "required": true
           },
           {
             "name": "newName",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's newName",
             "type": "string",
             "required": true
@@ -1939,7 +1939,7 @@
         "parameters":[
           {
             "name": "categories",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's Name",
             "type": "string",
             "required": true
@@ -1973,7 +1973,7 @@
         "parameters":[
           {
             "name": "categories",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's Name",
             "type": "string",
             "required": true
@@ -2087,7 +2087,7 @@
         "parameters":[
           {
             "name": "product",
-            "in":"req.body",
+            "in":"body",
             "description": "Category's Name",
             "type": "object",
             "required": true
