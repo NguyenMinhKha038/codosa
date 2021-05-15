@@ -9,7 +9,7 @@ const search = async (req, res, next) => {
   let arrProduct = products.map((x) => x.name);
 
   if (arrProduct.length == 0) {
-    res.status(200).json({ Message: "Product not found" });
+    res.status(400).json({ Message: "Product not found" });
   }
   res.status(200).json({ Product: arrProduct });
 };

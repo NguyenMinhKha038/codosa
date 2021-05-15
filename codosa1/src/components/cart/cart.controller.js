@@ -3,11 +3,11 @@ import product from "../products/product.model";
 import mongoose from "mongoose";
 
 const getCart = async (req, res,next) => {
-  const email = req.user.Email;
+  const email = req.user.email;
   try {
     const carts = await cart.findOne({ id: email }).populate("product.productId");
     if (!carts) {
-      res.status(200).json({ Message: "Cart is Emty" });
+      res.status(400).json({ Message: "Cart is Emty" });
     } else {
       res.status(200).json({ Cart: carts.product[0] });
     }

@@ -51,6 +51,9 @@ const reportProduct = async (req, res, next) => {
       },
       
     ]);
+    if(!report){
+      res.status(400).json({ message: "No orders" });
+    }
     res.status(200).json({ Result: report });
   } catch (error) {
     next(error);

@@ -44,20 +44,28 @@ const managerLogin = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res,next) => {
   const email = req.body.email;
+  const checkExits = await user.findOne({email:email});
+  if(!checkExits){
+    res.status(400).json({ message: "No such user found" });
+  }
   try {
     await user.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
-    res.status(200).json({ message: "Successful" });
+    res.status(204).json({ message: "Successful" });
   } catch (error) {
-    req.status(400).json({ message: "Failed!" });
+    next(error)
   }
 };
 const deleteStaff = async (req, res) => {
   const email = req.body.email;
+  const checkExits = await staff.findOne({email:email});
+  if(!checkExits){
+    req.status(400).json({ message: "No such user found!" });
+  }
   try {
     await staff.findOneAndUpdate(
       { email: email },

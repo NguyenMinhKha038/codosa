@@ -20,7 +20,7 @@ orderRouter.post(
   orderController.getUserOrder
 );
 orderRouter.put(
-  "/update",
+  "/user/update",
   auth.passportUser,
   auth.isUser,
   validate(orderValidate.checkIdAddress),

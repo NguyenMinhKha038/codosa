@@ -39,7 +39,7 @@ const checkOrder ={
       .length(10)
       .required(),
       address:Joi.string()
-      .regex(/[a-zA-Z0-9]{5,50}/)
+      .regex(/[a-zA-Z0-9]{20,50}/)
       .required(),
         
     }),

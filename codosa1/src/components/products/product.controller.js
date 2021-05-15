@@ -14,11 +14,10 @@ const addProduct = async (req, res, next) => {
       name,
       amount,
       price,
-      category:category,
+      category,
       description,
       status: statusMiddleWare.productStatus.ACTIVE,
     });
-    console.log(products);
     const checkCategory = await categoryModel.find({ name: category });
    
     if (!checkCategory) {
@@ -26,18 +25,16 @@ const addProduct = async (req, res, next) => {
         name: category,
         status: statusMiddleWare.categoryStatus.ACTIVE,
       });
-      console.log("co1");
       await categories.save();
     }
-    console.log("khong6 co");
     await products.save();
 
     res.status(200).json({
       message: {
-        name: name,
-        amount: amount,
-        price: price,
-        description: description,
+        name,
+        amount,
+        price,
+        description,
       },
     });
   } catch (error) {
@@ -45,7 +42,7 @@ const addProduct = async (req, res, next) => {
   }
 };
 
-const getProduct = async (req, res) => {
+const getProduct = async (req, res,next) => {
   const name = req.body.name;
 
   try {
@@ -60,11 +57,15 @@ const getProduct = async (req, res) => {
       res.status(400).json({ message: "Product not found" });
     }
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(errer);
   }
 };
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res,next) => {
   const name = req.body.name;
+  const checkExits = await product.findOne({name:name});
+  if(!checkExits){
+    res.status(400).json({ message: "Can not find product" });
+  }
   try {
     await product.findOneAndUpdate(
       { name: name },
@@ -91,7 +92,7 @@ const updateProduct = async (req, res) => {
       opts
     );
     await session.commitTransaction();
-    res.status(200).json({ message: "Update successful" });
+    res.status(200).json({ message: {name: newName, amount: amount, price: price} });
   } catch (error) {
     res.status(400).json({ Error: error });
   }

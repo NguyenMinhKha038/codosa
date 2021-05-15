@@ -17,14 +17,14 @@ staffRoute.post(
   errorHandller(staffController.staffLogin)
 );
 staffRoute.put(
-  "/update",
+  "/updateuser",
   auth.passportStaff,
   auth.isStaff,
   validate(staffValidate.checkEmailNamePass),
   errorHandller(staffController.updateUser)
 );
 staffRoute.delete(
-  "/delete",
+  "/deleteuser",
   auth.passportStaff,
   auth.isStaff,
   validate(staffValidate.checkEmail),

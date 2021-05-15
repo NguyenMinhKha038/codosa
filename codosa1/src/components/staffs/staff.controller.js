@@ -47,16 +47,20 @@ const staffLogin = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res,next) => {
   const email = req.body.email;
+  const checkExits = await user.findOne({email:email});
+  if(!checkExits){
+    req.status(400).json({ message: "No such user found" });
+  }
   try {
     await user.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
-    res.status(200).json({ message: "Delete successful" });
+    res.status(204).json({ message: "Delete successful" });
   } catch (error) {
-    req.status(400).json({ message: "Delete Failed" });
+    next(error)
   }
 };
 
@@ -74,7 +78,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res,next) => {
   const email = req.body.email;
   try {
     const users = await user.findOne({ email: email });
@@ -84,7 +88,7 @@ const getUser = async (req, res) => {
       res.status(400).json({ Error: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 

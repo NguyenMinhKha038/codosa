@@ -30,7 +30,7 @@ const userRegister = async (req, res, next) => {
     });
     const carts = await cartModel.save(options);
     await session.commitTransaction();
-    res.status(200).json({ message: { name: name, email: email } });
+    res.status(201).json({ message: { name: name, email: email } });
   } catch (error) {
     await session.abortTransaction();
     next(error);

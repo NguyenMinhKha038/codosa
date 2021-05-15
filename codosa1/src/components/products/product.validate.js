@@ -7,7 +7,7 @@ const checkAddProduct = {
     amount: Joi.number().required(),
     price: Joi.number().required(),
     category: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,20}/)
+      .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
     description: Joi.string()
       .regex(/[a-zA-Z0-9]{3,30}/)

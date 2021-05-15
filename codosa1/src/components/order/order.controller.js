@@ -54,17 +54,17 @@ const createOrder = async (req, res, next) => {
   }
 };
 
-const getOrder = async (req, res) => {
+const getOrder = async (req, res,next) => {
   const _id = req.user._id;
   try {
     const orders = await order.find({ id: _id });
     if (!orders) {
-      res.status(400).json({ Message: "Nothing" });
+      res.status(400).json({ Message: "No such order find" });
     } else {
       res.status(400).json({ Message: orders });
     }
   } catch (error) {
-    res.status(400).json({ Message: error });
+    next(error);
   }
 };
 const getUserOrder = async (req, res) => {
@@ -82,38 +82,35 @@ const getUserOrder = async (req, res) => {
   }
 };
 
-const updateOrder = async (req, res) => {
-  const payload = req.user;
-  const email = payload.email;
+const updateOrder = async (req, res,next) => {
   const id = req.body._id;
   const address = req.body.address;
-  const orders = await order.findOne({ _id: id, id: email });
+  const orders = await order.findOne({ _id: id});
   const status = orders.status;
   if (status > 2) {
     res
       .status(400)
-      .json({ Message: "Order is being delivery, cant not be update" });
+      .json({ Message: "Order is being delivery or finish, cant not be update" });
   } else {
     try {
       await order.findOneAndUpdate(
         { _id: id },
         { address: address, updateDay: Date.now() }
       );
-      res.status(200).json({ Message: "Update succesfull" });
+      res.status(200).json({ address: address });
     } catch (error) {
-      res.status(400).json({ Error: error });
+      next(error);
     }
   }
 };
 
-const userDeleteOrder = async (req, res) => {
-  const payload = req.user;
-  const email = payload.email;
+const userDeleteOrder = async (req, res,next) => {
+  const email = req.user.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id, id: email });
   const status = orders.status;
   if (status != 1) {
-    res.status(400).json({ Message: "Order is handing, can't update" });
+    res.status(400).json({ Message: "Order is handing, can't delete" });
   } else {
     try {
       await order.findOneAndUpdate(
@@ -122,13 +119,11 @@ const userDeleteOrder = async (req, res) => {
       );
       res.status(200).json({ Message: "Delete Successful" });
     } catch (error) {
-      res.status(400).json({ Error: error });
+      next(error);
     }
   }
 };
 const adminDeleteOrder = async (req, res) => {
-  const payload = req.user;
-  const email = payload.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id });
   const status = orders.status;
@@ -149,8 +144,7 @@ const adminDeleteOrder = async (req, res) => {
 
 //Update status
 
-const processingUpdate = async (req, res) => {
-  const payload = req.user;
+const processingUpdate = async (req, res,next) => {
   const _id = req.body._id;
   const orders = await order.findOne({ _id: _id });
   const status = orders.status;
@@ -214,21 +208,23 @@ const finishUpdate = async (req, res) => {
 };
 
 //get Order
-const getWaitingOrder = async (req, res) => {
+const getWaitingOrder = async (req, res,next) => {
   try {
     const orders = await order.find({ status: 1 });
     res.status(200).json({ Message: orders });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
-
-const getProcessingOrder = async (req, res) => {
+const getProcessingOrder = async (req, res,next) => {
   try {
     const orders = await order.find({ status: 2 });
-    res.status(200).json({ Message: orders });
+    if(!orders){
+      res.status(400).json({Message:"No such order found"});
+    }
+    res.status(200).json({ orders: orders });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 

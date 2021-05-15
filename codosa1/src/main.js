@@ -13,6 +13,7 @@ import orderRoute from "./components/order/order.route";
 import reportRoute from "./components/report/report.route";
 import cartRoute from "./components/cart/cart.route"
 import database from "./config/connectDb";
+import swaggerDocument from "./components/utils/swagger.json"
 import http from "http";
 
 
@@ -36,7 +37,7 @@ app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
 app.use("/cart",cartRoute);
-app.use('/api',apiRoute);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
@@ -44,6 +45,9 @@ app.use((req, res, next) => {
   next(error);
  });
  app.use((error, req, res, next) => {
+   if(error.message=="Validation Failed"){
+     error.status=422
+   }
   res.status(error.status || 500).json({
     error: {
       status: error.status || 500,

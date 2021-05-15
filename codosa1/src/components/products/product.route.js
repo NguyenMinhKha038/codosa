@@ -12,7 +12,7 @@ productRouter.post(
   auth.passportStaff,
   auth.isStaff,
   validate(productValidate.checkAddProduct),
-  product.addProduct
+  errorHandller(product.addProduct)
 );
 productRouter.delete("/delete", auth.passportStaff,auth.isStaff, validate(productValidate.checkNameProduct),errorHandller(product.deleteProduct));
 productRouter.put("/update", auth.passportStaff,auth.isStaff,validate(productValidate.checkUpdateProduct,),errorHandller(product.updateProduct));

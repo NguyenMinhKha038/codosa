@@ -1,0 +1,2120 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Document API",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8088",
+  "paths": {
+    "/user/register": {
+      "post": {
+        "summary": "User Register",
+        "description": "User Register",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "req.body",
+            "description": "User Name",
+            "required": true,
+            "type": "string",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "User Password",
+            "required": true,
+            "type": "String",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "User Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "201": {
+            "description": "A User object.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"MinhKha"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"minhkha@gmail.com"
+                }
+                
+              }
+            }
+            
+            
+          },
+          "400":{
+            "description": "An error"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }, "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "user/info":{
+      "get": {
+        "summary": "User Info",
+        "description": "User Info",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Name,Role and Email of User",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"MinhKha"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"minhkha@gmail.com"
+                },
+                "role":{
+                  "type":"number",
+                  "example":0
+                }
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/user/login":{
+      "post": {
+        "summary": "User Login",
+        "description": "User Legister",
+        "parameters": [
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "User Password",
+            "required": true,
+            "type": "String",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "User Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "A Token.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"Json",
+                  "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                }
+                
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "/manager/register": {
+      "post": {
+        "summary": "Manager Register",
+        "description": "Manager Register",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "req.body",
+            "description": "Manager Name",
+            "required": true,
+            "type": "string",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "Manager Password",
+            "required": true,
+            "type": "String",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "Manager Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "201": {
+            "description": "A Manager object.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"Staff"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"staff@gmail.com"
+                }
+                
+              }
+            }
+            
+            
+          },
+          "400":{
+            "description": "An error"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }, "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "manager/info":{
+      "get": {
+        "summary": "Manager Info",
+        "description": "Manager Info",
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "200": {
+            "description": "Name,Role and Email of Manager",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"staff"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"staff@gmail.com"
+                },
+                "role":{
+                  "type":"number",
+                  "example":0
+                }
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/login":{
+      "post": {
+        "summary": "Manager Login",
+        "description": "Manager Login",
+        "parameters": [
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "Manager Password",
+            "required": true,
+            "type": "string",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "Manager Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "200": {
+            "description": "A Token.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"json",
+                  "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                }
+                
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "/manager/deleteuser":{
+      "delete": {
+        "summary": "Manager Delete User",
+        "description": "Manager Delete User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/deletestaff":{
+      "delete": {
+        "summary": "Manager Delete Staff",
+        "description": "Manager Delete Staff",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "Staff Email",
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/updateuser":{
+      "put": {
+        "summary": "Manager Update User",
+        "description": "Manager Update User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          },
+          {
+            "name": "password",
+            "description": "User Password",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          },
+          {
+            "name": "name",
+            "description": "User Name",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/updatestaff":{
+      "put": {
+        "summary": "Manager Update Staff",
+        "description": "Manager Update Staff",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "Staff Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          },
+          {
+            "name": "password",
+            "description": "Staff Password",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          },
+          {
+            "name": "name",
+            "description": "Staff Name",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/getuser":{
+      "post": {
+        "summary": "Manager Get User",
+        "description": "Manager Get User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/manager/getstaff":{
+      "post": {
+        "summary": "Manager Get Staff",
+        "description": "Manager Get Staff",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "Staff Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/staff/register": {
+      "post": {
+        "summary": "Staff Register",
+        "description": "Staff Register",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "req.body",
+            "description": "Staff Name",
+            "required": true,
+            "type": "string",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "Staff Password",
+            "required": true,
+            "type": "String",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "Staff Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "201": {
+            "description": "A Staff object.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"Staff"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"staff@gmail.com"
+                }
+                
+              }
+            }
+            
+            
+          },
+          "400":{
+            "description": "An error"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }, "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "/staff/info":{
+      "get": {
+        "summary": "Staff Info",
+        "description": "Staff Info",
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "200": {
+            "description": "Name,Role and Email of Staff",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"string",
+                  "example":"staff"
+                },
+                "email":{
+                  "type":"string",
+                  "format":"email",
+                  "example":"staff@gmail.com"
+                },
+                "role":{
+                  "type":"number",
+                  "example":0
+                }
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/staff/login":{
+      "post": {
+        "summary": "Staff Login",
+        "description": "Staff Login",
+        "parameters": [
+          {
+            "name": "password",
+            "in": "req.body",
+            "description": "Staff Password",
+            "required": true,
+            "type": "string",
+            "min": "3",
+            "max":"30"
+          },
+          {
+            "name": "email",
+            "in": "req.body",
+            "description": "Staff Email",
+            "required": true,
+            "unique":true,
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "200": {
+            "description": "A Token.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "name":{
+                  "type":"json",
+                  "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                }
+                
+                
+              }
+            }
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "422":{
+            "description": "Validation Failed"
+          }
+        }
+      }
+    },
+    "/staff/deleteuser":{
+      "delete": {
+        "summary": "Staff Delete User",
+        "description": "Staff Delete User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/staff/updateuser":{
+      "put": {
+        "summary": "Staff Update User",
+        "description": "Staff Update User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          },
+          {
+            "name": "password",
+            "description": "User Password",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          },
+          {
+            "name": "name",
+            "description": "User Name",
+            "type": "string",
+            "required": true,
+            "min":3,
+            "max":30
+          }
+        ],
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "204": {
+            "description": "Update successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "422":{
+            "description":"Validation Failed"
+          }
+        }
+      }
+    },
+    "/staff/getuser":{
+      "post": {
+        "summary": "Staff Get User",
+        "description": "Staff Get User",
+        "parameters":[
+          {
+            "name": "email",
+            "description": "User Email",
+            "type": "string",
+            "required": true,
+            "format":"email"
+          }
+        ],
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "400":{
+            "description": "No such user found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          }
+        }
+      }
+    },
+    "/search":{
+      "post":{
+        "summary": "Search Product",
+        "description": "Search Product",
+        "parameters":[
+          {
+            "name": "name",
+            "description": "Word for search",
+            "type": "string",
+            "min":"3",
+            "max":"40",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Search"
+        ],
+        "responses": {
+          "400":{
+            "description": "Product not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200":{
+            "description":"Unauthorized"
+          },
+          "schema": {
+            "type": "object",
+            "properties":{
+              "name":{
+                "type":"string",
+                "example":"Converse Chuck Taylor II"
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/report/product":{
+      "post":{
+        "summary": "Report Product",
+        "description": "Report Product",
+        "parameters":[
+          {
+            "name": "fromDay",
+            "description": "From Day",
+            "type": "date",
+            "required": true
+          },
+          {
+            "name": "toDay",
+            "description": "To Day",
+            "type": "date",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Report"
+        ],
+        "responses": {
+          "400":{
+            "description": "No orders"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/report/category":{
+      "post":{
+        "summary": "Report Product",
+        "description": "Report Product",
+        "parameters":[
+          {
+            "name": "fromDay",
+            "description": "From Day",
+            "type": "date",
+            "required": true
+          },
+          {
+            "name": "toDay",
+            "description": "To Day",
+            "type": "date",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Report"
+        ],
+        "responses": {
+          "400":{
+            "description": "No orders"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/product/add":{
+      "post":{
+        "summary": "Add Product",
+        "description": "Add Product",
+        "parameters":[
+          {
+            "name": "name",
+            "description": "Product Name",
+            "type": "string",
+            "min":3,
+            "max":40,
+            "unique":true,
+            "required": true
+          },
+          {
+            "name": "amount",
+            "description": "Product's Amount",
+            "type": "number",
+            "required": true
+          },{
+            "name": "price",
+            "description": "Product's Price",
+            "type": "number",
+            "required": true
+          },{
+            "name": "category",
+            "description": "Product's Category",
+            "type": "string",
+            "max":30,
+            "min":3,
+            "required": true
+          },
+          {
+            "name": "description",
+            "description": "Product's Description",
+            "type": "string",
+            "max":30,
+            "min":3,
+            "required": true
+          }
+        ],
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "403":{
+            "description": "Already exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"name:Converse Chuck Taylor II,amount:2000,price:25000000,description:giay dep"
+                }
+                
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/product/update":{
+      "post":{
+        "summary": "Update Product",
+        "description": "Update Product",
+        "parameters":[
+          {
+            "name": "name",
+            "description": "Product Name",
+            "type": "string",
+            "min":3,
+            "max":40,
+            "unique":true,
+            "required": true
+          },
+          {
+            "name": "amount",
+            "description": "Product's Amount",
+            "type": "number",
+            "required": true
+          },{
+            "name": "price",
+            "description": "Product's Price",
+            "type": "number",
+            "required": true
+          },{
+            "name": "newName",
+            "description": "Product's New Name",
+            "type": "string",
+            "max":30,
+            "min":3,
+            "required": true
+          },
+          {
+            "name": "id",
+            "description": "Product's ID",
+            "type": "string",
+            "max":30,
+            "min":3,
+            "required": true
+          }
+        ],
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "400":{
+            "description": "Can not find product"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"name:Converse Chuck Taylor II,amount:2000,price:27000000,newname:Palladium"
+                }
+                
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/product/delete":{
+      "delete":{
+        "summary": "Delete Product",
+        "description": "Delete Product",
+        "parameters":[
+          {
+            "name": "name",
+            "description": "Product Name",
+            "type": "string",
+            "min":3,
+            "max":40,
+            "unique":true,
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "400":{
+            "description": "Can not find product"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "422":{
+            "description": "Validation Failed"
+          },
+
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Delete successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/product/get":{
+      "post":{
+        "summary": "Get Product",
+        "description": "Get Product",
+        "parameters":[
+          {
+            "name": "name",
+            "description": "Product Name",
+            "type": "string",
+            "min":3,
+            "max":40,
+            "unique":true,
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "400":{
+            "description": "Product not found"
+          },
+          "422":{
+            "description": "Validation Failed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"name:Converse Chuck Taylor II,amount:2000,price:27000000"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/create":{
+      "post":{
+        "summary": "Create Order",
+        "description": "Create Order",
+        "parameters":[
+          {
+            "name": "products",
+            "description": "List Order",
+            "type": "Array",
+            "required": true
+          },
+          {
+            "name": "phone",
+            "description": "User's Phone",
+            "type": "string",
+            "length":10,
+            "required": true
+          },
+          {
+            "name": "address",
+            "description": "User's Phone",
+            "type": "string",
+            "max":50,
+            "min":20,
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "Cart is Empty"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "422":{
+            "description": "Validation Failed"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"id:122545,products:[],price:phone:0965707061,address:'Vinhome',status:1,total:2500000"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/get":{
+      "get":{
+        "summary": "User Get Order",
+        "description": "User Get Order",
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order find"
+          },
+          "422":{
+            "description": "Validation Failed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"id:122545,products:[],price:phone:0965707061,address:'Vinhome',status:1,total:2500000"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/get":{
+      "post":{
+        "summary": "User Get Order",
+        "description": "User Get Order",
+        "parameters":[
+          {
+            "name": "_id",
+            "description": "User's id",
+            "type": "string",
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order find"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"id:122545,products:[],price:phone:0965707061,address:'Vinhome',status:1,total:2500000"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/user/update":{
+      "post":{
+        "summary": "User Update Order",
+        "description": "User Update Order",
+        "parameters":[
+          {
+            "name": "_id",
+            "description": "User's id",
+            "type": "string",
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "Order is being delivery or finish, cant not be update"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "address":{
+                  "type":"object",
+                  "example":"address:'Vinhome',updateDay:'15/05/2021'"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/admin/delete":{
+      "delete":{
+        "summary": "Admin Delete Order",
+        "description": "Admin Delete Order",
+        "parameters":[
+          {
+            "name": "_id",
+            "description": "Order's id",
+            "type": "string",
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "Order is finsh, can't delete"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Delete successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/order/user/delete":{
+      "delete":{
+        "summary": "Admin Delete Order",
+        "description": "Admin Delete Order",
+        "parameters":[
+          {
+            "name": "_id",
+            "in":"req.body",
+            "description": "Order's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in":"req.user",
+            "description": "User's id",
+            "type": "string",
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "Order is handing, can't delete"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Delete successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/order/status/processing":{
+      "put":{
+        "summary": "Update Order's Status To Processing",
+        "description": "Update Order's Status To Processing",
+        "parameters":[
+          {
+            "name": "_id",
+            "in":"req.body",
+            "description": "Order's id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "This Order can not processing"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Update successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/order/status/shipping":{
+      "put":{
+        "summary": "Update Order's Status To Shipping",
+        "description": "Update Order's Status To Shipping",
+        "parameters":[
+          {
+            "name": "_id",
+            "in":"req.body",
+            "description": "Order's id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "This Order can not Shipping"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Update successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/order/status/finish":{
+      "put":{
+        "summary": "Update Order's Status To Finish",
+        "description": "Update Order's Status To Finish",
+        "parameters":[
+          {
+            "name": "_id",
+            "in":"req.body",
+            "description": "Order's id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "This Order can not Finish"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Update successful ."
+          }
+
+        }
+      
+      }
+    },
+    "/order/waiting":{
+      "get":{
+        "summary": "Get Order Have Status Is Waiting(1)",
+        "description": "Get Order Have Status Is Waiting(1)",
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"orders:[]"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/processing":{
+      "get":{
+        "summary": "Get Order Have Status Is Processing(1)",
+        "description": "Get Order Have Status Is Processing(1)",
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"orders:[]"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/shipping":{
+      "get":{
+        "summary": "Get Order Have Status Is Shipping(1)",
+        "description": "Get Order Have Status Is Shipping(1)",
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"orders:[]"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/order/finish":{
+      "get":{
+        "summary": "Get Order Have Status Is Finish(1)",
+        "description": "Get Order Have Status Is Finish(1)",
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such order found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Result":{
+                  "type":"object",
+                  "example":"orders:[]"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/notification":{
+      "get":{
+        "summary": "Get Order Have Status Is Finish(1)",
+        "description": "Get Order Have Status Is Finish(1)",
+        "tags": [
+          "Notification"
+        ],
+        "responses": {
+          "400":{
+            "description": "No such notification found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A object product .",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Notification":{
+                  "type":"object",
+                  "example":"[]"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/image/avatar":{
+      "post":{
+        "summary": "Add Avatar",
+        "description": "Add Avatar",
+        "parameters":[
+          {
+            "name": "image",
+            "in":"req.body",
+            "description": "Product's Image",
+            "type": "file",
+            "required": true
+          }
+          
+          
+        ],
+        "tags": [
+          "Image"
+        ],
+        "responses": {
+          "400":{
+            "description": "Order is handing, can't delete"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A image's path  .",
+            "schema": {
+              "type": "string",
+              "properties":{
+                "imgPath":{
+                  "type":"object",
+                  "example":"uploads/abc.png"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/image/product":{
+      "post":{
+        "summary": "Add Product Image",
+        "description": "Add Product Image",
+        "parameters":[
+          {
+            "name": "image",
+            "in":"req.body",
+            "description": "Product's Image",
+            "type": "file",
+            "required": true
+          },
+          {
+            "name": "category",
+            "in":"req.user",
+            "description": "Product's Category",
+            "type": "file",
+            "required": true
+          }
+          
+        ],
+        "tags": [
+          "Iamge"
+        ],
+        "responses": {
+          "400":{
+            "description": "Order is handing, can't delete"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "A image's path  .",
+            "schema": {
+              "type": "string",
+              "properties":{
+                "imgPath":{
+                  "type":"object",
+                  "example":"uploads/abc.png"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/categry/add":{
+      "post":{
+        "summary": "Add Product Image",
+        "description": "Add Product Image",
+        "parameters":[
+          {
+            "name": "category",
+            "in":"req.body",
+            "description": "Category's Name",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "403":{
+            "description": "Already exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "422":{
+            "description":"Validation Failed"
+          },
+          "200":{
+            "description": "A Category's Name  .",
+            "schema": {
+              "type": "string",
+              "properties":{
+                "name":{
+                  "type":"object",
+                  "example":"Giay"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/categry/update":{
+      "put":{
+        "summary": "Add Product Image",
+        "description": "Add Product Image",
+        "parameters":[
+          {
+            "name": "name",
+            "in":"req.body",
+            "description": "Category's Name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "newName",
+            "in":"req.body",
+            "description": "Category's newName",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "403":{
+            "description": "Already exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "422":{
+            "description":"Validation Failed"
+          },
+          "200":{
+            "description": "A Category's Name  .",
+            "schema": {
+              "type": "string",
+              "properties":{
+                "name":{
+                  "type":"object",
+                  "example":"Giay"
+                },
+                "newName":{
+                  "type":"object",
+                  "example":"Non"
+                }
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/categry/delete":{
+      "delete":{
+        "summary": "Add Product Image",
+        "description": "Add Product Image",
+        "parameters":[
+          {
+            "name": "categories",
+            "in":"req.body",
+            "description": "Category's Name",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "422":{
+            "description": "Validation Failed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Delete successful."
+          }
+
+        }
+      
+      }
+    },
+    "/categry/getproduct":{
+      "post":{
+        "summary": "Get All Product In Category",
+        "description": "Get All Product In Category",
+        "parameters":[
+          {
+            "name": "categories",
+            "in":"req.body",
+            "description": "Category's Name",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "422":{
+            "description": "Validation Failed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "All product Found.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Product":{
+                  "type":"object",
+                  "example":"[Converse,Vans]"
+                }
+                
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/categry/getcategory":{
+      "get":{
+        "summary": "Get All Product In Category",
+        "description": "Get All Product In Category",
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "422":{
+            "description": "Validation Failed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "All product Found.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Product":{
+                  "type":"object",
+                  "example":"[Giay,Nuoc Hoa]"
+                }
+                
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/cart/info":{
+      "get":{
+        "summary": "Get Cart's Info",
+        "description": "Get Cart's Info",
+        "tags": [
+          "Cart"
+        ],
+        "responses": {
+          "400":{
+            "description": "Cart is Emty"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "All product Found.",
+            "schema": {
+              "type": "object",
+              "properties":{
+                "Cart":{
+                  "type":"object",
+                  "example":"[]"
+                }
+                
+              }
+            }
+          }
+
+        }
+      
+      }
+    },
+    "/cart/add":{
+      "post":{
+        "summary": "Create Cart",
+        "description": "Create Cart",
+        "parameters":[
+          {
+            "name": "product",
+            "in":"req.body",
+            "description": "Category's Name",
+            "type": "object",
+            "required": true
+          }
+        ],
+        "tags": [
+          "Cart"
+        ],
+        "responses": {
+         
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401":{
+            "description":"Unauthorized"
+          },
+          "200":{
+            "description": "Successful"
+          }
+
+        }
+      
+      }
+    }
+
+    
+
+
+  }
+}

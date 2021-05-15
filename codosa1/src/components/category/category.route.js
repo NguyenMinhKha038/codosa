@@ -8,30 +8,30 @@ import errorHandller from "../utils/errorHandller";
 const categoryRouter = Router();
 categoryRouter.post(
   "/add",
-  auth.checkAuth,
+  auth.isStaff,
   validate(categoryValidate.categoryValidate),
   errorHandller(categoryController.addCategory)
 );
 categoryRouter.delete(
   "/delete",
-  auth.checkAuth,
+  auth.isStaff,
   validate(categoryValidate.categoryValidate),
   errorHandller(categoryController.deleteCategory)
 );
 categoryRouter.put(
   "/update",
-  auth.checkAuth,
+  auth.isStaff,
   validate(categoryValidate.updateCategory),
   errorHandller(categoryController.updateCategory)
 );
 categoryRouter.get(
   "/getcategory",
-  auth.checkAuth,
+  auth.isStaff,
   errorHandller(categoryController.getListCategory)
 );
 categoryRouter.post(
   "/getproduct",
-  auth.checkAuth,
+  auth.isStaff,
   validate(categoryValidate.categoryValidate),
   errorHandller(categoryController.getAllProduct)
 );
