@@ -9,13 +9,13 @@ orderRouter.post(
   "/create",
   auth.passportUser,
   auth.isUser,
-  //validate(orderValidate.checkOrder),
+  validate(orderValidate.checkOrder),
   orderController.createOrder
 );
 orderRouter.get("/get", auth.passportUser, orderController.getOrder);
 orderRouter.post(
   "/get",
-  auth.checkAuth,
+  auth.isStaff,
   validate(orderValidate.checkEmail),
   orderController.getUserOrder
 );
@@ -28,7 +28,7 @@ orderRouter.put(
 );
 orderRouter.delete(
   "/admin/delete",
-  auth.checkAuth,
+  auth.isStaff,
   validate(orderValidate.checkID),
   orderController.adminDeleteOrder
 );
@@ -42,21 +42,21 @@ orderRouter.delete(
 orderRouter.put(
   "/status/processing",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   validate(orderValidate.checkID),
   orderController.processingUpdate
 );
 orderRouter.put(
   "/status/shipping",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   validate(orderValidate.checkID),
   orderController.shippingUpdate
 );
 orderRouter.put(
   "/status/finish",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   validate(orderValidate.checkID),
   orderController.finishUpdate
 );
@@ -66,19 +66,19 @@ orderRouter.get("/waiting", auth.checkAuth, orderController.getWaitingOrder);
 orderRouter.get(
   "/processing",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   orderController.getProcessingOrder
 );
 orderRouter.get(
   "/shipping",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   orderController.getShippingOrder
 );
 orderRouter.get(
   "/finish",
   auth.passportStaff,
-  auth.checkAuth,
+  auth.isStaff,
   orderController.getFinishOrder
 );
 export default orderRouter;

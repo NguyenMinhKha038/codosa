@@ -4,7 +4,7 @@ import auth from "../utils/auth";
 import validates from "../utils/validate";
 import product from "../products/product.controller";
 import productValidate from "./product.validate";
-import errorHandller from "../utils/errorHandller"
+import errorHandller from "../utils/errorHandller";
 
 const productRouter = Router();
 productRouter.post(
@@ -12,10 +12,28 @@ productRouter.post(
   auth.passportStaff,
   auth.isStaff,
   validate(productValidate.checkAddProduct),
-  errorHandller(product.addProduct)
+  product.addProduct
 );
-productRouter.delete("/delete", auth.passportStaff,auth.isStaff, validate(productValidate.checkNameProduct),errorHandller(product.deleteProduct));
-productRouter.put("/update", auth.passportStaff,auth.isStaff,validate(productValidate.checkUpdateProduct,),errorHandller(product.updateProduct));
-productRouter.post("/get",  auth.passportStaff,auth.isStaff,validate(productValidate.checkNameProduct), errorHandller(product.getProduct));
+productRouter.delete(
+  "/delete",
+  auth.passportStaff,
+  auth.isStaff,
+  validate(productValidate.checkNameProduct),
+  product.deleteProduct
+);
+productRouter.put(
+  "/update",
+  auth.passportStaff,
+  auth.isStaff,
+  validate(productValidate.checkUpdateProduct),
+  product.updateProduct
+);
+productRouter.post(
+  "/get",
+  auth.passportStaff,
+  auth.isStaff,
+  validate(productValidate.checkNameProduct),
+  product.getProduct
+);
 
 export default productRouter;

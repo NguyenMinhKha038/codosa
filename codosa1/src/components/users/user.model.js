@@ -23,6 +23,9 @@ const userSchema = new Schema({
     type: Number,
     require: true,
   },
-  image: String,
+  image: {
+    type:String,
+    max:50
+  },
 });
 export default mongoose.model("user", userSchema);

@@ -16,23 +16,23 @@ categoryRouter.delete(
   "/delete",
   auth.isStaff,
   validate(categoryValidate.categoryValidate),
-  errorHandller(categoryController.deleteCategory)
+  categoryController.deleteCategory
 );
 categoryRouter.put(
   "/update",
   auth.isStaff,
   validate(categoryValidate.updateCategory),
-  errorHandller(categoryController.updateCategory)
+  categoryController.updateCategory
 );
 categoryRouter.get(
   "/getcategory",
   auth.isStaff,
-  errorHandller(categoryController.getListCategory)
+  categoryController.getListCategory
 );
 categoryRouter.post(
   "/getproduct",
   auth.isStaff,
   validate(categoryValidate.categoryValidate),
-  errorHandller(categoryController.getAllProduct)
+  categoryController.getAllProduct
 );
 export default categoryRouter;

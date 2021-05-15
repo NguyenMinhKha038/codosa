@@ -10,12 +10,14 @@ reportRouter.post(
   
   auth.passportManager,
   auth.isManager,
-  errorHandller(reportController.reportProduct)
+  validate(reportValidate.checkReportProduct),
+  reportController.reportProduct
 );
 reportRouter.post(
   "/category",
   auth.passportManager,
   auth.isManager,
-  errorHandller(reportController.reportCategory)
+  validate(reportValidate.checkReportCategory),
+  reportController.reportCategory
 );
 export default reportRouter;

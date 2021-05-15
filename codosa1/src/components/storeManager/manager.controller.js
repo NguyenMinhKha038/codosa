@@ -6,10 +6,13 @@ import user from "../users/user.model";
 import staff from "../staffs/staff.model";
 import statusMiddleWare from "../utils/status";
 
-const managerRegister = async (req, res) => {
+const managerRegister = async (req, res, next) => {
   const { email, name, password } = req.body;
   try {
-    await auth.checkManagerExist;
+    const checkExits = await manager.findOne({ email: email });
+    if (checkExits) {
+      res.status(403).json({ message: "Already exist" });
+    }
     const hash = await bcrypt.hash(password, 10);
     let managers = await new manager({
       name,
@@ -22,11 +25,11 @@ const managerRegister = async (req, res) => {
     await managers.save();
     res.status(200).json({ message: { name: name, email: email } });
   } catch (err) {
-    res.status(400).json({ Error: err });
+    next(error);
   }
 };
 
-const managerLogin = async (req, res) => {
+const managerLogin = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     let managers = await manager.findOne({ email: email });
@@ -40,14 +43,14 @@ const managerLogin = async (req, res) => {
       res.status(200).json({ token: token });
     }
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
-const deleteUser = async (req, res,next) => {
+const deleteUser = async (req, res, next) => {
   const email = req.body.email;
-  const checkExits = await user.findOne({email:email});
-  if(!checkExits){
+  const checkExits = await user.findOne({ email: email });
+  if (!checkExits) {
     res.status(400).json({ message: "No such user found" });
   }
   try {
@@ -57,13 +60,13 @@ const deleteUser = async (req, res,next) => {
     );
     res.status(204).json({ message: "Successful" });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
-const deleteStaff = async (req, res) => {
+const deleteStaff = async (req, res, next) => {
   const email = req.body.email;
-  const checkExits = await staff.findOne({email:email});
-  if(!checkExits){
+  const checkExits = await staff.findOne({ email: email });
+  if (!checkExits) {
     req.status(400).json({ message: "No such user found!" });
   }
   try {
@@ -73,10 +76,10 @@ const deleteStaff = async (req, res) => {
     );
     res.status(200).json({ message: "Successful" });
   } catch (error) {
-    req.status(400).json({ message: "Failed!" });
+    next(error);
   }
 };
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   const { email, name, password } = req.body;
   const findUser = user.findOne({ email: email });
   if (findUser) {
@@ -88,13 +91,13 @@ const updateUser = async (req, res) => {
       );
       res.status(200).json({ message: "Update successful" });
     } catch (error) {
-      res.status(400).json({ message: error });
+      next(error);
     }
   } else {
     res.status(400).json({ message: "User not found" });
   }
 };
-const updateStaff = async (req, res) => {
+const updateStaff = async (req, res, next) => {
   const { email, name, password } = req.body;
 
   const findStaff = staff.findOne({ email: email });
@@ -107,13 +110,13 @@ const updateStaff = async (req, res) => {
       );
       res.status(200).json({ message: "Update successful" });
     } catch (error) {
-      res.status(400).json({ message: error });
+      next(error);
     }
   } else {
     res.status(400).json({ message: "User not found" });
   }
 };
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   const email = req.body.email; //ok
 
   try {
@@ -124,11 +127,11 @@ const getUser = async (req, res) => {
       res.status(400).json({ Error: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
-const getStaff = async (req, res) => {
+const getStaff = async (req, res, next) => {
   const email = req.body.email; //ok
 
   try {
@@ -139,15 +142,15 @@ const getStaff = async (req, res) => {
       res.status(400).json({ err: "User not found" });
     }
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
-const getInfo = async (req, res) => {
+const getInfo = async (req, res, next) => {
   try {
     const { name, role, email } = req.user;
     res.status(200).json({ Name: name, Role: role, Email: email });
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 

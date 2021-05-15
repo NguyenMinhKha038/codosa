@@ -15,7 +15,9 @@ const reportProduct = async (req, res, next) => {
       {
         $unwind: "$products",
       },
-
+      {
+        $addFields:{"buyPrice":"$products.price"}
+      },
       {
         $group: {
           _id: "$products.productId",
@@ -25,9 +27,9 @@ const reportProduct = async (req, res, next) => {
           },
           
           
+          
         },
       },
-     
       
       {
         $project: {
@@ -46,9 +48,7 @@ const reportProduct = async (req, res, next) => {
           as: "product",
         },
       },
-      {
-        $addFields:{"buyPrice":"$product.price"}
-      },
+     
       
     ]);
     if(!report){

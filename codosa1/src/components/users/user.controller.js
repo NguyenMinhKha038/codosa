@@ -9,6 +9,10 @@ dotenv.config();
 const userRegister = async (req, res, next) => {
   const { name, email, password } = req.body;
   try {
+    const checkExits = await user.findOne({ email: email });
+    if (checkExits) {
+      res.status(403).json({ message: "Already exist" });
+    }
     const session = await mongoose.startSession();
     session.startTransaction(); //start transaction
     const options = { session };
@@ -28,7 +32,7 @@ const userRegister = async (req, res, next) => {
       product: [],
       total: 0,
     });
-    const carts = await cartModel.save(options);
+    await cartModel.save(options);
     await session.commitTransaction();
     res.status(201).json({ message: { name: name, email: email } });
   } catch (error) {
@@ -79,7 +83,7 @@ const deleteAccount = async (req, res) => {
     await bcrypt.compare(password, users.password);
     users.remove();
   } catch (error) {
-    req.status(400).json({Error:error});
+    req.status(400).json({ Error: error });
   }
 };
 

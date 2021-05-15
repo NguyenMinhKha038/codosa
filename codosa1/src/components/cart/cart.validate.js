@@ -1,8 +1,9 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const cartValidate = {
+const addCart = {
   body: Joi.object({
-    product: Joi.array().required(),
+    product: Joi.required(),
   }),
 };
 
-export default { cartValidate };
+
+export default {addCart} ;

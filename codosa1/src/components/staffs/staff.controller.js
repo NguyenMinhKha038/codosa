@@ -9,7 +9,10 @@ dotenv.config();
 const staffRegister = async (req, res) => {
   const { email, name, password } = req.body;
   try {
-    auth.checkStaffExist;
+    const checkExits = await staff.findOne({ email: email });
+    if (checkExits) {
+      res.status(403).json({ message: "Already exist" });
+    }
     const hash = await bcrypt.hash(password, 10);
     let staffs = await new staff({
       name,
@@ -47,10 +50,10 @@ const staffLogin = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res,next) => {
+const deleteUser = async (req, res, next) => {
   const email = req.body.email;
-  const checkExits = await user.findOne({email:email});
-  if(!checkExits){
+  const checkExits = await user.findOne({ email: email });
+  if (!checkExits) {
     req.status(400).json({ message: "No such user found" });
   }
   try {
@@ -60,7 +63,7 @@ const deleteUser = async (req, res,next) => {
     );
     res.status(204).json({ message: "Delete successful" });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
@@ -78,7 +81,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-const getUser = async (req, res,next) => {
+const getUser = async (req, res, next) => {
   const email = req.body.email;
   try {
     const users = await user.findOne({ email: email });

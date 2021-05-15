@@ -3,24 +3,19 @@ import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../utils/auth";
 import userValidate from "./user.validate";
-import errorHandller from "../utils/errorHandller";
+
 const userRouter = Router();
 userRouter.post(
   "/login",
   validate(userValidate.checkEmailPass),
-  errorHandller(userController.userLogin)
+  userController.userLogin
 );
 userRouter.post(
   "/register",
   validate(userValidate.checkEmailNamePass),
-  errorHandller(userController.userRegister)
+  userController.userRegister
 );
 
-userRouter.get(
-  "/info",
-  auth.passportUser,
-  auth.isUser,
-  errorHandller(userController.getInfo)
-);
+userRouter.get("/info", auth.passportUser, auth.isUser, userController.getInfo);
 
 export default userRouter;
