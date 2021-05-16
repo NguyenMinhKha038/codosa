@@ -6,13 +6,11 @@ const notificationSchema = new Schema({
     type: String,
     require: true,
   },
-  content: {
-    type: Array,
+  orderId: {
+    type: Schema.Types.ObjectId,
+    ref: "order",
     require: true,
-  },
-  Date: {
-    type: Date,
-    require: true,
-  },
-});
+  }
+ 
+},{timestamps:true});
 export default mongoose.model("notification", notificationSchema);

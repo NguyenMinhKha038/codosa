@@ -27,7 +27,6 @@ const checkIdAddress = {
 };
 const checkOrder = {
   body: Joi.object({
-    products: Joi.required(),
     phone: Joi.string().length(10).required(),
     address: Joi.string()
       .regex(/[a-zA-Z0-9]{5,50}/)

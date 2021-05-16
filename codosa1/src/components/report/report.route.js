@@ -10,7 +10,7 @@ reportRouter.post(
   
   auth.passportManager,
   auth.isManager,
-  validate(reportValidate.checkReportProduct),
+  errorHandller(validate(reportValidate.checkReportProduct)),
   reportController.reportProduct
 );
 reportRouter.post(

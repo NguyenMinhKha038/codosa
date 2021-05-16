@@ -13,6 +13,7 @@ import orderRoute from "./components/order/order.route";
 import reportRoute from "./components/report/report.route";
 import cartRoute from "./components/cart/cart.route"
 import database from "./config/connectDb";
+import notificationRoute from "./components/notification/notification.route"
 import swaggerDocument from "./components/utils/swagger.json"
 import http from "http";
 
@@ -37,6 +38,7 @@ app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
 app.use("/cart",cartRoute);
+app.use("/notification",notificationRoute)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {

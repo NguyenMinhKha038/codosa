@@ -1,4 +1,3 @@
-import { Error } from "mongoose";
 import product from "../products/product.model";
 
 const search = async (req, res, next) => {

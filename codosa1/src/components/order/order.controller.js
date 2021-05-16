@@ -7,54 +7,58 @@ import statusMiddleware from "../utils/status";
 import mongoose from "mongoose";
 // CRUD order
 const createOrder = async (req, res, next) => {
-  const { email, _id } = req.user;
-  console.log("ok")
-  const { products, address, phone } = req.body;
-  console.log(products)
+  const { _id } = req.user;
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
-  const opts = { session, new: true };
-  const carts = await cart.findOne({ userId: _id }).populate("product.productId");
-  
-  if (carts.product.length == 1) {
-  
-    res.status(400).json({ Message: "Cart is Empty" });
-  } else {
-    try {
+  const { address, phone } = req.body;
+  try {
+    const opts = { session, new: true };
+    const carts = await cart
+      .findOne({ userId: _id })
+      .populate("product.productId");
+    if (carts.product.length == 1) {
+      res.status(400).json({ Message: "Cart is Empty" });
+    } else {
       let total = 0;
-      products.map((value) => {
-        
-        total += value.amount * value.price;
+      let orderInfo = [];
+      await carts.product.map((value) => {
+        total += value.productId.price * value.amount;
+        orderInfo.push(
+          { productId: value.productId._id ,
+           amount: value.amount ,
+           price: value.productId.price }
+        );
       });
-      const orders = new order({
-        id: _id,
-        products,
-        phone,
-        address,
+      console.log("total", total);
+      console.log("orderInfo", orderInfo);
+      const orders = new order ({
+        userId: _id,
+        products: orderInfo,
         status: statusMiddleWare.orderStatus.WAITING,
         total,
+        address,
+        phone,
       });
+      await orders.save(opts);
       const notifications = new notification({
         title: "New Order",
-        content: orders,
-        Date: Date.now(),
+        orderId: orders._id,
       });
       await Promise.all([
         notifications.save(opts),
-        orders.save(opts),
         cart.findOneAndUpdate({ userId: _id }, { product: [] }, opts),
       ]);
       await session.commitTransaction();
       res.status(200).json({ Message: orders });
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      next(error);
     }
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    next(error);
   }
 };
 
-const getOrder = async (req, res,next) => {
+const getOrder = async (req, res, next) => {
   const _id = req.user._id;
   try {
     const orders = await order.find({ id: _id });
@@ -82,15 +86,15 @@ const getUserOrder = async (req, res) => {
   }
 };
 
-const updateOrder = async (req, res,next) => {
+const updateOrder = async (req, res, next) => {
   const id = req.body._id;
   const address = req.body.address;
-  const orders = await order.findOne({ _id: id});
+  const orders = await order.findOne({ _id: id });
   const status = orders.status;
   if (status > 2) {
-    res
-      .status(400)
-      .json({ Message: "Order is being delivery or finish, cant not be update" });
+    res.status(400).json({
+      Message: "Order is being delivery or finish, cant not be update",
+    });
   } else {
     try {
       await order.findOneAndUpdate(
@@ -104,7 +108,7 @@ const updateOrder = async (req, res,next) => {
   }
 };
 
-const userDeleteOrder = async (req, res,next) => {
+const userDeleteOrder = async (req, res, next) => {
   const email = req.user.email;
   const id = req.body._id;
   const orders = await order.findOne({ _id: id, id: email });
@@ -144,7 +148,7 @@ const adminDeleteOrder = async (req, res) => {
 
 //Update status
 
-const processingUpdate = async (req, res,next) => {
+const processingUpdate = async (req, res, next) => {
   const _id = req.body._id;
   const orders = await order.findOne({ _id: _id });
   const status = orders.status;
@@ -208,7 +212,7 @@ const finishUpdate = async (req, res) => {
 };
 
 //get Order
-const getWaitingOrder = async (req, res,next) => {
+const getWaitingOrder = async (req, res, next) => {
   try {
     const orders = await order.find({ status: 1 });
     res.status(200).json({ Message: orders });
@@ -216,11 +220,11 @@ const getWaitingOrder = async (req, res,next) => {
     next(error);
   }
 };
-const getProcessingOrder = async (req, res,next) => {
+const getProcessingOrder = async (req, res, next) => {
   try {
     const orders = await order.find({ status: 2 });
-    if(!orders){
-      res.status(400).json({Message:"No such order found"});
+    if (!orders) {
+      res.status(400).json({ Message: "No such order found" });
     }
     res.status(200).json({ orders: orders });
   } catch (error) {

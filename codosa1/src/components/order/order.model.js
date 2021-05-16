@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
-  id: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref:'user',
     require: true,
@@ -13,11 +13,6 @@ const orderSchema = new Schema({
       ref:'product',
       require:true
     },
-    name:{
-      type:String,
-      require:true,
-      max:30,
-    },
     amount: {
       type:Number,
       require:true,
@@ -26,19 +21,20 @@ const orderSchema = new Schema({
     price:{
       type:Number,
       min:0
-    },
-    category:{
-      type:String,
-      require:true
     }
-    
   }],
   status: {
     type: Number,
     require: true,
   },
-  deliveryDay: Date,
-  finishDay: Date,
+  deliveryDay: {
+    type:Date,
+    default:null
+  },
+  finishDay: {
+    type:Date,
+    default:null
+  },
   total: {
     type:Number,
     min:0

@@ -24,7 +24,7 @@ const isStaff = async (req, res, next) => {
   if (role && role == 1) {
     return next();
   } else {
-    res.status(401).json({ message: req.user});
+    res.status(401).json({ message: "Must be Staff"});
   }
 };
 const isUser = async (req, res, next) => {

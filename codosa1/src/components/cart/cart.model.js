@@ -22,7 +22,6 @@ const cartModel = new Schema(
       }
     ],
   },
-  { colection: "cart" }
 );
 
 export default mongoose.model("cart", cartModel);
