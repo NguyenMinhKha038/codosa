@@ -11,12 +11,11 @@ import searchRoute from "./components/search/search.route";
 import imageRoute from "./components/image/image.route";
 import orderRoute from "./components/order/order.route";
 import reportRoute from "./components/report/report.route";
-import cartRoute from "./components/cart/cart.route"
+import cartRoute from "./components/cart/cart.route";
 import database from "./config/connectDb";
-import notificationRoute from "./components/notification/notification.route"
-import swaggerDocument from "./components/utils/swagger.json"
+import notificationRoute from "./components/notification/notification.route";
+import swaggerDocument from "./components/utils/swagger.json";
 import http from "http";
-
 
 database();
 dotenv.config();
@@ -37,25 +36,34 @@ app.use("/", searchRoute);
 app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);
-app.use("/cart",cartRoute);
-app.use("/notification",notificationRoute)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/cart", cartRoute);
+app.use("/notification", notificationRoute);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
   error.status = 404;
   next(error);
- });
- app.use((error, req, res, next) => {
-   if(error.message=="Validation Failed"){
-     error.status=422
-   }
-  res.status(error.status || 500).json({
-    error: {
-      status: error.status || 500,
-      message: error.message || 'Internal Server Error',
-    },
-  });
+});
+app.use((error, req, res, next) => {
+  if (error.details) {
+    error.details.body.forEach((element) => {
+      error.message = element.message;
+    });
+    res.status(error.status || 500).json({
+      error: {
+        status: error.statusCode || 500,
+        message: error.message || "Internal Server Error",
+      },
+    });
+  }else{
+    res.status(error.status || 500).json({
+      error: {
+        status: error.statusCode || 500,
+        message: error.message || "Internal Server Error",
+      },
+    });
+  }
 });
 
 const PORT = process.env.PORT || 8088;

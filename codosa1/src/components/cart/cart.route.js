@@ -6,6 +6,6 @@ import cartValidate from "./cart.validate";
 const cartRouter = Router();
 
 cartRouter.get("/info", auth.passportUser,auth.isUser, cartController.getCart);
-cartRouter.post("/add", auth.passportUser,auth.isUser,cartController.addCart);
+cartRouter.post("/add", auth.passportUser,auth.isUser,validate(cartValidate.addCart),cartController.addCart);
 
 export default cartRouter;
