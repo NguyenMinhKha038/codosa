@@ -1,42 +1,20 @@
 import mongoose from "mongoose"
-import autoBind from "auto-bind";
-
-class Service {
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+export class baseService {
   constructor(model) {
     this.model = model;
-    autoBind(this);
   }
-  async getAll(query) {
-    let { skip, limit, sortBy } = query;
-
-    skip = skip ? Number(skip) : 0;
-    limit = limit ? Number(limit) : 10;
-    sortBy = sortBy ? sortBy : {createdAt: -1};
-
-    delete query.skip;
-    delete query.limit;
-    delete query.sortBy;
-
-    if (query._id) {
-      try {
-        query._id = new mongoose.mongo.ObjectId(query._id);
-      } catch (error) {
-        throw new Error('Not able to generate mongoose id with content');
-      }
-    }
-
+  //CRUD
+  async create(data){
     try {
-      let items = await this.model
-        .find(query)
-        .sort(sortBy)
-        .skip(skip)
-        .limit(limit);
-
-      let total = await this.model.countDocuments(query);
-
-      return new HttpResponse(items, {totalCount: total});
-    } catch (errors) {
-      throw errors;
+      const item = this.model.create(data);
+      if(!item){
+        throw new baseError("Create",statusCode.BAD_REQUEST,errorList.CREATE_FAILD);
+      }
+    } catch (error) {
+      throw error;
     }
   }
 

@@ -1,13 +1,13 @@
-import order from "../order/order.model";
+import orderModel from "../order/order.model";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import {baseRes} from "../error/baseRes";
+import {reponseSuccess} from "../error/baseResponese";
 
 const reportProduct = async (req, res, next) => {
   try {
     const { toDay, fromDay } = req.body;
-    const report = await order.aggregate([
+    const report = await orderModel.aggregate([
       {
         $match: {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
@@ -48,9 +48,9 @@ const reportProduct = async (req, res, next) => {
       },
     ]);
     if (report.length ==0) {
-      throw new baseError("Product",statusCode.NOT_FOUND,errorList.foundError,true);
+      throw new baseError("Product",statusCode.NOT_FOUND,errorList.FIND_ERROR);
     }
-    return res.status(200).json({ Result: report });
+    reponseSuccess(res,report)
   } catch (error) {
     next(error);
   }
@@ -59,7 +59,7 @@ const reportProduct = async (req, res, next) => {
 const reportCategory = async (req, res, next) => {
   try {
     const { fromDay, toDay } = req.body;
-    const report = await order.aggregate([
+    const report = await orderModel.aggregate([
       {
         $match: {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
@@ -108,7 +108,7 @@ const reportCategory = async (req, res, next) => {
         $addFields: { name: "$product.name" },
       },
     ]);
-    baseRes(res,statusCode.Created,report,"Successful")
+    reponseSuccess(res,report)
   } catch (error) {
     next(error);
   }

@@ -16,7 +16,7 @@ opts.secretOrKey = process.env.privateKey;
 passport.use(
   "user",
   new JwtStrategy(opts, function (jwt_payload, done) {
-    user.findOne({ id: jwt_payload.sub }, function (err, user) {
+    user.findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
         return done(err, false);
       }
@@ -33,7 +33,7 @@ passport.use(
 passport.use(
   "staff",
   new JwtStrategy(opts, function (jwt_payload, done) {
-    staff.findOne({ id: jwt_payload.sub }, function (err, user) {
+    staff.findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
         return done(err, false);
       }
@@ -50,7 +50,7 @@ passport.use(
 passport.use(
   "manager",
   new JwtStrategy(opts, function (jwt_payload, done) {
-    manager.findOne({ id: jwt_payload.sub }, function (err, user) {
+    manager.findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
         return done(err, false);
       }

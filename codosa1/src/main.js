@@ -31,7 +31,7 @@ app.use(express.json());
 app.server = http.createServer(app);
 app.use("/user", userRoute);
 app.use("/staff", auth.passportStaff, auth.isStaff, staffRoute);
-app.use("/manager", auth.passportManager, auth.isManager, managerRoute);
+app.use("/manager", managerRoute);
 app.use("/product", auth.passportStaff, auth.isStaff, productRoute);
 app.use("/category", auth.passportStaff, auth.isStaff, categoryRoute);
 app.use("/", searchRoute);

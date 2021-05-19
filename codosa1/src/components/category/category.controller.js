@@ -1,39 +1,41 @@
-import category from "./category.model";
-import product from "../products/product.model";
+import categoryModel from "./category.model";
+import productModel from "../products/product.model";
 import statusMiddleWare from "../utils/status";
-
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import {reponseSuccess} from "../error/baseResponese";
 const addCategory = async (req, res, next) => {
   try {
     const categoryName = req.body.category;
-    const checkCategory = await category.findOne({ name: categoryName });
+    const checkCategory = await categoryModel.findOne({ name: categoryName });
     if (checkCategory) {
-      return res.status(403).json({ message: "Already exist" });
+      throw new baseError(categoryName,statusCode.ALREADY_EXITS,errorList.ALREADY_EXITS)
     }
-    let categories = new category({
+    let category = new categoryModel({
       name: categoryName,
       status: statusMiddleWare.categoryStatus.ACTIVE,
     });
-
-    await categories.save();
-    return res.status(200).json({ name: categoryName });
+    await category.save();
+    reponseSuccess(res,categoryName)
   } catch (error) {
     next(error);
   }
 };
 const deleteCategory = async (req, res, next) => {
-  const categories = req.body.category;
+  const category = req.body.category;
   await Promise.all(
-    category.findOneAndUpdate(
-      { name: categories },
+    categoryModel.findOneAndUpdate(
+      { name: category },
       { status: statusMiddleWare.categoryStatus.DISABLE }
     ),
-    product.updateMany(
-      { category: categories },
+    productModel.updateMany(
+      { category: category },
       { status: statusMiddleWare.categoryStatus.DISABLE }
     )
   )
     .then((value) => {
-      return res.status(200).json({ message: "Delete successful" });
+      reponseSuccess(res,category)
     })
     .catch((error) => {
       next(error);
@@ -41,37 +43,43 @@ const deleteCategory = async (req, res, next) => {
 };
 const getListCategory = async (req, res, next) => {
   try {
-    const categories = await category.find({});
-    let list = categories.map((x) => x._id);
+    const category = await categoryModel.find({});
+    let list = category.map((x) => x._id);
     if (list.length == 0) {
-      return res.status(200).json({ message: "Cant not found" });
+      throw new baseError(category,statusCode.BAD_REQUEST,errorList.FIND_ERROR);
     }
-    res.status(200).json({ category: categories });
+    reponseSuccess(res,category);
   } catch (error) {
     next(error);
   }
 };
 const getAllProduct = async (req, res) => {
   try {
-    const categories = req.body.category;
-    const listProduct = await product.findMany({ category: categories });
+    const category = req.body.category;
+    const listProduct = await productModel.findMany({ category: category });
     if (listProduct.length == 0) {
-      return res.status(200).json({ Message: "Cant not found" });
+      throw new baseError(categories,statusCode.BAD_REQUEST,errorList.FIND_ERROR);
     }
-    return res.status(200).json({ Product: listProduct });
+    reponseSuccess(res,listProduct);
   } catch (error) {
     next(error);
   }
 };
 const updateCategory = async (req, res,next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const opts = { session, new: true };
   try {
     const { name, newName } = req.body;
     await Promise.all(
-      category.findOneAndUpdate({ name: name }, { name: newName }),
-      product.updateMany({ category: name }, { category: newName })
+      categoryModel.findOneAndUpdate({ name: name }, { name: newName },opts),
+      productModel.updateMany({ category: name }, { category: newName },opts)
     );
-    return res.status(200).json({ message: { name: name, newName: newName } });
+    await session.commitTransaction();
+    reponseSuccess(res,{ name: name, newName: newName });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     next(error);
   }
 };

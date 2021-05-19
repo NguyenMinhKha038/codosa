@@ -13,7 +13,7 @@ reportRouter.post(
 );
 reportRouter.post(
   "/category",
-  auth.passportManager,
+  //auth.passportManager,
   auth.isManager,
   validate(reportValidate.checkReportCategory),
   reportController.reportCategory

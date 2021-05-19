@@ -1,37 +1,46 @@
-import user from "./user.model";
-import cart from "../cart/cart.model";
+import userModel from "./user.model";
+import cartModel from "../cart/cart.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import statusMiddleWare from "../utils/status";
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import { reponseSuccess } from "../error/baseResponese";
 import mongoose from "mongoose";
 const userRegister = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const options = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await user.findOne({ email: email });
+    const checkExits = await userModel.findOne({ email: email });
     if (checkExits) {
-      return res.status(403).json({ message: "Already exist" });
+      throw new baseError(
+        { name, email },
+        statusCode.ALREADY_EXITS,
+        errorList.ALREADY_EXITS
+      );
     }
-    const session = await mongoose.startSession();
-    session.startTransaction(); //start transaction
-    const options = { session };
+
     const hash = await bcrypt.hash(password, 10);
-    const userModel = new user({
+    const newUser = new userModel({
       name,
       password: hash,
       email,
       role: statusMiddleWare.permission.USER,
       status: statusMiddleWare.personStatus.ACTIVE,
     });
-    const users = await userModel.save(options);
+    newUser.save(options);
 
-    const cartModel = new cart({
-      userId: users._id,
+    const newCart = new cartModel({
+      userId: newUser._id,
       product: [],
       total: 0,
     });
-    await cartModel.save(options);
+    await newCart.save(options);
     await session.commitTransaction();
-    return res.status(201).json({ message: { name: name, email: email } });
+    reponseSuccess(res, { name, email });
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -43,37 +52,36 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let users = await user.findOne({ email: email });
+    let users = await userModel.findOne({ email: email });
     if (!users) {
-      return res.status(401).json({ message: "No such user found" });
+      throw new baseError(
+        { email, password },
+        statusCode.NOT_FOUND,
+        errorList.FIND_ERROR
+      );
     }
     await bcrypt.compare(password, users.password);
     let payload = {
       name: users.name,
       role: users.role,
-      email: email,
+      email: users.email,
       _id: users._id,
     };
     let token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    const err =new Error("ahihi do ngoc")
-    err.statusCode =401
-    return next(err)
-    return res.status(200).json({ token: token });
+    reponseSuccess(res, token);
   } catch (error) {
-    return res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
 const getInfo = async (req, res) => {
   try {
     const { name, role, email } = req.user;
-    return res.status(200).json({ Name: name, Role: role, Email: email });
+    reponseSuccess(res, { name, role, email });
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 };
-
-
 
 export default { userLogin, userRegister, getInfo };

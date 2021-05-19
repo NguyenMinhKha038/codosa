@@ -1,26 +1,29 @@
 import express from "express";
 import multer from "multer";
-import user from "../users/user.model";
-import staff from "../staffs/staff.model";
-import manager from "../storeManager/manager.model";
-import product from "../products/product.model";
-import category from "../category/category.model";
+import userModel from "../users/user.model";
+import staffModel from "../staffs/staff.model";
+import managerModel from "../storeManager/manager.model";
+import productModel from "../products/product.model";
+import categoryModel from "../category/category.model";
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import {reponseSuccess} from "../error/baseResponese";
 const addAvatar = async (req, res, next) => {
   try {
     const imgPath = "uploads/" + req.file.originalname;
-    const email = req.user.email;
-    const role = req.user.role;
-    if (email && role == 0) {
-      await user.findOneAndUpdate({ email: email }, { image: imgPath });
-      return res.status(200).json({ Message: imgPath });
+    const {email,role} = req.user;
+    if (role == 0) {
+      await userModel.findOneAndUpdate({ email: email }, { image: imgPath });
+      reponseSuccess(res,imgPath)
     }
-    if (email && role == 1) {
-      await staff.findOneAndUpdate({ email: email }, { image: imgPath });
-      return res.status(200).json({ Message: imgPath });
+    if (role == 1) {
+      await staffModel.findOneAndUpdate({ email: email }, { image: imgPath });
+      reponseSuccess(res,imgPath)
     }
-    if (email && role == 2) {
-      await manager.findOneAndUpdate({ email: email }, { image: imgPath });
-      return res.status(200).json({ Message: "Upload thành công" });
+    if (role == 2) {
+      await managerModel.findOneAndUpdate({ email: email }, { image: imgPath });
+      reponseSuccess(res,imgPath)
     }
   } catch (error) {
     next(error);
@@ -32,15 +35,15 @@ const addProductImage = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const products = req.body.name;
-    const categories = req.body.category;
+    const category= req.body.category;
     const img = req.files;
     const arrImage = img.map((x) => "uploads/" + x.originalname);
     await Promise.all(
-      product.findOneAndUpdate({ name: products }, { image: arrImage },option),
-      category.findOneAndUpdate({ name: categories }, { image: arrImage },option)
+      productModel.findOneAndUpdate({ name: products }, { image: arrImage },option),
+      categoryModel.findOneAndUpdate({ name: category }, { image: arrImage },option)
     );
     await session.commitTransaction();
-    return res.status(200).json({ Message: "Upload thành công" });
+    reponseSuccess(res,arrImage)
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

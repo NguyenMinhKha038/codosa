@@ -1,28 +1,27 @@
-import product from "../products/product.model";
-import cart from "../cart/cart.model";
-import order from "../order/order.model";
+import productModel from "../products/product.model";
+import cartModel from "../cart/cart.model";
+import orderModel from "../order/order.model";
 import statusMiddleWare from "../utils/status";
 import notification from "../notification/notification.model";
 import statusMiddleware from "../utils/status";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import {baseRes} from "../error/baseRes";
+import {reponseSuccess} from "../error/baseResponese";
 import mongoose from "mongoose";
 // CRUD order
 const createOrder = async (req, res, next) => {
   try {
-    const { _id } = req.user;
     const session = await mongoose.startSession();
     session.startTransaction(); //start transaction
     const opts = { session, new: true };
+    const { userId } = req.user;
     const { address, phone } = req.body;
     const carts = await cart
-      .findOne({ userId: _id })
+      .findOne({ userId: userId })
       .populate("product.productId");
     if (carts.product.length == 1) {
-      //return res.status(400).json({ Message: "Cart is Empty" });
-      throw new baseError("Cart",statusCode.NOT_FOUND,errorList.foundError)
+      throw new baseError("Cart",statusCode.NOT_FOUND,errorList.FIND_ERROR)
     } else {
       let total = 0;
       let orderInfo = [];
@@ -33,14 +32,14 @@ const createOrder = async (req, res, next) => {
           amount: value.amount,
           price: value.productId.price,
         });
-        await product.findOneAndUpdate(
+        await productModel.findOneAndUpdate(
           { _id: value.productId._id },
           { amount: value.productId.amount - value.amount },
           opts
         );
       });
-      const orders = new order({
-        userId: _id,
+      const orders = new orderModel({
+        userId: userId,
         products: orderInfo,
         status: statusMiddleWare.orderStatus.WAITING,
         total,
@@ -54,11 +53,10 @@ const createOrder = async (req, res, next) => {
       });
       await Promise.all([
         notifications.save(opts),
-        cart.findOneAndUpdate({ userId: _id }, { product: [] }, opts),
+        cartModel.findOneAndUpdate({ userId: userId }, { product: [] }, opts),
       ]);
       await session.commitTransaction();
-      //return res.status(200).json({ Message: orders });
-      baseRes(res,statusCode.Created,orders,"Successful")
+      reponseSuccess(res,orders)
     }
   } catch (error) {
     await session.abortTransaction();
@@ -69,26 +67,24 @@ const createOrder = async (req, res, next) => {
 
 const getOrder = async (req, res, next) => {
   try {
-    const _id = req.user._id;
-    const orders = await order.find({ id: _id });
+    const userId = req.user._id;
+    const orders = await orderModel.find({ userId: userId });
     if (!orders) {
-      //return res.status(400).json({ Message: "No such order find" });
-      throw new baseError(_id,statusCode.NOT_FOUND,errorList.foundError)
+      throw new baseError(userId,statusCode.NOT_FOUND,errorList.FIND_ERROR)
     } 
-    baseRes(res,statusCode.Created,orders,"Successful")
-    //return res.status(400).json({ Message: orders });
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }
 };
 const getUserOrder = async (req, res) => {
   try {
-    const email = req.body.email;
-    const orders = await order.find({ id: email });
+    const userId = req.body.userId;
+    const orders = await order.find({ userId: userId });
     if (!orders) {
-      throw new baseError(_id,statusCode.NOT_FOUND,errorList.foundError)
+      throw new baseError(_id,statusCode.NOT_FOUND,errorList.FIND_ERROR)
     }
-    baseRes(res,statusCode.Created,orders,"Successful")
+    reponseSuccess(res,orders)
     
   } catch (error) {
     next(error);
@@ -98,16 +94,16 @@ const getUserOrder = async (req, res) => {
 const updateOrder = async (req, res, next) => {
   try {
     const { orderId, address } = req.body;
-    const orders = await order.findOne({ _id: orderId });
+    const orders = await orderModel.findOne({ _id: orderId });
     const status = orders.status;
     if (status > 2) {
-      throw new baseError(orders,statusCode.NOT_FOUND,errorList.updateOrderFail)
+      throw new baseError(orders,statusCode.NOT_FOUND,errorList.UPDATE_ORDER_FAILD)
     }
-    await order.findOneAndUpdate(
-      { _id: id },
+    await orderModel.findOneAndUpdate(
+      { _id: orderId },
       { address: address, updateDay: Date.now() }
     );
-    return res.status(200).json({ address: address });
+    reponseSuccess(res,{ orderId, address })
   } catch (error) {
     next(error);
   }
@@ -115,35 +111,35 @@ const updateOrder = async (req, res, next) => {
 
 const userDeleteOrder = async (req, res, next) => {
   try {
-    const email = req.user.email;
-    const id = req.body._id;
-    const orders = await order.findOne({ _id: id, id: email });
+    const userId = req.user._id;
+    const orderId = req.body._id;
+    const orders = await orderModel.findOne({ _id: orderId, userId: userId });
     const status = orders.status;
     if (status != 1) {
-      return res.status(400).json({ Message: "Order is handing, can't delete" });
+      throw new baseError(email,statusCode.BAD_REQUEST,errorList.DELETE_ORDER_FAILD);
     }
-    await order.findOneAndUpdate(
-      { _id: id, id: email },
+    await orderModel.findOneAndUpdate(
+      { _id: orderId, userId: userId },
       { status: statusMiddleWare.orderStatus.DELETE }
     );
-    return res.status(200).json({ Message: "Delete Successful" });
+    reponseSuccess(res,orderId)
   } catch (error) {
     next(error);
   }
 };
 const adminDeleteOrder = async (req, res) => {
   try {
-    const id = req.body._id;
-    const orders = await order.findOne({ _id: id });
+    const orderId = req.body._id;
+    const orders = await orderModel.findOne({ _id: orderId });
     const status = orders.status;
     if (status == 4) {
-      return res.status(400).json({ Message: "Order is finsh, can't delete" });
+      throw new baseError(orderId,statusCode.BAD_REQUEST,errorList.DELETE_ORDER_FAILD);
     }
-    await order.findOneAndUpdate(
-      { _id: id },
+    await orderModel.findOneAndUpdate(
+      { _id: orderId },
       { status: statusMiddleWare.orderStatus.DELETE }
     );
-    return res.status(200).json({ Message: "Delete successful" });
+    reponseSuccess(res,orderId)
   } catch (error) {
     next(error);
   }
@@ -153,17 +149,17 @@ const adminDeleteOrder = async (req, res) => {
 
 const processingUpdate = async (req, res, next) => {
   try {
-    const _id = req.body._id;
-    const orders = await order.findOne({ _id: _id });
+    const orderId = req.body._id;
+    const orders = await orderModel.findOne({ _id: orderId });
     const status = orders.status;
     if (status == 1) {
-      await order.findOneAndUpdate(
-        { _id: _id },
+      await orderModel.findOneAndUpdate(
+        { _id: orderId },
         { status: statusMiddleWare.orderStatus.PROCESSING }
       );
-      return res.status(200).json({ Message: "Update Sucessful" });
+      reponseSuccess(res,orderId)
     }
-    return res.status(400).json({ Message: "This Order can not processing" });
+    throw new baseError(orderId,statusCode.BAD_REQUEST,errorList.UPDATE_PROCESSING_FAILD);
   } catch (error) {
     next(error);
   }
@@ -172,19 +168,19 @@ const processingUpdate = async (req, res, next) => {
 const shippingUpdate = async (req, res) => {
   try {
     const orderId = req.body._id;
-    const orders = await order.findOne({ _id: orderId });
+    const orders = await orderModel.findOne({ _id: orderId });
     const status = orders.status;
     if (status == 2) {
-      await order.findOneAndUpdate(
+      await orderModel.findOneAndUpdate(
         { _id: orderId },
         {
           status: statusMiddleWare.orderStatus.SHIPPING,
           deliveryDay: Date.now(),
         }
       );
-      return res.status(200).json({ Message: "Update Sucessful" });
+      reponseSuccess(res,orderId);
     }
-    return res.status(400).json({ Message: "This Order can not processing" });
+    throw new baseError(orderId,statusCode.BAD_REQUEST,errorList.UPDATE_SHIPPING_FAILD);
   } catch (error) {
     next(error);
   }
@@ -192,17 +188,17 @@ const shippingUpdate = async (req, res) => {
 
 const finishUpdate = async (req, res, next) => {
   try {
-    const id = req.body._id;
-    const orders = await order.findOne({ _id: id });
+    const orderId = req.body._id;
+    const orders = await orderModel.findOne({ _id: orderId });
     const status = orders.status;
     if (status == 3) {
-      await order.findOneAndUpdate(
-        { _id: id },
+      await orderModel.findOneAndUpdate(
+        { _id: orderId },
         { status: statusMiddleWare.orderStatus.FINISH, finishDay: Date.now() }
       );
-      return res.status(200).json({ Message: "Update Sucessful" });
+      reponseSuccess(res,orderId)
     }
-    return res.status(400).json({ Message: "This Order can not processing" });
+    throw new baseError(orderId,statusCode.BAD_REQUEST,errorList.UPDATE_FINISH_FAILD)
   } catch (error) {
     next(error);
   }
@@ -211,19 +207,19 @@ const finishUpdate = async (req, res, next) => {
 //get Order
 const getWaitingOrder = async (req, res, next) => {
   try {
-    const orders = await order.find({ status: 1 });
-    return res.status(200).json({ Message: orders });
+    const orders = await orderModel.find({ status: 1 });
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }
 };
 const getProcessingOrder = async (req, res, next) => {
   try {
-    const orders = await order.find({ status: 2 });
+    const orders = await orderModel.find({ status: 2 });
     if (!orders) {
-      return res.status(400).json({ Message: "No such order found" });
+      throw new baseError("processing",statusCode.BAD_REQUEST,errorList.FIND_ERROR)
     }
-    return res.status(200).json({ orders: orders });
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }
@@ -231,8 +227,8 @@ const getProcessingOrder = async (req, res, next) => {
 
 const getShippingOrder = async (req, res, next) => {
   try {
-    const orders = await order.find({ status: 3 });
-    return res.status(200).json({ Message: orders });
+    const orders = await orderModel.find({ status: 3 });
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }
@@ -240,8 +236,11 @@ const getShippingOrder = async (req, res, next) => {
 
 const getFinishOrder = async (req, res, next) => {
   try {
-    const orders = await order.find({ status: 4 });
-    return res.status(200).json({ Message: orders });
+    const orders = await orderModel.find({ status: 4 });
+    if (!orders) {
+      throw new baseError("processing",statusCode.BAD_REQUEST,errorList.FIND_ERROR)
+    }
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }
@@ -249,8 +248,11 @@ const getFinishOrder = async (req, res, next) => {
 
 const getDeleteOrder = async (req, res, next) => {
   try {
-    const orders = await order.find({ status: 0 });
-    return res.status(200).json({ Message: orders });
+    const orders = await orderModel.find({ status: 0 });
+    if (!orders) {
+      throw new baseError("processing",statusCode.BAD_REQUEST,errorList.FIND_ERROR)
+    }
+    reponseSuccess(res,orders)
   } catch (error) {
     next(error);
   }

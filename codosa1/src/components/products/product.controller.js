@@ -1,22 +1,26 @@
 import categoryModel from "../category/category.model";
-import product from "../products/product.model";
+import productModel from "../products/product.model";
 import statusMiddleWare from "../utils/status";
 import mongoose from "mongoose";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import {baseRes} from "../error/baseRes";
+import { reponseSuccess } from "../error/baseResponese";
 const addProduct = async (req, res, next) => {
   try {
     const session = await mongoose.startSession();
     session.startTransaction(); //start transaction
     const opts = { session, new: true };
     const { name, amount, price, category, description } = req.body;
-    const checkProduct = await product.findOne({ name: name }, opts);
+    const checkProduct = await productModel.findOne({ name: name }, opts);
     if (checkProduct) {
-      return res.status(403).json({ message: "Already exist " });
+      throw new baseError(
+        { name, amount, price, category, description },
+        statusCode.ALREADY_EXITS,
+        errorList.ALREADY_EXITS
+      );
     }
-    let products = new product({
+    let newProduct = new productModel({
       name,
       amount,
       price,
@@ -26,23 +30,15 @@ const addProduct = async (req, res, next) => {
     });
     const checkCategory = await categoryModel.find({ name: category }, opts);
     if (!checkCategory) {
-      let categories = new categoryModel({
+      let newCategory = new categoryModel({
         name: category,
         status: statusMiddleWare.categoryStatus.ACTIVE,
       });
-      await categories.save(opts);
+      await newCategory.save(opts);
     }
-    await products.save(opts);
+    await newProduct.save(opts);
     await session.commitTransaction();
-    // return res.status(200).json({
-    //   message: {
-    //     name,
-    //     amount,
-    //     price,
-    //     description,
-    //   },
-    // });
-    baseRes(res,statusCode.Created,orders,"Successful")
+    reponseSuccess(res, newProduct);
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -53,32 +49,33 @@ const addProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const name = req.body.name;
-    const products = await product.find({ name: name });
+    const products = await productModel.find({ name: name });
     if (products) {
-      // return res.status(200).json({
-      //   name: products[0].name,
-      //   amount: products[0].amount,
-      //   price: products[0].price,
-      // });
-      baseRes(res,statusCode.Created,products,"Successful")
+      reponseSuccess(res, {
+        products,
+      });
     }
-    throw new baseError(name,statusCode.NOT_FOUND,errorList.foundError);
+    throw new baseError(name, statusCode.NOT_FOUND, errorList.FIND_ERROR);
   } catch (error) {
     next(errer);
   }
 };
 const deleteProduct = async (req, res, next) => {
   try {
-    const name = req.body.name;
-    const checkExits = await product.findOne({ name: name });
+    const productName = req.body.name;
+    const checkExits = await productModel.findOne({ name: productName });
     if (!checkExits) {
-      throw new baseError(name,statusCode.NOT_FOUND,errorList.foundError);
+      throw new baseError(
+        productName,
+        statusCode.NOT_FOUND,
+        errorList.FIND_ERROR
+      );
     }
-    await product.findOneAndUpdate(
-      { name: name },
+    await productModel.findOneAndUpdate(
+      { name: productName },
       { status: statusMiddleWare.productStatus.DISABLE }
     );
-    baseRes(res,statusCode.Created,null,"Successful")
+    reponseSuccess(res, productName);
   } catch (error) {
     next(error);
   }
@@ -89,20 +86,18 @@ const updateProduct = async (req, res, next) => {
   const opts = { session, new: true };
   try {
     const { name, amount, price, newName, productId } = req.body;
-    const checkExits = await product.findOne({ _id: productId },opts);
+    const checkExits = await productModel.findOne({ _id: productId }, opts);
     if (!checkExits) {
-      throw new baseError(name,statusCode.NOT_FOUND,errorList.foundError);
+      throw new baseError(name, statusCode.NOT_FOUND, errorList.FIND_ERROR);
     }
-    await product.findOneAndUpdate(
+    await productModel.findOneAndUpdate(
       { _id: productId },
       { name: newName, amount: amount, price: price },
       opts
     );
     await session.commitTransaction();
-    // return res
-    //   .status(200)
-    //   .json({ message: { name: newName, amount: amount, price: price } });
-    baseRes(res,statusCode.Created,{ name: newName, amount: amount, price: price},"Successful")
+
+    reponseSuccess(res, { newName, amount, price });
   } catch (error) {
     next(error);
   }

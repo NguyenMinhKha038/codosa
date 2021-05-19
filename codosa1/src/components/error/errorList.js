@@ -1,13 +1,16 @@
 const errorList = {
-  pageNotFound: "Page Not Found",
-  staffNotFound: "Staff Not Found", //Trả về khi một Resouce vừa được tạo thành công.
-  managerNotFound: "Manager Not Found", //Trả về khi Resource xoá thành công.
-  deleteFaild: "Delete Faild",
-  updateFaild: "Update Faild",
-  foundError: "Can not found",
-  updateOrderFail:"Order is being delivery or finish, cant not be update",
-  already_Exits:"Already exist",
-  Unauthorized:"Unauthorized"
+  PAGE_NOT_FOUND: "Page Not Found",
+  FIND_ERROR: "Can not found",
+  UPDATE_ORDER_FAILD:"Order is being delivery or finish, cant not be update",
+  ALREADY_EXITS:"Already exist",
+  Unauthorized:"Unauthorized",
+  DELETE_ORDER_FAILD:"Order is handing, can't delete",
+  DELETE_ORDER_FAILD:"Order is finsh, can't delete",
+  UPDATE_PROCESSING_FAILD:"This Order can not update processing",
+  UPDATE_SHIPPING_FAILD: "This Order can not processing",
+  UPDATE_FINISH_FAILD: "This Order can not processing",
+  CREATE_FAILD:"Create Faild",
+  CART_EMPTY:"Cart is Emty"
 };
 
 export { errorList };
