@@ -3,7 +3,6 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import managerController from "./manager.controller";
 import managerValidate from "./manager.validate";
-import errorHandller from "../utils/errorHandller";
 const managerRouter = Router();
 
 managerRouter.post(
@@ -19,7 +18,7 @@ managerRouter.post(
 );
 
 managerRouter.delete(
-  "/deleteuser",
+  "/delete-user",
   auth.passportManager,
   auth.isManager,
   validate(managerValidate.checkEmail),
@@ -69,4 +68,5 @@ managerRouter.post(
   validate(managerValidate.checkEmail),
   managerController.getStaff
 );
+
 export default managerRouter;

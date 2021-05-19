@@ -6,6 +6,40 @@ Sử dụng Ref ok
 Error Handller ok
 Sửa lại addCart ok
 
-phân trang
+phân trang ok
 sửa lại chức năng order,lấy dữ liệu từ cart ok
 sử lý lỗi cho mỗi Validate
+ 
+
+clean code
+
+
+
+baseService {
+   create, find....
+}
+ category.service.js  {
+   ...baseService,
+  findWith
+ }
+
+Controller {try, catch} ok
+BaseResponse {   ok
+  statusCode,
+  data,
+  message  
+}
+BaseError extend Error {
+  statusCode,
+  errorCode,
+  message
+}
+
+throw new BaseErrror({statusCode: 400, error: errorList.NoExistUser})
+
+{
+  statusCode: 400,
+  errorCode: errorList.NoExistUser.errorCode,
+}
+
+tach' route

@@ -3,11 +3,8 @@ import staff from "../staffs/staff.model";
 import manager from "../storeManager/manager.model";
 import product from "../products/product.model";
 import passport from "passport";
-import {users,staffs,managers} from "./passport";
+import { users, staffs, managers } from "./passport";
 import category from "../category/category.model";
-import dotenv from "dotenv";
-dotenv.config();
-//import jwt from "jsonwebtoken";
 
 const passportUser = (req, res, next) => {
   return passport.authenticate("user", { session: false })(req, res, next);
@@ -24,84 +21,115 @@ const isStaff = async (req, res, next) => {
   if (role && role == 1) {
     return next();
   } else {
-    res.status(401).json({ message: "Must be Staff"});
+    res.status(401).json({ message: "Must be Staff" });
   }
 };
 const isUser = async (req, res, next) => {
-  const role = req.user.role;
-  if (role && role == 0) {
-    next();
-  } else {
-    res.status(401).json({ Message: "Must be User" });
+  try {
+    const role = req.user.role;
+    if (role && role == 0) {
+      next();
+    } else {
+      res.status(401).json({ Message: "Must be User" });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 const isManager = async (req, res, next) => {
-  const role = req.user.role;
-  if (role && role == 2) {
-    return next();
-  } else {
-    res.status(401).json({ message: req.user});
+  try {
+    const role = req.user.role;
+    if (role && role == 2) {
+      return next();
+    } else {
+      res.status(401).json({ message: req.user });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
 const checkUserExist = async (req, res, next) => {
-  const { email, name, password } = req.body; //ok
-  const users = await user.findOne({ email: email });
-  if (users) {
-    res.status(403).json({ message: "Đã tồn tại" });
-  } else {
-    next();
+  try {
+    const { email, name, password } = req.body; //ok
+    const users = await user.findOne({ email: email });
+    if (users) {
+      res.status(403).json({ message: "Đã tồn tại" });
+    } else {
+      next();
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
 const checkStaffExist = async (req, res, next) => {
-  const email = req.body.email;
-  const staffs = await staff.findOne({ email: email });
-  if (staffs) {
-    res.status(403).json({ message: "Đã tồn tại" });
+  try {
+    const email = req.body.email;
+    const staffs = await staff.findOne({ email: email });
+    if (staffs) {
+      res.status(403).json({ message: "Đã tồn tại" });
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 };
 const checkManagerExist = async (req, res, next) => {
-  const { email, name, password } = req.body;
+  try {
+    const { email, name, password } = req.body;
 
-  const managers = await manager.findOne({ email: email });
+    const managers = await manager.findOne({ email: email });
 
-  if (managers) {
-    res.status(403).json({ message: "Đã tồn tại" });
+    if (managers) {
+      res.status(403).json({ message: "Đã tồn tại" });
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 };
 
 const checkAuth = async (req, res, next) => {
-  const role = req.user.role;
-    if (role==1||role==2) {
+  try {
+    const role = req.user.role;
+    if (role == 1 || role == 2) {
       next();
     } else {
       res.status(401).json({ message: req.user });
     }
-  
+  } catch (error) {
+    next(error);
+  }
 };
 const checkExitsProduct = async (req, res, next) => {
-  const name = req.body.name;
-  const products = await product.findOne({ name: name });
-  if (products) {
-    res.status(403).json({ message: "Đã tồn tại" });
+  try {
+    const name = req.body.name;
+    const products = await product.findOne({ name: name });
+    if (products) {
+      res.status(403).json({ message: "Đã tồn tại" });
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 };
 const checkExitsCategory = async (req, res, next) => {
-  const name = req.body.category;
-  const categories = await category.findOne({ name: name });
-  if (categories) {
-    res.status(403).json({ message: "Đã tồn tại" });
+  try {
+    const name = req.body.category;
+    const categories = await category.findOne({ name: name });
+    if (categories) {
+      res.status(403).json({ message: "Đã tồn tại" });
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 };
 const checkUpdateCart = async (req, res, next) => {
-  const productName = req.body.productName;
-  const amount = req.body.amount;
   try {
+    const productName = req.body.productName;
+    const amount = req.body.amount;
     const products = await product.findOne({ name: productName });
 
     if (!products) {
@@ -130,5 +158,5 @@ export default {
   checkUpdateCart,
   passportUser,
   passportStaff,
-  passportManager
+  passportManager,
 };

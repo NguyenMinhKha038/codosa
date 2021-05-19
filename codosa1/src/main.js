@@ -1,4 +1,5 @@
 import express from "express";
+dotenv.config();
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
@@ -16,9 +17,10 @@ import database from "./config/connectDb";
 import notificationRoute from "./components/notification/notification.route";
 import swaggerDocument from "./components/utils/swagger.json";
 import http from "http";
+import auth from "./components/utils/auth";
 
 database();
-dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -28,10 +30,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.server = http.createServer(app);
 app.use("/user", userRoute);
-app.use("/staff", staffRoute);
-app.use("/manager", managerRoute);
-app.use("/product", productRoute);
-app.use("/category", categoryRoute);
+app.use("/staff", auth.passportStaff, auth.isStaff, staffRoute);
+app.use("/manager", auth.passportManager, auth.isManager, managerRoute);
+app.use("/product", auth.passportStaff, auth.isStaff, productRoute);
+app.use("/category", auth.passportStaff, auth.isStaff, categoryRoute);
 app.use("/", searchRoute);
 app.use("/image", imageRoute);
 app.use("/order", orderRoute);
@@ -42,9 +44,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
-  error.status = 404;
+  error.httpCode = 404;
+  console.log(error);
   next(error);
 });
+
 app.use((error, req, res, next) => {
   if (error.details) {
     error.details.body.forEach((element) => {
@@ -56,14 +60,24 @@ app.use((error, req, res, next) => {
         message: error.message || "Internal Server Error",
       },
     });
-  }else{
-    res.status(error.status || 500).json({
+  } else {
+    res.status(error.statusCode || 500).json({
       error: {
         status: error.statusCode || 500,
         message: error.message || "Internal Server Error",
       },
     });
   }
+});
+app.use((error, req, res, next) => {
+  res.status(error.httpCode || 500).json({
+    error: {
+      status: error.httpCode || 500,
+      message: error.message || "Internal Server Error",
+      name:error.name,
+      description:error.description
+    },
+  });
 });
 
 const PORT = process.env.PORT || 8088;

@@ -1,10 +1,8 @@
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../utils/auth";
-import validates from "../utils/validate";
 import product from "../products/product.controller";
 import productValidate from "./product.validate";
-import errorHandller from "../utils/errorHandller";
 
 const productRouter = Router();
 productRouter.post(
@@ -35,5 +33,7 @@ productRouter.post(
   validate(productValidate.checkNameProduct),
   product.getProduct
 );
+
+
 
 export default productRouter;

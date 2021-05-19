@@ -2,16 +2,17 @@ import staff from "../staffs/staff.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import user from "../users/user.model";
-import dotenv from "dotenv";
-import auth from "../utils/auth";
 import statusMiddleWare from "../utils/status";
-dotenv.config();
-const staffRegister = async (req, res) => {
-  const { email, name, password } = req.body;
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import {baseRes} from "../error/baseRes";
+const staffRegister = async (req, res, next) => {
   try {
+    const { email, name, password } = req.body;
     const checkExits = await staff.findOne({ email: email });
     if (checkExits) {
-      res.status(403).json({ message: "Already exist" });
+      throw new baseError(name,statusCode.ALREADY_EXITS,errorList.already_Exits);
     }
     const hash = await bcrypt.hash(password, 10);
     let staffs = await new staff({
@@ -22,18 +23,18 @@ const staffRegister = async (req, res) => {
       status: statusMiddleWare.permission.USER,
     });
     await staffs.save();
-    res.status(200).json({ message: staffs });
+    baseRes(res,statusCode.Created,staffs,"Successful")
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
 const staffLogin = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
     let staffs = await staff.findOne({ email: email });
     if (!staffs) {
-      res.status(401).json({ message: "No such user found" });
+      throw new baseError(email,statusCode.NOT_FOUND,errorList.foundError);
     } else {
       await bcrypt.compare(password, staffs.password);
       let payload = {
@@ -43,64 +44,64 @@ const staffLogin = async (req, res) => {
       };
       let token = jwt.sign(payload, process.env.privateKey);
       req.user = token;
-      res.status(200).json({ token: token });
+      baseRes(res,statusCode.OK,token,"Successful")
     }
   } catch (error) {
-    res.status(400).json({ message: "Password incorrect" });
+    next(error);
   }
 };
 
 const deleteUser = async (req, res, next) => {
-  const email = req.body.email;
-  const checkExits = await user.findOne({ email: email });
-  if (!checkExits) {
-    req.status(400).json({ message: "No such user found" });
-  }
   try {
+    const email = req.body.email;
+    const checkExits = await user.findOne({ email: email });
+    if (!checkExits) {
+      throw new baseError(email,statusCode.NOT_FOUND,errorList.foundError);
+    }
     await user.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
-    res.status(204).json({ message: "Delete successful" });
+    baseRes(res,statusCode.OK,email,"Successful")
   } catch (error) {
     next(error);
   }
 };
 
-const updateUser = async (req, res) => {
-  const { email, name, password } = req.body;
-  const hash = await bcrypt.hash(password, 10);
+const updateUser = async (req, res, next) => {
   try {
+    const { email, name, password } = req.body;
+    const hash = await bcrypt.hash(password, 10);
     await user.findOneAndUpdate(
       { email: email },
       { name: name, password: hash }
     );
-    res.status(200).json({ message: "Update successful" });
+    baseRes(res,statusCode.OK,{ email, name, password },"Successful")
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 
 const getUser = async (req, res, next) => {
-  const email = req.body.email;
   try {
+    const email = req.body.email;
     const users = await user.findOne({ email: email });
     if (users) {
-      res.status(200).json({ Info: users });
+      baseRes(res,statusCode.OK,users,"Successful")
     } else {
-      res.status(400).json({ Error: "User not found" });
+      throw new baseError(email,statusCode.NOT_FOUND,errorList.foundError);
     }
   } catch (error) {
     next(error);
   }
 };
 
-const getInfo = async (req, res) => {
+const getInfo = async (req, res, next) => {
   try {
     const { email, name, role } = req.user;
-    res.status(200).json({ Name: name, Role: role, Email: email });
+    baseRes(res,statusCode.OK,{ email, name, role },"Successful")
   } catch (error) {
-    res.status(400).json({ Error: error });
+    next(error);
   }
 };
 export default {

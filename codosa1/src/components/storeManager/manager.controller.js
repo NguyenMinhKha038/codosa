@@ -5,13 +5,17 @@ import manager from "./manager.model";
 import user from "../users/user.model";
 import staff from "../staffs/staff.model";
 import statusMiddleWare from "../utils/status";
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import {baseRes} from "../error/baseRes";
 
 const managerRegister = async (req, res, next) => {
-  const { email, name, password } = req.body;
   try {
+    const { email, name, password } = req.body;
     const checkExits = await manager.findOne({ email: email });
     if (checkExits) {
-      res.status(403).json({ message: "Already exist" });
+      throw new baseError(name,statusCode.ALREADY_EXITS,errorList.already_Exits);
     }
     const hash = await bcrypt.hash(password, 10);
     let managers = await new manager({
@@ -21,110 +25,107 @@ const managerRegister = async (req, res, next) => {
       role: statusMiddleWare.permission.MANAGER,
       status: statusMiddleWare.personStatus.ACTIVE,
     });
-
     await managers.save();
-    res.status(200).json({ message: { name: name, email: email } });
+    baseRes(res,statusCode.Created,{email, name},"Successful")
   } catch (err) {
     next(error);
   }
 };
 
 const managerLogin = async (req, res, next) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
     let managers = await manager.findOne({ email: email });
     if (!managers) {
-      res.status(401).json({ msg: "No such user found" });
-    } else {
-      await bcrypt.compare(password, managers.password);
-      let payload = { name: managers.name, role: managers.role, email: email };
-      let token = jwt.sign(payload, process.env.privateKey);
-      req.user = token;
-      res.status(200).json({ token: token });
+     throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
     }
+    await bcrypt.compare(password, managers.password);
+    let payload = { name: managers.name, role: managers.role, email: email };
+    let token = jwt.sign(payload, process.env.privateKey);
+    req.user = token;
+    //return res.status(200).json({ token: token });
+    baseRes(res,statusCode.OK,token,"Successful")
   } catch (error) {
     next(error);
   }
 };
 
 const deleteUser = async (req, res, next) => {
-  const email = req.body.email;
-  const checkExits = await user.findOne({ email: email });
-  if (!checkExits) {
-    res.status(400).json({ message: "No such user found" });
-  }
   try {
+    const email = req.body.email;
+    const checkExits = await user.findOne({ email: email });
+    if (!checkExits) {
+      throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
+    }
     await user.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
-    res.status(204).json({ message: "Successful" });
+    baseRes(res,statusCode.OK,email,"Successful")
   } catch (error) {
     next(error);
   }
 };
 const deleteStaff = async (req, res, next) => {
-  const email = req.body.email;
-  const checkExits = await staff.findOne({ email: email });
-  if (!checkExits) {
-    req.status(400).json({ message: "No such user found!" });
-  }
   try {
+    const email = req.body.email;
+    const checkExits = await staff.findOne({ email: email });
+    if (!checkExits) {
+      throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
+    }
     await staff.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
-    res.status(200).json({ message: "Successful" });
+    baseRes(res,statusCode.OK,email,"Successful")
   } catch (error) {
     next(error);
   }
 };
 const updateUser = async (req, res, next) => {
-  const { email, name, password } = req.body;
-  const findUser = user.findOne({ email: email });
-  if (findUser) {
-    const hash = await bcrypt.hash(password, 10);
-    try {
+  try {
+    const { email, name, password } = req.body;
+    const findUser = user.findOne({ email: email });
+    if (findUser) {
+      const hash = await bcrypt.hash(password, 10);
       await user.findOneAndUpdate(
         { email: email },
         { name: name, password: hash }
       );
-      res.status(200).json({ message: "Update successful" });
-    } catch (error) {
-      next(error);
+      baseRes(res,statusCode.OK,{email, name},"Successful")
     }
-  } else {
-    res.status(400).json({ message: "User not found" });
+    throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
+  } catch (error) {
+    next(error);
   }
 };
 const updateStaff = async (req, res, next) => {
-  const { email, name, password } = req.body;
+  try {
+    const { email, name, password } = req.body;
 
-  const findStaff = staff.findOne({ email: email });
-  if (findStaff) {
-    const hash = await bcrypt.hash(password, 10);
-    try {
+    const findStaff = staff.findOne({ email: email });
+    if (findStaff) {
+      const hash = await bcrypt.hash(password, 10);
+
       await staff.findOneAndUpdate(
         { email: email },
         { name: name, password: hash }
       );
-      res.status(200).json({ message: "Update successful" });
-    } catch (error) {
-      next(error);
+      baseRes(res,statusCode.OK,{email, name},"Successful")
     }
-  } else {
-    res.status(400).json({ message: "User not found" });
+    throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
+  } catch (error) {
+    next(error);
   }
 };
 const getUser = async (req, res, next) => {
-  const email = req.body.email; //ok
-
   try {
+    const email = req.body.email; //ok
     const users = await user.findOne({ email: email });
     if (users) {
-      res.status(200).json({ Info: users });
+      baseRes(res,statusCode.OK,users,"Successful")
     } else {
-      res.status(400).json({ Error: "User not found" });
+      throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
     }
   } catch (error) {
     next(error);
@@ -132,14 +133,13 @@ const getUser = async (req, res, next) => {
 };
 
 const getStaff = async (req, res, next) => {
-  const email = req.body.email; //ok
-
   try {
+    const email = req.body.email; //ok
     const staffs = await staff.findOne({ email: email });
     if (staffs) {
-      res.status(200).json({ Info: staffs });
+      baseRes(res,statusCode.OK,staffs,"Successful")
     } else {
-      res.status(400).json({ err: "User not found" });
+      throw new baseError(email,statusCode.BAD_REQUEST,errorList.foundError);
     }
   } catch (error) {
     next(error);
@@ -148,7 +148,7 @@ const getStaff = async (req, res, next) => {
 const getInfo = async (req, res, next) => {
   try {
     const { name, role, email } = req.user;
-    res.status(200).json({ Name: name, Role: role, Email: email });
+    baseRes(res,statusCode.OK,{ name, role, email },"Successful")
   } catch (error) {
     next(error);
   }

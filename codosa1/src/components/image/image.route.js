@@ -10,14 +10,12 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-
 const upload = multer({ storage: storage });
 const imageRouter = Router();
-
 imageRouter.post("/avatar", upload.single("image"), imageController.addAvatar);
 imageRouter.post(
   "/product",
-  auth.checkAuth,
+  auth.isStaff,
   upload.array("imgArray", 10),
   imageController.addProductImage
 );

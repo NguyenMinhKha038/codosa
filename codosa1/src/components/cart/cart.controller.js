@@ -1,28 +1,26 @@
 import cart from "./cart.model";
 import productModel from "../products/product.model";
-import mongoose from "mongoose";
-import cartValidate from "./cart.validate";
+
 
 const getCart = async (req, res, next) => {
-  const id = req.user._id;
   try {
+    const id = req.user._id;
     const carts = await cart
       .findOne({ userId: id })
       .populate("product.productId");
     if (!carts) {
-      res.status(400).json({ Message: "Cart is Emty" });
+      return res.status(400).json({ Message: "Cart is Emty" });
     } else {
-      res.status(200).json({ Cart: carts.product });
+      return res.status(200).json({ Cart: carts.product });
     }
   } catch (error) {
     next(error);
   }
 };
 const addCart = async (req, res, next) => {
-  const { product, phone, address } = req.body;
-  const { email, _id } = req.user;
-  console.log(typeof product);
   try {
+    const { product} = req.body;
+    const { email, _id } = req.user;
     for (const value of product) {
       const checkExits = await productModel
         .findOne({ _id: value.productId })
@@ -35,13 +33,15 @@ const addCart = async (req, res, next) => {
         return res
           .status(400)
           .json({ message: checkExits.name + " Out of stock " });
-        
+      }else if(value.amount>checkExits.amount){
+        return res
+          .status(400)
+          .json({ message: checkExits.name + " Exceed the number of existence " });
       } 
-     
     }
     await cart.findOneAndUpdate(
       { userId: _id },
-      { product: product, phone: phone, address: address }
+      { product: product }
     );
     return res.status(200).json({ cart: product });
   } catch (error) {

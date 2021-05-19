@@ -1,6 +1,8 @@
-import product from "../products/product.model";
 import order from "../order/order.model";
-import category from "../category/category.model";
+import { baseError } from "../error/baseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+import {baseRes} from "../error/baseRes";
 
 const reportProduct = async (req, res, next) => {
   try {
@@ -16,7 +18,7 @@ const reportProduct = async (req, res, next) => {
         $unwind: "$products",
       },
       {
-        $addFields:{"buyPrice":"$products.price"}
+        $addFields: { buyPrice: "$products.price" },
       },
       {
         $group: {
@@ -25,21 +27,17 @@ const reportProduct = async (req, res, next) => {
           revenue: {
             $sum: { $multiply: ["$products.price", "$products.amount"] },
           },
-          
-          
-          
         },
       },
-      
+
       {
         $project: {
           productId: "$_id",
           amount: "$amount",
           revenue: "$revenue",
-          
         },
       },
-      
+
       {
         $lookup: {
           from: "products",
@@ -48,13 +46,11 @@ const reportProduct = async (req, res, next) => {
           as: "product",
         },
       },
-     
-      
     ]);
-    if(!report){
-      res.status(400).json({ message: "No orders" });
+    if (report.length ==0) {
+      throw new baseError("Product",statusCode.NOT_FOUND,errorList.foundError,true);
     }
-    res.status(200).json({ Result: report });
+    return res.status(200).json({ Result: report });
   } catch (error) {
     next(error);
   }
@@ -62,7 +58,7 @@ const reportProduct = async (req, res, next) => {
 
 const reportCategory = async (req, res, next) => {
   try {
-    const {fromDay, toDay } = req.body;
+    const { fromDay, toDay } = req.body;
     const report = await order.aggregate([
       {
         $match: {
@@ -73,7 +69,7 @@ const reportCategory = async (req, res, next) => {
       {
         $unwind: "$products",
       },
-      
+
       {
         $group: {
           _id: "$products.productId",
@@ -81,8 +77,6 @@ const reportCategory = async (req, res, next) => {
           revenue: {
             $sum: { $multiply: ["$products.price", "$products.amount"] },
           },
-          
-          
         },
       },
       {
@@ -90,7 +84,6 @@ const reportCategory = async (req, res, next) => {
           productId: "$_id",
           amount: "$amount",
           revenue: "$revenue",
-          
         },
       },
       {
@@ -106,17 +99,16 @@ const reportCategory = async (req, res, next) => {
         $group: {
           _id: "$product.category",
           revenue: {
-            $sum: { $add:"$revenue" },
+            $sum: { $add: "$revenue" },
           },
-          
         },
       },
-      
+
       {
-        $addFields:{"name":"$product.name"}
-      }
+        $addFields: { name: "$product.name" },
+      },
     ]);
-    res.status(200).json({ Result: report });
+    baseRes(res,statusCode.Created,report,"Successful")
   } catch (error) {
     next(error);
   }

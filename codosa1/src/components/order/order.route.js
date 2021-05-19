@@ -12,7 +12,7 @@ orderRouter.post(
   validate(orderValidate.checkOrder),
   orderController.createOrder
 );
-orderRouter.get("/get", auth.passportUser, orderController.getOrder);
+orderRouter.get("/get", auth.passportUser, auth.isUser, orderController.getOrder);
 orderRouter.post(
   "/get",
   auth.isStaff,
@@ -62,7 +62,7 @@ orderRouter.put(
 );
 
 //get
-orderRouter.get("/waiting", auth.checkAuth, orderController.getWaitingOrder);
+orderRouter.get("/waiting",auth.passportStaff, auth.isStaff, orderController.getWaitingOrder);
 orderRouter.get(
   "/processing",
   auth.passportStaff,
