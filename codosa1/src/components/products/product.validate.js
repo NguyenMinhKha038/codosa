@@ -1,5 +1,5 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const checkAddProduct = {
+const addProduct = {
   body: Joi.object({
     name: Joi.string()
       .regex(/[a-zA-Z0-9]{3,40}/)
@@ -14,14 +14,14 @@ const checkAddProduct = {
       .required(),
   }),
 };
-const checkNameProduct = {
+const nameProduct = {
   body: Joi.object({
     name: Joi.string()
       .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
   }),
 };
-const checkUpdateProduct = {
+const updateProduct = {
   body: Joi.object({
     name: Joi.string()
       .regex(/[a-zA-Z0-9]{3,20}/)
@@ -37,4 +37,4 @@ const checkUpdateProduct = {
       .required(),
   }),
 };
-export default { checkAddProduct, checkNameProduct, checkUpdateProduct };
+export default { addProduct, nameProduct, updateProduct };

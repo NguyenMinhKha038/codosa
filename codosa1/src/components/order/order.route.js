@@ -9,55 +9,55 @@ orderRouter.post(
   "/create",
   auth.passportUser,
   auth.isUser,
-  validate(orderValidate.checkOrder),
+  validate(orderValidate.order),
   orderController.createOrder
 );
 orderRouter.get("/get", auth.passportUser, auth.isUser, orderController.getOrder);
-orderRouter.post(
-  "/get",
+orderRouter.get(
+  "/get-user-order",
   auth.isStaff,
-  validate(orderValidate.checkEmail),
+  validate(orderValidate.email),
   orderController.getUserOrder
 );
 orderRouter.put(
-  "/user/update",
+  "/user-update",
   auth.passportUser,
   auth.isUser,
-  validate(orderValidate.checkIdAddress),
+  validate(orderValidate.idAddress),
   orderController.updateOrder
 );
 orderRouter.delete(
-  "/admin/delete",
+  "/admin-delete",
   auth.isStaff,
-  validate(orderValidate.checkID),
+  validate(orderValidate.id),
   orderController.adminDeleteOrder
 );
 orderRouter.delete(
-  "/user/delete",
+  "/user-delete",
   auth.isUser,
-  validate(orderValidate.checkID),
+  validate(orderValidate.id),
   orderController.userDeleteOrder
 );
 //status update
 orderRouter.put(
-  "/status/processing",
+  "/status-processing",
   auth.passportStaff,
   auth.isStaff,
-  validate(orderValidate.checkID),
+  validate(orderValidate.id),
   orderController.processingUpdate
 );
 orderRouter.put(
-  "/status/shipping",
+  "/status-shipping",
   auth.passportStaff,
   auth.isStaff,
-  validate(orderValidate.checkID),
+  validate(orderValidate.id),
   orderController.shippingUpdate
 );
 orderRouter.put(
-  "/status/finish",
+  "/status-finish",
   auth.passportStaff,
   auth.isStaff,
-  validate(orderValidate.checkID),
+  validate(orderValidate.id),
   orderController.finishUpdate
 );
 

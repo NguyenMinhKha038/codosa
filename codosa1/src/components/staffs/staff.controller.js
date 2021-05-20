@@ -1,16 +1,16 @@
-import staffModel from "../staffs/staff.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import userModel from "../users/user.model";
 import statusMiddleWare from "../utils/status";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { reponseSuccess } from "../error/baseResponese";
+import staffService from "./staff.service";
+import userService from "../users/user.service";
 const staffRegister = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const checkExits = await staffModel.findOne({ email: email });
+    const checkExits = await staffService.findOneByAny({ email: email });
     if (checkExits) {
       throw new baseError(
         name,
@@ -19,15 +19,14 @@ const staffRegister = async (req, res, next) => {
       );
     }
     const hash = await bcrypt.hash(password, 10);
-    let newStaff = new staffModel({
+    let newStaff = await staffService.create({
       name,
       password: hash,
       email,
       role: statusMiddleWare.permission.STAFF,
       status: statusMiddleWare.permission.USER,
     });
-    await newStaff.save();
-    reponseSuccess(res, newStaff);
+    reponseSuccess(res,{email, name});
   } catch (error) {
     next(error);
   }
@@ -36,7 +35,7 @@ const staffRegister = async (req, res, next) => {
 const staffLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let staffs = await staffModel.findOne({ email: email });
+    let staffs = await staffService.findOneByAny({ email: email });
     if (!staffs) {
       throw new baseError(email, statusCode.NOT_FOUND, errorList.FIND_ERROR);
     }
@@ -58,11 +57,11 @@ const staffLogin = async (req, res) => {
 const deleteUser = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const checkExits = await userModel.findOne({ email: email });
+    const checkExits = await userService.findOneByAny({ email: email });
     if (!checkExits) {
       throw new baseError(email, statusCode.NOT_FOUND, errorList.FIND_ERROR);
     }
-    await userModel.findOneAndUpdate(
+    await userService.findOneAndUpdate(
       { email: email },
       { status: statusMiddleWare.personStatus.DISABLE }
     );
@@ -76,7 +75,7 @@ const updateUser = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
     const hash = await bcrypt.hash(password, 10);
-    await userModel.findOneAndUpdate(
+    await userService.findOneAndUpdate(
       { email: email },
       { name: name, password: hash }
     );
@@ -89,7 +88,7 @@ const updateUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const users = await userModel.findOne({ email: email });
+    const users = await userService.findOneByAny({ email: email });
     if (users) {
       reponseSuccess(res, users);
     } else {

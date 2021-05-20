@@ -15,11 +15,11 @@ clean code
 
 
 
-baseService {
+BaseService {
    create, find....
 }
  category.service.js  {
-   ...baseService,
+   ...BaseService,
   findWith
  }
 

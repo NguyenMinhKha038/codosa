@@ -20,8 +20,8 @@ categoryRouter.put(
   categoryController.updateCategory
 );
 categoryRouter.get("/getcategory", categoryController.getListCategory);
-categoryRouter.post(
-  "/getproduct",
+categoryRouter.get(
+  "/get-product",
   validate(categoryValidate.categoryValidate),
   categoryController.getAllProduct
 );

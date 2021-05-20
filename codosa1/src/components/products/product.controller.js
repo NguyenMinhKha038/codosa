@@ -1,18 +1,18 @@
-import categoryModel from "../category/category.model";
-import productModel from "../products/product.model";
 import statusMiddleWare from "../utils/status";
 import mongoose from "mongoose";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { reponseSuccess } from "../error/baseResponese";
+import productService from "./product.service";
+import categoryService from "../category/category.service";
 const addProduct = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const opts = { session, new: true };
   try {
-    const session = await mongoose.startSession();
-    session.startTransaction(); //start transaction
-    const opts = { session, new: true };
     const { name, amount, price, category, description } = req.body;
-    const checkProduct = await productModel.findOne({ name: name }, opts);
+    const checkProduct = await productService.findOneByAny({ name: name },null, opts);
     if (checkProduct) {
       throw new baseError(
         { name, amount, price, category, description },
@@ -20,23 +20,25 @@ const addProduct = async (req, res, next) => {
         errorList.ALREADY_EXITS
       );
     }
-    let newProduct = new productModel({
+    let newProduct = await productService.create({
       name,
       amount,
       price,
       category,
       description,
       status: statusMiddleWare.productStatus.ACTIVE,
-    });
-    const checkCategory = await categoryModel.find({ name: category }, opts);
+    },opts);
+    const checkCategory = await categoryService.findOneByAny(
+      { name: category },null,
+      opts
+    );
     if (!checkCategory) {
-      let newCategory = new categoryModel({
+      let newCategory = categoryService.create({
         name: category,
         status: statusMiddleWare.categoryStatus.ACTIVE,
-      });
-      await newCategory.save(opts);
+      },opts);
+      console.group("cate",newCategory)
     }
-    await newProduct.save(opts);
     await session.commitTransaction();
     reponseSuccess(res, newProduct);
   } catch (error) {
@@ -49,7 +51,7 @@ const addProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const name = req.body.name;
-    const products = await productModel.find({ name: name });
+    const products = await productService.findByAny({ name: name });
     if (products) {
       reponseSuccess(res, {
         products,
@@ -63,7 +65,7 @@ const getProduct = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
   try {
     const productName = req.body.name;
-    const checkExits = await productModel.findOne({ name: productName });
+    const checkExits = await productService.findByAny({ name: productName });
     if (!checkExits) {
       throw new baseError(
         productName,
@@ -71,7 +73,7 @@ const deleteProduct = async (req, res, next) => {
         errorList.FIND_ERROR
       );
     }
-    await productModel.findOneAndUpdate(
+    await productService.findOneAndUpdate(
       { name: productName },
       { status: statusMiddleWare.productStatus.DISABLE }
     );
@@ -86,11 +88,11 @@ const updateProduct = async (req, res, next) => {
   const opts = { session, new: true };
   try {
     const { name, amount, price, newName, productId } = req.body;
-    const checkExits = await productModel.findOne({ _id: productId }, opts);
+    const checkExits = await productService.findByAny({ _id: productId }, opts);
     if (!checkExits) {
       throw new baseError(name, statusCode.NOT_FOUND, errorList.FIND_ERROR);
     }
-    await productModel.findOneAndUpdate(
+    await productService.findByIdAndUpdate(
       { _id: productId },
       { name: newName, amount: amount, price: price },
       opts

@@ -1,5 +1,3 @@
-import { response } from "express";
-
 const reponseSuccess = (res,data)=>{
     const httpCode =200;
     const message="Successful";

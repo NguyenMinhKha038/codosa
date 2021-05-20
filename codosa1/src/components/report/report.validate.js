@@ -1,5 +1,5 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const checkReportProduct = {
+const reportProduct = {
   body: Joi.object({
     fromDay: Joi.date()
       .less(Joi.ref("toDay"))
@@ -10,7 +10,7 @@ const checkReportProduct = {
       .error((errors) => console.log(errors)),
   }),
 };
-const checkReportCategory = {
+const reportCategory = {
   body: Joi.object({
     toDay: Joi.date()
       .required()
@@ -18,4 +18,4 @@ const checkReportCategory = {
     fromDay: Joi.date().less(Joi.ref("toDay")).required(),
   }),
 };
-export default { checkReportProduct, checkReportCategory };
+export default { reportProduct, reportCategory };

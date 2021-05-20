@@ -18,7 +18,7 @@ passport.use(
   new JwtStrategy(opts, function (jwt_payload, done) {
     user.findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
-        return done(err, false);
+        //return done(err, false);
       }
       if (user) {
         return done(null, user); // req.user
@@ -46,13 +46,24 @@ passport.use(
     });
   })
 );
-
+const a = (role) => {
+  let roleModel;
+  switch (role) {
+    case "user":
+      roleModel = user;
+      break;
+    default:
+      break;
+  }
+  
+}
 passport.use(
   "manager",
   new JwtStrategy(opts, function (jwt_payload, done) {
     manager.findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
         return done(err, false);
+        throw err;
       }
       if (user) {
         return done(null, user); // req.user

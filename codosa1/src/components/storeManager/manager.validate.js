@@ -1,5 +1,5 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const checkEmailNamePass = {
+const EmailNamePass = {
   body: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()
@@ -10,12 +10,12 @@ const checkEmailNamePass = {
       .required(),
   }),
 };
-const checkEmail = {
+const Email = {
   body: Joi.object({
     email: Joi.string().email().required(),
   }),
 };
-const checkEmailPass = {
+const EmailPass = {
   body: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()
@@ -23,4 +23,4 @@ const checkEmailPass = {
       .required(),
   }),
 };
-export default { checkEmailNamePass, checkEmail, checkEmailPass };
+export default { EmailNamePass, Email, EmailPass };

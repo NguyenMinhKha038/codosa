@@ -1,16 +1,16 @@
-import cart from "./cart.model";
-import productModel from "../products/product.model";
 import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { reponseSuccess } from "../error/baseResponese";
-
+import cartService from "./cart.service";
+import productService from "../products/product.service";
 const getCart = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const carts = await cart
-      .findOne({ userId: userId })
-      .populate("product.productId");
+    const carts = await cartService.findOneByAny(
+      { userId: userId },
+      "product.productId"
+    );
     if (!carts) {
       throw new baseError(userId, statusCode.NOT_FOUND, errorList.CART_EMPTY);
     }
@@ -21,19 +21,20 @@ const getCart = async (req, res, next) => {
 };
 const addCart = async (req, res, next) => {
   try {
-    const { product } = req.body;
-    const { email, userId } = req.user;
+    const product = req.body;
+    const userId = req.user._id;
     for (const value of product) {
-      const checkExits = await productModel
-        .findOne({ _id: value.productId })
-        .populate("product.productId");
+      const checkExits = await productService.findOneByAny(
+        { _id: value.productId },
+        "product.productId"
+      );
       if (checkExits == null) {
         throw new baseError(
           userId,
           statusCode.NOT_FOUND,
           "No product exists " + value.productId
         );
-      } else if ((checkExits.amount = 0)) {
+      } else if (checkExits.amount == 0) {
         throw new baseError(
           userId,
           statusCode.NOT_FOUND,
@@ -47,7 +48,10 @@ const addCart = async (req, res, next) => {
         );
       }
     }
-    await cart.findOneAndUpdate({ userId: userId }, { product: product });
+    await cartService.findOneAndUpdate(
+      { userId: userId },
+      { product: product }
+    );
     reponseSuccess(res, product);
   } catch (error) {
     next(error);

@@ -1,10 +1,5 @@
-import user from "../users/user.model";
-import staff from "../staffs/staff.model";
-import manager from "../storeManager/manager.model";
-import product from "../products/product.model";
 import passport from "passport";
 import { users, staffs, managers } from "./passport";
-import category from "../category/category.model";
 
 const passportUser = (req, res, next) => {
   return passport.authenticate("user", { session: false })(req, res, next);

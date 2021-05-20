@@ -7,33 +7,33 @@ const staffRoute = Router();
 
 staffRoute.post(
   "/register",
-  validate(staffValidate.checkEmailNamePass),
+  validate(staffValidate.EmailNamePass),
   staffController.staffRegister
 );
 staffRoute.post(
   "/login",
-  validate(staffValidate.checkEmailPass),
+  validate(staffValidate.EmailPass),
   staffController.staffLogin
 );
 staffRoute.put(
-  "/updateuser",
+  "/update-user",
   auth.passportStaff,
   auth.isStaff,
-  validate(staffValidate.checkEmailNamePass),
+  validate(staffValidate.EmailNamePass),
   staffController.updateUser
 );
 staffRoute.delete(
-  "/deleteuser",
+  "/delete-user",
   auth.passportStaff,
   auth.isStaff,
-  validate(staffValidate.checkEmail),
+  validate(staffValidate.Email),
   staffController.deleteUser
 );
-staffRoute.post(
-  "/getuser",
+staffRoute.get(
+  "/get-user",
   auth.passportStaff,
   auth.isStaff,
-  validate(staffValidate.checkEmail),
+  validate(staffValidate.Email),
   staffController.getUser
 );
 staffRoute.get(

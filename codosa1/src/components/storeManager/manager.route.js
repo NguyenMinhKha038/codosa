@@ -7,13 +7,13 @@ const managerRouter = Router();
 
 managerRouter.post(
   "/register",
-  validate(managerValidate.checkEmailNamePass),
+  validate(managerValidate.EmailNamePass),
   managerController.managerRegister
 );
 
 managerRouter.post(
   "/login",
-  validate(managerValidate.checkEmailPass),
+  validate(managerValidate.EmailPass),
   managerController.managerLogin
 );
 
@@ -21,30 +21,30 @@ managerRouter.delete(
   "/delete-user",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmail),
+  validate(managerValidate.Email),
   managerController.deleteUser
 );
 
 managerRouter.delete(
-  "/deletestaff",
+  "/delete-staff",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmail),
+  validate(managerValidate.Email),
   managerController.deleteStaff
 );
 
 managerRouter.put(
-  "/updateuser",
+  "/update-user",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmailNamePass),
+  validate(managerValidate.EmailNamePass),
   managerController.updateUser
 );
 managerRouter.put(
-  "/updatestaff",
+  "/update-staff",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmailNamePass),
+  validate(managerValidate.EmailNamePass),
   managerController.updateStaff
 );
 
@@ -54,18 +54,18 @@ managerRouter.get(
   auth.isManager,
   managerController.getInfo
 );
-managerRouter.post(
-  "/getuser",
+managerRouter.get(
+  "/get-user",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmail),
+  validate(managerValidate.Email),
   managerController.getUser
 );
-managerRouter.post(
-  "/getstaff",
+managerRouter.get(
+  "/get-staff",
   auth.passportManager,
   auth.isManager,
-  validate(managerValidate.checkEmail),
+  validate(managerValidate.Email),
   managerController.getStaff
 );
 

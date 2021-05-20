@@ -2,20 +2,15 @@ import reportController from "../report/report.controller";
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import reportValidate from "./report.validate";
-import auth from "../utils/auth";
 const reportRouter = Router();
-reportRouter.post(
+reportRouter.get(
   "/product",
-  auth.passportManager,
-  auth.isManager,
-  validate(reportValidate.checkReportProduct),
+  validate(reportValidate.reportProduct),
   reportController.reportProduct
 );
-reportRouter.post(
+reportRouter.get(
   "/category",
-  //auth.passportManager,
-  auth.isManager,
-  validate(reportValidate.checkReportCategory),
+  validate(reportValidate.reportCategory),
   reportController.reportCategory
 );
 export default reportRouter;

@@ -7,30 +7,22 @@ import productValidate from "./product.validate";
 const productRouter = Router();
 productRouter.post(
   "/add",
-  auth.passportStaff,
-  auth.isStaff,
-  validate(productValidate.checkAddProduct),
+  validate(productValidate.addProduct),
   product.addProduct
 );
 productRouter.delete(
   "/delete",
-  auth.passportStaff,
-  auth.isStaff,
-  validate(productValidate.checkNameProduct),
+  validate(productValidate.nameProduct),
   product.deleteProduct
 );
 productRouter.put(
   "/update",
-  auth.passportStaff,
-  auth.isStaff,
-  validate(productValidate.checkUpdateProduct),
+  validate(productValidate.updateProduct),
   product.updateProduct
 );
-productRouter.post(
+productRouter.get(
   "/get",
-  auth.passportStaff,
-  auth.isStaff,
-  validate(productValidate.checkNameProduct),
+  validate(productValidate.nameProduct),
   product.getProduct
 );
 

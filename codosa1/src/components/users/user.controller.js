@@ -1,5 +1,3 @@
-import userModel from "./user.model";
-import cartModel from "../cart/cart.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import statusMiddleWare from "../utils/status";
@@ -7,14 +5,22 @@ import { baseError } from "../error/baseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { reponseSuccess } from "../error/baseResponese";
+import userService from "./user.service";
+import cartService from "../cart/cart.service";
 import mongoose from "mongoose";
+import userModel from "./user.model";
 const userRegister = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
   const options = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await userModel.findOne({ email: email });
+    const checkExits = await userService.findOneByAny(
+      { email: email },
+      null,
+      options
+    );
+    console.log(checkExits);
     if (checkExits) {
       throw new baseError(
         { name, email },
@@ -24,21 +30,18 @@ const userRegister = async (req, res, next) => {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const newUser = new userModel({
+    const newUser = await userService.create({
       name,
       password: hash,
       email,
       role: statusMiddleWare.permission.USER,
       status: statusMiddleWare.personStatus.ACTIVE,
     });
-    newUser.save(options);
-
-    const newCart = new cartModel({
+    await cartService.create({
       userId: newUser._id,
       product: [],
       total: 0,
     });
-    await newCart.save(options);
     await session.commitTransaction();
     reponseSuccess(res, { name, email });
   } catch (error) {
@@ -49,10 +52,10 @@ const userRegister = async (req, res, next) => {
   }
 };
 
-const userLogin = async (req, res) => {
+const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    let users = await userModel.findOne({ email: email });
+    const users = await userService.findOneByAny({ email: email });
     if (!users) {
       throw new baseError(
         { email, password },
@@ -61,13 +64,13 @@ const userLogin = async (req, res) => {
       );
     }
     await bcrypt.compare(password, users.password);
-    let payload = {
+    const payload = {
       name: users.name,
       role: users.role,
       email: users.email,
       _id: users._id,
     };
-    let token = jwt.sign(payload, process.env.privateKey);
+    const token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
     reponseSuccess(res, token);
   } catch (error) {

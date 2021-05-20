@@ -1,31 +1,31 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const checkEmail = {
+const email = {
   body: Joi.object({
     email: Joi.string().email().required(),
   }),
 };
 
-const checkAddress = {
+const address = {
   body: Joi.object({
     name: Joi.string()
       .regex(/[a-zA-Z0-9]{20,50}/)
       .required(),
   }),
 };
-const checkID = {
+const id = {
   body: Joi.object({
-    _id: Joi.string().required(),
+    orderId: Joi.string().required(),
   }),
 };
-const checkIdAddress = {
+const idAddress = {
   body: Joi.object({
     name: Joi.string()
       .regex(/[a-zA-Z0-9]{20,50}/)
       .required(),
-    _id: Joi.string().required(),
+      orderId: Joi.string().required(),
   }),
 };
-const checkOrder = {
+const order = {
   body: Joi.object({
     phone: Joi.string().length(10).required(),
     address: Joi.string()
@@ -34,9 +34,9 @@ const checkOrder = {
   }),
 };
 export default {
-  checkEmail,
-  checkAddress,
-  checkID,
-  checkIdAddress,
-  checkOrder,
+  email,
+  address,
+  id,
+  idAddress,
+  order,
 };
