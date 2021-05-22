@@ -15,6 +15,7 @@ const imageRouter = Router();
 imageRouter.post("/avatar", upload.single("image"), imageController.addAvatar);
 imageRouter.post(
   "/product",
+  auth.passport,
   auth.isStaff,
   upload.array("imgArray", 10),
   imageController.addProductImage

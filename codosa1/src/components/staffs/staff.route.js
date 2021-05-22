@@ -15,31 +15,21 @@ staffRoute.post(
   validate(staffValidate.EmailPass),
   staffController.staffLogin
 );
+staffRoute.use(auth.passport, auth.isStaff);
 staffRoute.put(
-  "/update-user",
-  auth.passportStaff,
-  auth.isStaff,
+  "/user",
   validate(staffValidate.EmailNamePass),
   staffController.updateUser
 );
 staffRoute.delete(
-  "/delete-user",
-  auth.passportStaff,
-  auth.isStaff,
+  "/user",
   validate(staffValidate.Email),
   staffController.deleteUser
 );
 staffRoute.get(
-  "/get-user",
-  auth.passportStaff,
-  auth.isStaff,
+  "/user",
   validate(staffValidate.Email),
   staffController.getUser
 );
-staffRoute.get(
-  "/info",
-  auth.passportStaff,
-  auth.isStaff,
-  staffController.getInfo
-);
+staffRoute.get("/info", staffController.getInfo);
 export default staffRoute;

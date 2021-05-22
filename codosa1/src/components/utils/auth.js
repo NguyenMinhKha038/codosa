@@ -1,16 +1,10 @@
-import passport from "passport";
+import passportModule from "passport";
 import { users, staffs, managers } from "./passport";
 
-const passportUser = (req, res, next) => {
-  return passport.authenticate("user", { session: false })(req, res, next);
+const passport = (req, res, next) => {
+  return passportModule.authenticate("user", { session: false })(req, res, next);
 };
 
-const passportStaff = (req, res, next) => {
-  return passport.authenticate("staff", { session: false })(req, res, next);
-};
-const passportManager = (req, res, next) => {
-  return passport.authenticate("manager", { session: false })(req, res, next);
-};
 const isStaff = async (req, res, next) => {
   const role = req.user.role;
   if (role && role == 1) {
@@ -44,7 +38,7 @@ const isManager = async (req, res, next) => {
   }
 };
 
-const checkAuth = async (req, res, next) => {
+const isManagerOrStaff = async (req, res, next) => {
   try {
     const role = req.user.role;
     if (role == 1 || role == 2) {
@@ -64,8 +58,6 @@ export default {
   isStaff,
   isManager,
   isUser,
-  checkAuth,
-  passportUser,
-  passportStaff,
-  passportManager,
+  isManagerOrStaff,
+  passport
 };

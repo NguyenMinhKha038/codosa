@@ -1,14 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import statusMiddleWare from "../utils/status";
-import { baseError } from "../error/baseError";
+import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import { reponseSuccess } from "../error/baseResponese";
-import userService from "./user.service";
-import cartService from "../cart/cart.service";
+import { responseSuccess } from "../error/baseResponese";
+import { userService } from "./user.service";
+import { cartService } from "../cart/cart.service";
 import mongoose from "mongoose";
-import userModel from "./user.model";
 const userRegister = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
@@ -18,17 +17,14 @@ const userRegister = async (req, res, next) => {
     const checkExits = await userService.findOneByAny(
       { email: email },
       null,
-      options
     );
-    console.log(checkExits);
     if (checkExits) {
-      throw new baseError(
-        { name, email },
-        statusCode.ALREADY_EXITS,
-        errorList.ALREADY_EXITS
-      );
+      throw new BaseError({
+        name: { name, email },
+        httpCode: statusCode.ALREADY_EXITS,
+        description: errorList.ALREADY_EXITS,
+      });
     }
-
     const hash = await bcrypt.hash(password, 10);
     const newUser = await userService.create({
       name,
@@ -36,14 +32,14 @@ const userRegister = async (req, res, next) => {
       email,
       role: statusMiddleWare.permission.USER,
       status: statusMiddleWare.personStatus.ACTIVE,
-    });
+    },options);
     await cartService.create({
       userId: newUser._id,
       product: [],
       total: 0,
-    });
+    },options);
     await session.commitTransaction();
-    reponseSuccess(res, { name, email });
+    responseSuccess(res, { name, email });
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -55,24 +51,24 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const users = await userService.findOneByAny({ email: email });
-    if (!users) {
-      throw new baseError(
-        { email, password },
-        statusCode.NOT_FOUND,
-        errorList.FIND_ERROR
-      );
+    const user = await userService.findOneByAny({ email: email });
+    if (!user) {
+      throw new BaseError({
+        name: { email, password },
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     }
-    await bcrypt.compare(password, users.password);
+    await bcrypt.compare(password, user.password);
     const payload = {
-      name: users.name,
-      role: users.role,
-      email: users.email,
-      _id: users._id,
+      name: user.name,
+      role: user.role,
+      email: user.email,
+      _id: user._id,
     };
     const token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    reponseSuccess(res, token);
+    responseSuccess(res, token);
   } catch (error) {
     next(error);
   }
@@ -81,9 +77,9 @@ const userLogin = async (req, res, next) => {
 const getInfo = async (req, res) => {
   try {
     const { name, role, email } = req.user;
-    reponseSuccess(res, { name, role, email });
+    responseSuccess(res, { name, role, email });
   } catch (error) {
-    return next(error);
+    next(error);
   }
 };
 

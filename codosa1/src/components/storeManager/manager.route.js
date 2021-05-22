@@ -16,55 +16,41 @@ managerRouter.post(
   validate(managerValidate.EmailPass),
   managerController.managerLogin
 );
-
+managerRouter.use(auth.passport, auth.isManager);
 managerRouter.delete(
-  "/delete-user",
-  auth.passportManager,
-  auth.isManager,
+  "/user",
   validate(managerValidate.Email),
   managerController.deleteUser
 );
 
 managerRouter.delete(
-  "/delete-staff",
-  auth.passportManager,
-  auth.isManager,
+  "/staff",
   validate(managerValidate.Email),
   managerController.deleteStaff
 );
 
 managerRouter.put(
-  "/update-user",
-  auth.passportManager,
-  auth.isManager,
+  "/user",
   validate(managerValidate.EmailNamePass),
   managerController.updateUser
 );
 managerRouter.put(
-  "/update-staff",
-  auth.passportManager,
-  auth.isManager,
+  "/staff",
   validate(managerValidate.EmailNamePass),
   managerController.updateStaff
 );
 
 managerRouter.get(
   "/info",
-  auth.passportManager,
-  auth.isManager,
   managerController.getInfo
 );
 managerRouter.get(
-  "/get-user",
-  auth.passportManager,
-  auth.isManager,
+  "/user",
   validate(managerValidate.Email),
   managerController.getUser
 );
 managerRouter.get(
-  "/get-staff",
-  auth.passportManager,
-  auth.isManager,
+  "/staff",
   validate(managerValidate.Email),
   managerController.getStaff
 );

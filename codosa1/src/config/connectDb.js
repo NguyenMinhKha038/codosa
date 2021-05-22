@@ -4,13 +4,14 @@ const URI =process.env.DATACONNECTION
   //"mongodb://localhost:27017/webstore"
 const connectDB = async () => {
   try {
-    await mongoose.connect(URI, {
-      userUnifiedTopology: true,
-      useNewUrlParser: true,
-    });
+     await mongoose.connect(URI, {
+       useNewUrlParser: true,
+       useUnifiedTopology: true,
+    })
     console.log("connected...");
   } catch (error) {
     console.log(error);
   }
 };
+
 export default connectDB;

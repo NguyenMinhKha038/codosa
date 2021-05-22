@@ -11,7 +11,10 @@ const categorySchema = new Schema({
     type:Schema.Types.ObjectId,
     ref:"product"
   }],
-  image: Array,
+  image: {
+    type:Array,
+    default:null
+  },
   status: {
     type: Number,
     require: true,

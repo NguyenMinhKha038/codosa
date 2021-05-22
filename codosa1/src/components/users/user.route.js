@@ -15,6 +15,6 @@ userRouter.post(
   validate(userValidate.checkEmailNamePass),
   userController.userRegister
 );
-userRouter.get("/info", auth.passportUser, auth.isUser, userController.getInfo);
+userRouter.get("/info", auth.passport, auth.isUser, userController.getInfo);
 
 export default userRouter;

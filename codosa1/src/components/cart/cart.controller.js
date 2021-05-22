@@ -1,7 +1,7 @@
-import { baseError } from "../error/baseError";
+import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import { reponseSuccess } from "../error/baseResponese";
+import { responseSuccess } from "../error/baseResponese";
 import cartService from "./cart.service";
 import productService from "../products/product.service";
 const getCart = async (req, res, next) => {
@@ -12,9 +12,13 @@ const getCart = async (req, res, next) => {
       "product.productId"
     );
     if (!carts) {
-      throw new baseError(userId, statusCode.NOT_FOUND, errorList.CART_EMPTY);
+      throw new BaseError({
+        name: userId,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.CART_EMPTY,
+      });
     }
-    reponseSuccess(res, carts.product);
+    responseSuccess(res, carts.product);
   } catch (error) {
     next(error);
   }
@@ -29,30 +33,30 @@ const addCart = async (req, res, next) => {
         "product.productId"
       );
       if (checkExits == null) {
-        throw new baseError(
-          userId,
-          statusCode.NOT_FOUND,
-          "No product exists " + value.productId
-        );
+        throw new BaseError({
+          name: userId,
+          httpCode: statusCode.NOT_FOUND,
+          description: "No product exists " + value.productId,
+        });
       } else if (checkExits.amount == 0) {
-        throw new baseError(
-          userId,
-          statusCode.NOT_FOUND,
-          checkExits.name + " Out of stock "
-        );
+        throw new BaseError({
+          name: userId,
+          httpCode: statusCode.NOT_FOUND,
+          description: checkExits.name + " Out of stock ",
+        });
       } else if (value.amount > checkExits.amount) {
-        throw new baseError(
-          userId,
-          statusCode.NOT_FOUND,
-          checkExits.name + " Exceed the number of existence "
-        );
+        throw new BaseError({
+          name: userId,
+          httpCode: statusCode.NOT_FOUND,
+          description: checkExits.name + " Exceed the number of existence ",
+        });
       }
     }
     await cartService.findOneAndUpdate(
       { userId: userId },
       { product: product }
     );
-    reponseSuccess(res, product);
+    responseSuccess(res, product);
   } catch (error) {
     next(error);
   }

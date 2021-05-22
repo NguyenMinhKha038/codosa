@@ -1,8 +1,8 @@
 import orderModel from "../order/order.model";
-import { baseError } from "../error/baseError";
+import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import {reponseSuccess} from "../error/baseResponese";
+import {responseSuccess} from "../error/baseResponese";
 
 const reportProduct = async (req, res, next) => {
   try {
@@ -48,9 +48,9 @@ const reportProduct = async (req, res, next) => {
       },
     ]);
     if (report.length ==0) {
-      throw new baseError("Product",statusCode.NOT_FOUND,errorList.FIND_ERROR);
+      throw new BaseError({namw:"Product",httpCode:statusCode.NOT_FOUND,description:errorList.FIND_ERROR});
     }
-    reponseSuccess(res,report)
+    responseSuccess(res,report)
   } catch (error) {
     next(error);
   }
@@ -108,7 +108,10 @@ const reportCategory = async (req, res, next) => {
         $addFields: { name: "$product.name" },
       },
     ]);
-    reponseSuccess(res,report)
+    if (report.length ==0) {
+      throw new BaseError({namw:"Product",httpCode:statusCode.NOT_FOUND,description:errorList.FIND_ERROR});
+    }
+    responseSuccess(res,report)
   } catch (error) {
     next(error);
   }

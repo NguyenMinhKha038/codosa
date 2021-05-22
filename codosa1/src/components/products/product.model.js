@@ -29,6 +29,10 @@ const productSchema = new Schema({
     type: Number,
     require: true,
   },
-  image: Array,
+  image: [
+    {
+      type: String,
+    },
+  ],
 });
 export default mongoose.model("product", productSchema);

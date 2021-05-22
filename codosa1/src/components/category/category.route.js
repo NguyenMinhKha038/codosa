@@ -4,6 +4,7 @@ import categoryController from "../category/category.controller";
 import categoryValidate from "./category.validate";
 import { validate, ValidationError, Joi } from "express-validation";
 const categoryRouter = Router();
+categoryRouter.use(auth.passport,auth.isManagerOrStaff);
 categoryRouter.post(
   "/add",
   validate(categoryValidate.categoryValidate),

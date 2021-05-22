@@ -12,7 +12,7 @@ const staffSchema = new Schema({
   },
   role: {
     type: String,
-    unique: true,
+    require: true,
   },
   email: {
     type: String,

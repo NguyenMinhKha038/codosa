@@ -5,6 +5,7 @@ import product from "../products/product.controller";
 import productValidate from "./product.validate";
 
 const productRouter = Router();
+productRouter.use(auth.passport,auth.isManagerOrStaff)
 productRouter.post(
   "/add",
   validate(productValidate.addProduct),

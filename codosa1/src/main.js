@@ -21,21 +21,20 @@ import auth from "./components/utils/auth";
 database();
 
 const app = express();
-const server = http.createServer(app);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.server = http.createServer(app);
 app.use("/user", userRoute);
 app.use("/staff", staffRoute);
 app.use("/manager", managerRoute);
-app.use("/product", auth.passportStaff, auth.isStaff, productRoute);
-app.use("/category", auth.passportStaff, auth.isStaff, categoryRoute);
+app.use("/product", productRoute);
+app.use("/category", categoryRoute);
 app.use("/", searchRoute);
+
 app.use("/image", imageRoute);
 app.use("/order", orderRoute);
-app.use("/report", auth.passportManager, auth.isManager, reportRoute);
-app.use("/cart", auth.passportUser, auth.isUser, cartRoute);
-app.use("/notification", auth.passportStaff, auth.isStaff, notificationRoute);
+app.use("/report", reportRoute);
+app.use("/cart", cartRoute);
+app.use("/notification", notificationRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
@@ -63,7 +62,6 @@ app.use((error, req, res, next) => {
     },
   });
 });
-
 
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {

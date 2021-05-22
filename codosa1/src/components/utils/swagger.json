@@ -25,7 +25,7 @@
             "in": "body",
             "description": "User Password",
             "required": true,
-            "type": "String",
+            "type": "string",
             "min": "3",
             "max":"30"
           },
@@ -34,7 +34,6 @@
             "in": "body",
             "description": "User Email",
             "required": true,
-            
             "type": "string",
             "format":"email"
           }
@@ -43,7 +42,7 @@
           "User"
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "A User object.",
             "schema": {
               "type": "object",
@@ -63,8 +62,8 @@
             
             
           },
-          "400":{
-            "description": "An error"
+          "403":{
+            "description": "Already exist"
           },
           "500": {
             "description": "Internal Server Error"
@@ -104,14 +103,8 @@
               }
             }
           },
-          "400":{
-            "description": "No such user found"
-          },
           "500": {
             "description": "Internal Server Error"
-          },
-          "401":{
-            "description":"Unauthorized"
           }
         }
       }
@@ -119,15 +112,15 @@
     "/user/login":{
       "post": {
         "summary": "User Login",
-        "description": "User Legister",
+        "description": "User Login",
         "parameters": [
           {
             "name": "password",
             "in": "body",
             "description": "User Password",
             "required": true,
-            "type": "String",
-            "min": "3",
+            "type": "string",
+            "min": "1",
             "max":"30"
           },
           {
@@ -135,7 +128,6 @@
             "in": "body",
             "description": "User Email",
             "required": true,
-            
             "type": "string",
             "format":"email"
           }
@@ -150,7 +142,7 @@
               "type": "object",
               "properties":{
                 "name":{
-                  "type":"Json",
+                  "type":"string",
                   "example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
                 }
                 
@@ -334,7 +326,7 @@
         }
       }
     },
-    "/manager/deleteuser":{
+    "/manager/delete-user":{
       "delete": {
         "summary": "Manager Delete User",
         "description": "Manager Delete User",
@@ -365,7 +357,7 @@
         }
       }
     },
-    "/manager/deletestaff":{
+    "/manager/delete-staff":{
       "delete": {
         "summary": "Manager Delete Staff",
         "description": "Manager Delete Staff",
@@ -396,7 +388,7 @@
         }
       }
     },
-    "/manager/updateuser":{
+    "/manager/update-user":{
       "put": {
         "summary": "Manager Update User",
         "description": "Manager Update User",
@@ -444,7 +436,7 @@
         }
       }
     },
-    "/manager/updatestaff":{
+    "/manager/update-staff":{
       "put": {
         "summary": "Manager Update Staff",
         "description": "Manager Update Staff",
@@ -492,7 +484,7 @@
         }
       }
     },
-    "/manager/getuser":{
+    "/manager/get-user":{
       "post": {
         "summary": "Manager Get User",
         "description": "Manager Get User",
@@ -524,7 +516,7 @@
         }
       }
     },
-    "/manager/getstaff":{
+    "/manager/get-staff":{
       "post": {
         "summary": "Manager Get Staff",
         "description": "Manager Get Staff",
@@ -720,7 +712,7 @@
         }
       }
     },
-    "/staff/deleteuser":{
+    "/staff/delete-user":{
       "delete": {
         "summary": "Staff Delete User",
         "description": "Staff Delete User",
@@ -751,7 +743,7 @@
         }
       }
     },
-    "/staff/updateuser":{
+    "/staff/update-user":{
       "put": {
         "summary": "Staff Update User",
         "description": "Staff Update User",
@@ -802,7 +794,7 @@
         }
       }
     },
-    "/staff/getuser":{
+    "/staff/get-user":{
       "post": {
         "summary": "Staff Get User",
         "description": "Staff Get User",
@@ -1275,49 +1267,6 @@
           },
           "422":{
             "description": "Validation Failed"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          },
-          "401":{
-            "description":"Unauthorized"
-          },
-          "200":{
-            "description": "A object product .",
-            "schema": {
-              "type": "object",
-              "properties":{
-                "Result":{
-                  "type":"object",
-                  "example":"id:122545,products:[],price:phone:0965707061,address:'Vinhome',status:1,total:2500000"
-                }
-              }
-            }
-          }
-
-        }
-      
-      }
-    },
-    "/order/get":{
-      "post":{
-        "summary": "User Get Order",
-        "description": "User Get Order",
-        "parameters":[
-          {
-            "name": "_id",
-            "description": "User's id",
-            "type": "string",
-            "required": true
-          }
-          
-        ],
-        "tags": [
-          "Order"
-        ],
-        "responses": {
-          "400":{
-            "description": "No such order find"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1966,7 +1915,7 @@
       
       }
     },
-    "/categry/getproduct":{
+    "/categry/get-product":{
       "post":{
         "summary": "Get All Product In Category",
         "description": "Get All Product In Category",
@@ -2112,9 +2061,5 @@
       
       }
     }
-
-    
-
-
   }
 }

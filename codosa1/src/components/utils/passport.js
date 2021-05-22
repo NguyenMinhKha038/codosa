@@ -9,16 +9,21 @@ dotenv.config();
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
 
-let opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.privateKey;
+const model = [user,staff,manager]
+
+//model[role].
+
+let option = {};
+option.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+option.secretOrKey = process.env.privateKey;
 
 passport.use(
   "user",
-  new JwtStrategy(opts, function (jwt_payload, done) {
-    user.findOne({ _id: jwt_payload._id }, function (err, user) {
+  new JwtStrategy(option, function (jwt_payload, done) {
+    let role = jwt_payload.role;
+    model[role].findOne({ _id: jwt_payload._id }, function (err, user) {
       if (err) {
-        //return done(err, false);
+        return done(err, false);
       }
       if (user) {
         return done(null, user); // req.user
@@ -30,49 +35,5 @@ passport.use(
   })
 );
 
-passport.use(
-  "staff",
-  new JwtStrategy(opts, function (jwt_payload, done) {
-    staff.findOne({ _id: jwt_payload._id }, function (err, user) {
-      if (err) {
-        return done(err, false);
-      }
-      if (user) {
-        return done(null, user); // req.user
-      } else {
-        return done(null, false);
-        // or you could create a new account
-      }
-    });
-  })
-);
-const a = (role) => {
-  let roleModel;
-  switch (role) {
-    case "user":
-      roleModel = user;
-      break;
-    default:
-      break;
-  }
-  
-}
-passport.use(
-  "manager",
-  new JwtStrategy(opts, function (jwt_payload, done) {
-    manager.findOne({ _id: jwt_payload._id }, function (err, user) {
-      if (err) {
-        return done(err, false);
-        throw err;
-      }
-      if (user) {
-        return done(null, user); // req.user
-      } else {
-        return done(null, false);
-        // or you could create a new account
-      }
-    });
-  })
-);
 
 export default { passport };

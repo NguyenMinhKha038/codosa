@@ -1,31 +1,36 @@
 import statusMiddleWare from "../utils/status";
-import { baseError } from "../error/baseError";
+import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import { reponseSuccess } from "../error/baseResponese";
-import orderService from "./order.service";
+import { responseSuccess } from "../error/baseResponese";
+import {orderService} from "./order.service";
 import mongoose from "mongoose";
-import productService from "../products/product.service";
-import notificationService from "../notification/notification.service";
-import cartService from "../cart/cart.service";
+import {productService} from "../products/product.service";
+import {notificationService} from "../notification/notification.service";
+import {cartService} from "../cart/cart.service";
 // CRUD order
 const createOrder = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
-  const opts = { session, new: true };
+  const option = { session, new: true };
   try {
     const userId = req.user._id;
     const { address, phone } = req.body;
-    const carts = await cartService.findOneByAny(
+    const cart = await cartService.findOneByAny(
       { userId: userId },
-      "product.productId",opts
+      "product.productId",
+      option
     );
-    if (!carts.product) {
-      throw new baseError("Cart", statusCode.NOT_FOUND, errorList.FIND_ERROR);
+    if (!cart.product) {
+      throw new BaseError({
+        name: "Cart",
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     } else {
       let total = 0;
       let orderInfo = [];
-      await carts.product.map(async (value) => {
+      await cart.product.map(async (value) => {
         total += value.productId.price * value.amount;
         orderInfo.push({
           productId: value.productId._id,
@@ -35,27 +40,37 @@ const createOrder = async (req, res, next) => {
         await productService.findOneAndUpdate(
           { _id: value.productId._id },
           { amount: value.productId.amount - value.amount },
-          opts
+          option
         );
       });
-      const orders = await orderService.create({
-        userId: userId,
-        products: orderInfo,
-        status: statusMiddleWare.orderStatus.WAITING,
-        total,
-        address,
-        phone,
-      },opts);
+      const order = await orderService.create(
+        {
+          userId: userId,
+          products: orderInfo,
+          status: statusMiddleWare.orderStatus.WAITING,
+          total,
+          address,
+          phone,
+        },
+        option
+      );
 
       await Promise.all([
-        await notificationService.create({
-          title: "New Order",
-          orderId: orders._id,
-        },opts),
-        cartService.findOneAndUpdate({ userId: userId }, { product: [] }, opts),
+        await notificationService.create(
+          {
+            title: "New Order",
+            orderId: order._id,
+          },
+          option
+        ),
+        cartService.findOneAndUpdate(
+          { userId: userId },
+          { product: [] },
+          option
+        ),
       ]);
       await session.commitTransaction();
-      reponseSuccess(res, orders);
+      responseSuccess(res, orders);
     }
   } catch (error) {
     await session.abortTransaction();
@@ -67,11 +82,15 @@ const createOrder = async (req, res, next) => {
 const getOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const orders = await orderService.findByAny({ userId: userId });
-    if (!orders) {
-      throw new baseError(userId, statusCode.NOT_FOUND, errorList.FIND_ERROR);
+    const order = await orderService.findByAny({ userId: userId });
+    if (!order) {
+      throw new BaseError({
+        name: userId,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     }
-    reponseSuccess(res, orders);
+    responseSuccess(res, order);
   } catch (error) {
     next(error);
   }
@@ -79,11 +98,15 @@ const getOrder = async (req, res, next) => {
 const getUserOrder = async (req, res) => {
   try {
     const userId = req.body.userId;
-    const orders = await orderService.findByAny({ userId: userId });
-    if (!orders) {
-      throw new baseError(_id, statusCode.NOT_FOUND, errorList.FIND_ERROR);
+    const order = await orderService.findByAny({ userId: userId });
+    if (!order) {
+      throw new BaseError({
+        name: _id,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     }
-    reponseSuccess(res, orders);
+    responseSuccess(res, order);
   } catch (error) {
     next(error);
   }
@@ -92,20 +115,20 @@ const getUserOrder = async (req, res) => {
 const updateOrder = async (req, res, next) => {
   try {
     const { orderId, address } = req.body;
-    const orders = await orderService.findByAny({ _id: orderId });
-    const status = orders.status;
+    const order = await orderService.findByAny({ _id: orderId });
+    const status = order.status;
     if (status > 2) {
-      throw new baseError(
-        orders,
-        statusCode.NOT_FOUND,
-        errorList.UPDATE_ORDER_FAILD
-      );
+      throw new BaseError({
+        name: order,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.UPDATE_ORDER_FAILD,
+      });
     }
     await orderService.findOneAndUpdate(
       { _id: orderId },
       { address: address, updateDay: Date.now() }
     );
-    reponseSuccess(res, { orderId, address });
+    responseSuccess(res, { orderId, address });
   } catch (error) {
     next(error);
   }
@@ -115,23 +138,23 @@ const userDeleteOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const orderId = req.body._id;
-    const orders = await orderService.findOneAndUpdate({
+    const order = await orderService.findOneAndUpdate({
       _id: orderId,
       userId: userId,
     });
-    const status = orders.status;
+    const status = order.status;
     if (status != 1) {
-      throw new baseError(
-        email,
-        statusCode.BAD_REQUEST,
-        errorList.DELETE_ORDER_FAILD
-      );
+      throw new BaseError({
+        name: orderId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.DELETE_ORDER_FAILD,
+      });
     }
     await orderService.findOneAndUpdate(
       { _id: orderId, userId: userId },
       { status: statusMiddleWare.orderStatus.DELETE }
     );
-    reponseSuccess(res, orderId);
+    responseSuccess(res, orderId);
   } catch (error) {
     next(error);
   }
@@ -139,10 +162,10 @@ const userDeleteOrder = async (req, res, next) => {
 const adminDeleteOrder = async (req, res) => {
   try {
     const orderId = req.body._id;
-    const orders = await orderService.findByAny({ _id: orderId });
-    const status = orders.status;
+    const order = await orderService.findByAny({ _id: orderId });
+    const status = order.status;
     if (status == 4) {
-      throw new baseError(
+      throw new BaseError(
         orderId,
         statusCode.BAD_REQUEST,
         errorList.DELETE_ORDER_FAILD
@@ -152,7 +175,7 @@ const adminDeleteOrder = async (req, res) => {
       { _id: orderId },
       { status: statusMiddleWare.orderStatus.DELETE }
     );
-    reponseSuccess(res, orderId);
+    responseSuccess(res, orderId);
   } catch (error) {
     next(error);
   }
@@ -163,30 +186,30 @@ const adminDeleteOrder = async (req, res) => {
 const processingUpdate = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;
-    const orders = await orderService.findOneByAny({ _id: orderId });
-    const status = orders.status;
+    const order = await orderService.findOneByAny({ _id: orderId });
+    const status = order.status;
     if (status == 1) {
       await orderService.findOneAndUpdate(
         { _id: orderId },
         { status: statusMiddleWare.orderStatus.PROCESSING }
       );
-      reponseSuccess(res, orderId);
+      responseSuccess(res, orderId);
     }
-    throw new baseError(
-      orderId,
-      statusCode.BAD_REQUEST,
-      errorList.UPDATE_PROCESSING_FAILD
-    );
+    throw new BaseError({
+      name: orderId,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.UPDATE_PROCESSING_FAILD,
+    });
   } catch (error) {
     next(error);
   }
 };
 
-const shippingUpdate = async (req, res,next) => {
+const shippingUpdate = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;
-    const orders = await orderService.findOneByAny({ _id: orderId });
-    const status = orders.status;
+    const order = await orderService.findOneByAny({ _id: orderId });
+    const status = order.status;
     if (status == 2) {
       await orderService.findOneAndUpdate(
         { _id: orderId },
@@ -195,13 +218,13 @@ const shippingUpdate = async (req, res,next) => {
           deliveryDay: Date.now(),
         }
       );
-      reponseSuccess(res, orderId);
+      responseSuccess(res, orderId);
     }
-    throw new baseError(
-      orderId,
-      statusCode.BAD_REQUEST,
-      errorList.UPDATE_SHIPPING_FAILD
-    );
+    throw new BaseError({
+      name: orderId,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.UPDATE_SHIPPING_FAILD,
+    });
   } catch (error) {
     next(error);
   }
@@ -210,20 +233,20 @@ const shippingUpdate = async (req, res,next) => {
 const finishUpdate = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;
-    const orders = await orderService.findOneByAny({ _id: orderId });
-    const status = orders.status;
+    const order = await orderService.findOneByAny({ _id: orderId });
+    const status = order.status;
     if (status == 3) {
       await orderService.findOneAndUpdate(
         { _id: orderId },
         { status: statusMiddleWare.orderStatus.FINISH, finishDay: Date.now() }
       );
-      reponseSuccess(res, orderId);
+      responseSuccess(res, orderId);
     }
-    throw new baseError(
-      orderId,
-      statusCode.BAD_REQUEST,
-      errorList.UPDATE_FINISH_FAILD
-    );
+    throw new BaseError({
+      name: orderId,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.UPDATE_FINISH_FAILD,
+    });
   } catch (error) {
     next(error);
   }
@@ -233,7 +256,7 @@ const finishUpdate = async (req, res, next) => {
 const getWaitingOrder = async (req, res, next) => {
   try {
     const orders = await orderService.findByAny({ status: 1 });
-    reponseSuccess(res, orders);
+    responseSuccess(res, orders);
   } catch (error) {
     next(error);
   }
@@ -242,13 +265,13 @@ const getProcessingOrder = async (req, res, next) => {
   try {
     const orders = await orderService.findByAny({ status: 2 });
     if (!orders) {
-      throw new baseError(
+      throw new BaseError(
         "processing",
         statusCode.BAD_REQUEST,
         errorList.FIND_ERROR
       );
     }
-    reponseSuccess(res, orders);
+    responseSuccess(res, orders);
   } catch (error) {
     next(error);
   }
@@ -257,7 +280,7 @@ const getProcessingOrder = async (req, res, next) => {
 const getShippingOrder = async (req, res, next) => {
   try {
     const orders = await orderService.findByAny({ status: 3 });
-    reponseSuccess(res, orders);
+    responseSuccess(res, orders);
   } catch (error) {
     next(error);
   }
@@ -267,13 +290,13 @@ const getFinishOrder = async (req, res, next) => {
   try {
     const orders = await orderService.findByAny({ status: 4 });
     if (!orders) {
-      throw new baseError(
+      throw new BaseError(
         "processing",
         statusCode.BAD_REQUEST,
         errorList.FIND_ERROR
       );
     }
-    reponseSuccess(res, orders);
+    responseSuccess(res, orders);
   } catch (error) {
     next(error);
   }
@@ -283,13 +306,13 @@ const getDeleteOrder = async (req, res, next) => {
   try {
     const orders = await orderService.findByAny({ status: 0 });
     if (!orders) {
-      throw new baseError(
+      throw new BaseError(
         "processing",
         statusCode.BAD_REQUEST,
         errorList.FIND_ERROR
       );
     }
-    reponseSuccess(res, orders);
+    responseSuccess(res, orders);
   } catch (error) {
     next(error);
   }
