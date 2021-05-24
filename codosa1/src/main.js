@@ -15,11 +15,7 @@ import cartRoute from "./components/cart/cart.route";
 import database from "./config/connectDb";
 import notificationRoute from "./components/notification/notification.route";
 import swaggerDocument from "./components/utils/swagger.json";
-import http from "http";
-import auth from "./components/utils/auth";
-
 database();
-
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -29,7 +25,6 @@ app.use("/manager", managerRoute);
 app.use("/product", productRoute);
 app.use("/category", categoryRoute);
 app.use("/", searchRoute);
-
 app.use("/image", imageRoute);
 app.use("/order", orderRoute);
 app.use("/report", reportRoute);

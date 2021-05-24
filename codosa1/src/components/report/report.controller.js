@@ -2,7 +2,7 @@ import orderModel from "../order/order.model";
 import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
-import {responseSuccess} from "../error/baseResponese";
+import { responseSuccess } from "../error/baseResponese";
 
 const reportProduct = async (req, res, next) => {
   try {
@@ -13,7 +13,6 @@ const reportProduct = async (req, res, next) => {
           finishDay: { $gte: new Date(fromDay), $lte: new Date(toDay) },
         },
       },
-
       {
         $unwind: "$products",
       },
@@ -47,10 +46,14 @@ const reportProduct = async (req, res, next) => {
         },
       },
     ]);
-    if (report.length ==0) {
-      throw new BaseError({namw:"Product",httpCode:statusCode.NOT_FOUND,description:errorList.FIND_ERROR});
+    if (report.length == 0) {
+      throw new BaseError({
+        namw: "Product",
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     }
-    responseSuccess(res,report)
+    responseSuccess(res, report);
   } catch (error) {
     next(error);
   }
@@ -108,10 +111,14 @@ const reportCategory = async (req, res, next) => {
         $addFields: { name: "$product.name" },
       },
     ]);
-    if (report.length ==0) {
-      throw new BaseError({namw:"Product",httpCode:statusCode.NOT_FOUND,description:errorList.FIND_ERROR});
+    if (report.length == 0) {
+      throw new BaseError({
+        namw: "Product",
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
     }
-    responseSuccess(res,report)
+    responseSuccess(res, report);
   } catch (error) {
     next(error);
   }

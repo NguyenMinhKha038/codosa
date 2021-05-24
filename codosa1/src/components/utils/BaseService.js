@@ -74,8 +74,8 @@
 //   }
 
 // }
- export const BaseService = (model) => {
-  const create = async (data,option) => {
+export const BaseService = (model) => {
+  const create = async (data, option) => {
     try {
       const item = new model(data);
       return item.save(option);
@@ -83,17 +83,9 @@
       throw error;
     }
   };
-  const getById = async (id) => {
+  const findByAny = async (condition, populate) => {
     try {
-      const item = await model.findById(id);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const findByAny = async (condition, populate,option) => {
-    try {
-      let item = await model.find(condition,option).populate(populate);
+      let item = await model.find(condition, option).populate(populate);
       return item;
     } catch (errors) {
       throw errors;
@@ -107,31 +99,50 @@
       throw errors;
     }
   };
-  const getAll = async (populate,option) => {
+  const getAll = async (populate) => {
     try {
-      const item = await model.find(option).populate(populate);
+      const item = await model.find().populate(populate);
       return item;
     } catch (errors) {
       throw errors;
     }
   };
-  const findByIdAndUpdate = async (id, data) => {
+  const findByIdAndUpdate = async (id, data,option) => {
     try {
-      let item = await model.findByIdAndUpdate(id, data, { new: true });
+      let item = await model.findByIdAndUpdate(id, data, option);
       return item;
     } catch (errors) {
       throw errors;
     }
   };
-  const findOneAndUpdate = async (condition, data) => {
+  const findOneAndUpdate = async (condition, data,option) => {
     try {
-      const item = await model.findOneAndUpdate(condition, data, {
-        new: true,
-      });
+      const item = await model.findOneAndUpdate(condition, data,option);
       return item;
     } catch (errors) {
       throw errors;
     }
   };
-  return {findOneByAny,findOneAndUpdate,findByIdAndUpdate,create,findByAny,getAll}
+  const search = async (name, page, perPage) => {
+    try {
+      let item = await model
+        .find({
+          name: { $regex: name, $options: "$i" },
+        })
+        .skip(page > 0 ? (page - 1) * perPage : 0)
+        .limit(Number(perPage));
+      return item;
+    } catch (error) {
+      throw error;
+    }
+  };
+  return {
+    findOneByAny,
+    findOneAndUpdate,
+    findByIdAndUpdate,
+    create,
+    findByAny,
+    getAll,
+    search,
+  };
 };

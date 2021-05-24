@@ -11,7 +11,7 @@ const staffSchema = new Schema({
     required: true,
   },
   role: {
-    type: String,
+    type: Number,
     require: true,
   },
   email: {

@@ -43,3 +43,7 @@ throw new BaseErrror({statusCode: 400, error: errorList.NoExistUser})
 }
 
 tach' route
+
+get-get
+put-update
+delete-delete

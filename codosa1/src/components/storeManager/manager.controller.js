@@ -139,7 +139,7 @@ const getUser = async (req, res, next) => {
 const getStaff = async (req, res, next) => {
   try {
     const email = req.body.email; //ok
-    const staff = await staffService.findByAny({ email: email });
+    const staff = await staffService.findOneByAny({ email: email });
     if (staff) {
       responseSuccess(res, staff);
     } else {

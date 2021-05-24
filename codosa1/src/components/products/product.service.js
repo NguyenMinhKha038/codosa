@@ -43,57 +43,36 @@ import { BaseService } from "../utils/BaseService";
 
 
 
-// export const productService = (productModel) => {
-//   [...BaseService(productModel)];
-//   const findManyAndUpdate = async (condition, data) => {
-//     try {
-//       let item = await productModel.updateMany(condition, data, {
-//         new: true,
-//       });
-//       return item;
-//     } catch (errors) {
-//       throw errors;
-//     }
-//   };
-//   const findMany = async (condition) => {
-//     try {
-//       let item = await productModel.find(condition, {
-//         new: true,
-//       });
-//       return item;
-//     } catch (errors) {
-//       throw errors;
-//     }
-//   };
-//   const search = async (name, page, perPage) => {
-//     try {
-//       let item = await productModel
-//         .find({
-//           name: { $regex: name, $options: "$i" },
-//         })
-//         .skip(page > 0 ? (page - 1) * perPage : 0)
-//         .limit(Number(perPage));
-//       return item;
-//     } catch (error) {
-//       throw error;
-//     }
-//   };
-// };
-// export const productService = { 
-//   ...BaseService(productModel) ,
-//    search = async (name, page, perPage) => {
-//         try {
-//           let item = await productModel
-//             .find({
-//               name: { $regex: name, $options: "$i" },
-//             })
-//             .skip(page > 0 ? (page - 1) * perPage : 0)
-//             .limit(Number(perPage));
-//           return item;
-//         } catch (error) {
-//           throw error;
-//         }
-//       }
+const service = (productModel) => {
+  
+  const findManyAndUpdate = async (condition, data) => {
+    try {
+      let item = await productModel.updateMany(condition, data, {
+        new: true,
+      });
+      return item;
+    } catch (errors) {
+      throw errors;
+    }
+  };
+  const findMany = async (condition) => {
+    try {
+      let item = await productModel.find(condition, {
+        new: true,
+      });
+      return item;
+    } catch (errors) {
+      throw errors;
+    }
+  };
   
   
-// };
+  return {findMany,findManyAndUpdate,...BaseService(productModel)}
+};
+
+export const productService ={
+  ...service(productModel)
+}
+
+
+

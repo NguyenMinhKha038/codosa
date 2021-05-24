@@ -2,8 +2,8 @@ import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { responseSuccess } from "../error/baseResponese";
-import cartService from "./cart.service";
-import productService from "../products/product.service";
+import {cartService} from "./cart.service";
+import {productService} from "../products/product.service";
 const getCart = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -25,7 +25,7 @@ const getCart = async (req, res, next) => {
 };
 const addCart = async (req, res, next) => {
   try {
-    const product = req.body;
+    const product = req.body.product;
     const userId = req.user._id;
     for (const value of product) {
       const checkExits = await productService.findOneByAny(
@@ -56,7 +56,8 @@ const addCart = async (req, res, next) => {
       { userId: userId },
       { product: product }
     );
-    responseSuccess(res, product);
+    
+    responseSuccess(res, "product");
   } catch (error) {
     next(error);
   }

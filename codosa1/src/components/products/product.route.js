@@ -22,7 +22,7 @@ productRouter.put(
   product.updateProduct
 );
 productRouter.get(
-  "/get",
+  "/view",
   validate(productValidate.nameProduct),
   product.getProduct
 );

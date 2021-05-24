@@ -4,8 +4,8 @@ import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { responseSuccess } from "../error/baseResponese";
-import productService from "./product.service";
-import categoryService from "../category/category.service";
+import {productService} from "./product.service";
+import {categoryService} from "../category/category.service";
 const addProduct = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
@@ -55,7 +55,7 @@ const addProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const name = req.body.name;
-    const product = await productService.findByAny({ name: name });
+    const product = await productService.findOneByAny({ name: name });
     if (product) {
       responseSuccess(res, {
         product,
@@ -63,7 +63,7 @@ const getProduct = async (req, res, next) => {
     }
     throw new BaseError({name:name, httpCode:statusCode.NOT_FOUND, description:errorList.FIND_ERROR});
   } catch (error) {
-    next(errer);
+    next(error);
   }
 };
 const deleteProduct = async (req, res, next) => {

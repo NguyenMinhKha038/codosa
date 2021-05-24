@@ -7,7 +7,8 @@ const passport = (req, res, next) => {
 
 const isStaff = async (req, res, next) => {
   const role = req.user.role;
-  if (role && role == 1) {
+  console.log(role)
+  if (role == 1) {
     return next();
   } else {
     res.status(401).json({ message: "Must be Staff" });
@@ -16,7 +17,8 @@ const isStaff = async (req, res, next) => {
 const isUser = async (req, res, next) => {
   try {
     const role = req.user.role;
-    if (role && role == 0) {
+    
+    if (role == 0) {
       next();
     } else {
       res.status(401).json({ Message: "Must be User" });

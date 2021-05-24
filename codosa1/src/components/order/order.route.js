@@ -40,17 +40,17 @@ orderRouter.delete(
 );
 //status update
 orderRouter.put(
-  "/status-processing",
+  "/processing",
   validate(orderValidate.id),
   orderController.processingUpdate
 );
 orderRouter.put(
-  "/status-shipping",
+  "/shipping",
   validate(orderValidate.id),
   orderController.shippingUpdate
 );
 orderRouter.put(
-  "/status-finish",
+  "/finish",
   validate(orderValidate.id),
   orderController.finishUpdate
 );
