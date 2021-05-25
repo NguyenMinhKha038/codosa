@@ -19,9 +19,9 @@ orderRouter.put(
   validate(orderValidate.idAddress),
   orderController.updateOrder
 );
-orderRouter.get("/get", auth.passport, auth.isUser, orderController.getOrder);
+orderRouter.get("/", auth.passport, auth.isUser, orderController.getOrder);
 orderRouter.delete(
-  "/user-delete",
+  "/user",
   auth.passport,
   auth.isUser,
   validate(orderValidate.id),
@@ -34,7 +34,7 @@ orderRouter.get(
   orderController.getUserOrder
 );
 orderRouter.delete(
-  "/admin-delete",
+  "/admin",
   validate(orderValidate.id),
   orderController.adminDeleteOrder
 );

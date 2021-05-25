@@ -8,8 +8,7 @@ import passport from "passport";
 dotenv.config();
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
-
-const model = [user,staff,manager];
+const model = [user, staff, manager];
 let option = {};
 option.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 option.secretOrKey = process.env.privateKey;
@@ -22,14 +21,12 @@ passport.use(
         return done(err, false);
       }
       if (user) {
-        return done(null, user); // req.user
+        return done(null, user);
       } else {
         return done(null, false);
-        // or you could create a new account
       }
     });
   })
 );
-
 
 export default { passport };

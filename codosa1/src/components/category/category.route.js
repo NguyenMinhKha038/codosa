@@ -11,18 +11,18 @@ categoryRouter.post(
   categoryController.addCategory
 );
 categoryRouter.delete(
-  "/delete",
+  "/",
   validate(categoryValidate.categoryValidate),
   categoryController.deleteCategory
 );
 categoryRouter.put(
-  "/update",
+  "/",
   validate(categoryValidate.updateCategory),
   categoryController.updateCategory
 );
-categoryRouter.get("/getcategory", categoryController.getListCategory);
+categoryRouter.get("/", categoryController.getListCategory);
 categoryRouter.get(
-  "/get-product",
+  "/product",
   validate(categoryValidate.categoryValidate),
   categoryController.getAllProduct
 );

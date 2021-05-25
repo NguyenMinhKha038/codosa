@@ -45,9 +45,9 @@ import { BaseService } from "../utils/BaseService";
 
 const service = (productModel) => {
   
-  const findManyAndUpdate = async (condition, data) => {
+  const findManyAndUpdate = async (query, data) => {
     try {
-      let item = await productModel.updateMany(condition, data, {
+      let item = await productModel.updateMany(query, data, {
         new: true,
       });
       return item;
@@ -55,9 +55,9 @@ const service = (productModel) => {
       throw errors;
     }
   };
-  const findMany = async (condition) => {
+  const findMany = async (query) => {
     try {
-      let item = await productModel.find(condition, {
+      let item = await productModel.find(query, {
         new: true,
       });
       return item;

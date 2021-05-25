@@ -6,7 +6,7 @@ import {productService} from "../products/product.service";
 
 const search = async (req, res, next) => {
   try {
-    const { page, perPage } = req.query;
+    const { page, perPage } = req.params;
     const name = req.body.name;
     const product = await productService.search(name, page, perPage);
     let arrProduct = product.map((x) => x);

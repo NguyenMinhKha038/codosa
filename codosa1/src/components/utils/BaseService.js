@@ -83,17 +83,17 @@ export const BaseService = (model) => {
       throw error;
     }
   };
-  const findByAny = async (condition, populate) => {
+  const findByAny = async (query, populate) => {
     try {
-      let item = await model.find(condition, option).populate(populate);
+      let item = await model.find(query).populate(populate);
       return item;
     } catch (errors) {
       throw errors;
     }
   };
-  const findOneByAny = async (condition, populate) => {
+  const findOneByAny = async (query, populate) => {
     try {
-      const item = await model.findOne(condition).populate(populate);
+      const item = await model.findOne(query).populate(populate);
       return item;
     } catch (errors) {
       throw errors;
@@ -115,9 +115,9 @@ export const BaseService = (model) => {
       throw errors;
     }
   };
-  const findOneAndUpdate = async (condition, data,option) => {
+  const findOneAndUpdate = async (query, data,option) => {
     try {
-      const item = await model.findOneAndUpdate(condition, data,option);
+      const item = await model.findOneAndUpdate(query, data,option);
       return item;
     } catch (errors) {
       throw errors;

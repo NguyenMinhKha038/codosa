@@ -17,15 +17,15 @@ const userSchema = new Schema({
   email: {
     type: String,
     unique: true,
-    require:true
+    require: true,
   },
   status: {
     type: Number,
     require: true,
   },
   image: {
-    type:String,
-    max:50
+    type: String,
+    max: 50,
   },
 });
 export default mongoose.model("user", userSchema);

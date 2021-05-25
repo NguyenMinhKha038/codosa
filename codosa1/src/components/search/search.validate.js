@@ -6,5 +6,4 @@ const nameSearch ={
           .required(),
       }),
 }
-
 export default {nameSearch};

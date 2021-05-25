@@ -40,10 +40,7 @@ managerRouter.put(
   managerController.updateStaff
 );
 
-managerRouter.get(
-  "/info",
-  managerController.getInfo
-);
+managerRouter.get("/info", managerController.getInfo);
 managerRouter.get(
   "/user",
   validate(managerValidate.Email),

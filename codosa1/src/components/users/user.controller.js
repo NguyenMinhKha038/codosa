@@ -14,10 +14,7 @@ const userRegister = async (req, res, next) => {
   const options = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await userService.findOneByAny(
-      { email: email },
-      null,
-    );
+    const checkExits = await userService.findOneByAny({ email: email }, null);
     if (checkExits) {
       throw new BaseError({
         name: { name, email },
@@ -26,18 +23,24 @@ const userRegister = async (req, res, next) => {
       });
     }
     const hash = await bcrypt.hash(password, 10);
-    const newUser = await userService.create({
-      name,
-      password: hash,
-      email,
-      role: statusMiddleWare.permission.USER,
-      status: statusMiddleWare.personStatus.ACTIVE,
-    },options);
-    await cartService.create({
-      userId: newUser._id,
-      product: [],
-      total: 0,
-    },options);
+    const newUser = await userService.create(
+      {
+        name,
+        password: hash,
+        email,
+        role: statusMiddleWare.permission.USER,
+        status: statusMiddleWare.personStatus.ACTIVE,
+      },
+      options
+    );
+    await cartService.create(
+      {
+        userId: newUser._id,
+        product: [],
+        total: 0,
+      },
+      options
+    );
     await session.commitTransaction();
     responseSuccess(res, { name, email });
   } catch (error) {
@@ -47,7 +50,6 @@ const userRegister = async (req, res, next) => {
     session.endSession();
   }
 };
-
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;

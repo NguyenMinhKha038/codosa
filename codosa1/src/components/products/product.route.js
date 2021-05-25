@@ -12,12 +12,12 @@ productRouter.post(
   product.addProduct
 );
 productRouter.delete(
-  "/delete",
+  "/",
   validate(productValidate.nameProduct),
   product.deleteProduct
 );
 productRouter.put(
-  "/update",
+  "/",
   validate(productValidate.updateProduct),
   product.updateProduct
 );
