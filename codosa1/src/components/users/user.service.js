@@ -1,8 +1,8 @@
 import userModel from "./user.model";
-import {BaseService} from "../utils/BaseService";
+import {baseService} from "../utils/baseService";
 
-//export default new BaseService(userModel)
-// class userService extends BaseService{
+//export default new baseService(userModel)
+// class userService extends baseService{
 //   constructor(){
 //     super(userModel);
 //   }
@@ -11,6 +11,6 @@ import {BaseService} from "../utils/BaseService";
 //export default new userService(userModel)
 
 export const userService = { 
-  ...BaseService(userModel) 
+  ...baseService(userModel) 
 };
 

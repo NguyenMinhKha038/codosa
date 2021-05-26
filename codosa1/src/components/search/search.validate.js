@@ -1,9 +1,23 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const nameSearch ={
-    body: Joi.object({
-        name: Joi.string()
-          .regex(/[a-zA-Z0-9]{3,40}/)
-          .required(),
-      }),
-}
-export default {nameSearch};
+import { BaseError } from "../error/BaseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
+const nameSearch = {
+  body: Joi.object({
+    name: Joi.string()
+      .regex(/[a-zA-Z0-9]{3,40}/)
+      .required(),
+  }),
+};
+const pagePerPage = (req, res, next) => {
+  const { page, perPage } = req.params;
+  if (isNaN(page ) || isNaN(perPage)) {
+    throw new BaseError({
+      name: req.params.id,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.VALIDATE_PAGE_PERPAGE,
+    });
+  }
+  next();
+};
+export default { nameSearch, pagePerPage };

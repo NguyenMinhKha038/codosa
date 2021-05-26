@@ -14,8 +14,8 @@ const userRegister = async (req, res, next) => {
   const options = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await userService.findOneByAny({ email: email }, null);
-    if (checkExits) {
+    const checkExits = await userService.getOne({condition:{ email: email }}, null);
+    if (!checkExits) {
       throw new BaseError({
         name: { name, email },
         httpCode: statusCode.ALREADY_EXITS,
@@ -53,7 +53,7 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.findOneByAny({ email: email });
+    const user = await userService.getOne({ condition:{email: email} });
     if (!user) {
       throw new BaseError({
         name: { email, password },

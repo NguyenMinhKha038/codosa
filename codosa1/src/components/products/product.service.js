@@ -1,7 +1,7 @@
 import productModel from "./product.model";
-import { BaseService } from "../utils/BaseService";
+import { baseService } from "../utils/baseService";
 
-// class productService extends BaseService{
+// class productService extends baseService{
 //   constructor(){
 //     super(productModel);
 //   }
@@ -45,11 +45,9 @@ import { BaseService } from "../utils/BaseService";
 
 const service = (productModel) => {
   
-  const findManyAndUpdate = async (query, data) => {
+  const findManyAndUpdate = async (query, data,option) => {
     try {
-      let item = await productModel.updateMany(query, data, {
-        new: true,
-      });
+      let item = await productModel.updateMany(query, data, option);
       return item;
     } catch (errors) {
       throw errors;
@@ -57,7 +55,7 @@ const service = (productModel) => {
   };
   const findMany = async (query) => {
     try {
-      let item = await productModel.find(query, {
+      let item = await productModel.find(...query, {
         new: true,
       });
       return item;
@@ -67,7 +65,7 @@ const service = (productModel) => {
   };
   
   
-  return {findMany,findManyAndUpdate,...BaseService(productModel)}
+  return {findMany,findManyAndUpdate,...baseService(productModel)}
 };
 
 export const productService ={

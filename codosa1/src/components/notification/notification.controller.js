@@ -7,11 +7,11 @@ import { notificationService } from "./notification.service";
 const getNotification = async (req, res, next) => {
   const { page, perPage } = req.params;
   try {
-    const notifications = await notificationService.getNotification(
-      page,
-      perPage,
-      "orderId"
-    );
+    const notifications = await notificationService.get({
+      skip: page > 0 ? (page - 1) * perPage : 0,
+      limit: Number(perPage),
+      populate: "orderId",
+    });
     if (!notifications) {
       throw new BaseError({
         name: "Notification",

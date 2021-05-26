@@ -15,11 +15,11 @@ clean code
 
 
 
-BaseService {
+baseService {
    create, find....
 }
  category.service.js  {
-   ...BaseService,
+   ...baseService,
   findWith
  }
 
@@ -47,3 +47,17 @@ tach' route
 get-get
 put-update
 delete-delete
+
+CRUD =id
+
+router
+baseService,
+params
+
+ /api/{components}/{object}/{content}
+
+ /api/user/admin/:id
+
+ /user/me 
+ /user/staff/:id
+ GET /user/admin {page, limit, status}

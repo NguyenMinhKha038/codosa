@@ -1,7 +1,7 @@
 import staffModel from "./staff.model";
-import {BaseService} from "../utils/BaseService"
+import {baseService} from "../utils/baseService"
 
-// class staffService extends BaseService{
+// class staffService extends baseService{
 //   constructor(){
 //     super(staffModel);
 //   }
@@ -10,5 +10,5 @@ import {BaseService} from "../utils/BaseService"
 
 
 export const staffService = { 
-  ...BaseService(staffModel) 
+  ...baseService(staffModel) 
 };

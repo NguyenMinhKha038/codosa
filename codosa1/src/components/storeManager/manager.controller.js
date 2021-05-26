@@ -12,7 +12,9 @@ import { staffService } from "../staffs/staff.service";
 const managerRegister = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const checkExits = await managerService.findOneByAny({ email: email });
+    const checkExits = await managerService.getOne({
+      condition: { email: email },
+    });
     if (checkExits) {
       throw new BaseError({
         name: name,
@@ -37,7 +39,7 @@ const managerRegister = async (req, res, next) => {
 const managerLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const manager = await managerService.findOneByAny({ email: email });
+    const manager = await managerService.getOne({ condition: { email: email } });
     if (!manager) {
       throw new BaseError({
         name: email,
@@ -62,8 +64,8 @@ const managerLogin = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
-    const email = req.body.email;
-    const checkExits = await userService.findOneByAny({ email: email });
+    const userId = req.params.id;
+    const checkExits = await userService.getOne({ condition: { _id: userId } });
     if (!checkExits) {
       throw new BaseError({
         name: email,
@@ -71,31 +73,25 @@ const deleteUser = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    await userService.findOneAndUpdate(
-      { email: email },
-      { status: statusMiddleWare.personStatus.DISABLE }
-    );
-    responseSuccess(res, email);
+    await userService.findOneAndDelete({ _id: userId });
+    responseSuccess(res, userId);
   } catch (error) {
     next(error);
   }
 };
 const deleteStaff = async (req, res, next) => {
   try {
-    const email = req.body.email;
-    const checkExits = await staffService.findOneByAny({ email: email });
+    const userId = req.params.id;
+    const checkExits = await staffService.getOne({ condition: { _id: userId } });
     if (!checkExits) {
       throw new BaseError({
-        name: email,
+        name: userId,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });
     }
-    await staffService.findOneAndUpdate(
-      { email: email },
-      { status: statusMiddleWare.personStatus.DISABLE }
-    );
-    responseSuccess(res, email);
+    await staffService.findOneAndDelete({ _id: userId });
+    responseSuccess(res, userId);
   } catch (error) {
     next(error);
   }
@@ -103,17 +99,18 @@ const deleteStaff = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const findUser = userService.findOneByAny({ email: email });
+    const userId = req.params.id;
+    const findUser = userService.getOne({ condition: { _id: userId } });
     if (findUser) {
       const hash = await bcrypt.hash(password, 10);
       await userService.findOneAndUpdate(
-        { email: email },
-        { name: name, password: hash }
+        { _id: userId },
+        { name: name, password: hash, email: email }
       );
       responseSuccess(res, { email, name });
     }
     throw new BaseError({
-      name: email,
+      name: userId,
       httpCode: statusCode.BAD_REQUEST,
       description: errorList.FIND_ERROR,
     });
@@ -124,17 +121,18 @@ const updateUser = async (req, res, next) => {
 const updateStaff = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const findStaff = staffService.findOneByAny({ email: email });
+    const staffId = req.params.id;
+    const findStaff = staffService.getOne({ condition: { _id: staffId } });
     if (findStaff) {
       const hash = await bcrypt.hash(password, 10);
       await staffService.findOneAndUpdate(
-        { email: email },
-        { name: name, password: hash }
+        { _id: staffId },
+        { name: name, password: hash, email: email }
       );
       responseSuccess(res, { email, name });
     }
     throw new BaseError({
-      name: email,
+      name: staffId,
       httpCode: statusCode.BAD_REQUEST,
       description: errorList.FIND_ERROR,
     });
@@ -144,17 +142,16 @@ const updateStaff = async (req, res, next) => {
 };
 const getUser = async (req, res, next) => {
   try {
-    const email = req.body.email; 
-    const user = await userService.findOneByAny({ email: email });
+    const userId = req.params.id;
+    const user = await userService.getOne({ condition: { _id: userId } });
     if (user) {
       responseSuccess(res, user);
-    } else {
-      throw new BaseError({
-        name: email,
-        httpCode: statusCode.BAD_REQUEST,
-        description: errorList.FIND_ERROR,
-      });
     }
+    throw new BaseError({
+      name: userId,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.FIND_ERROR,
+    });
   } catch (error) {
     next(error);
   }
@@ -162,13 +159,13 @@ const getUser = async (req, res, next) => {
 
 const getStaff = async (req, res, next) => {
   try {
-    const email = req.body.email; 
-    const staff = await staffService.findOneByAny({ email: email });
+    const staffId = req.params.id;
+    const staff = await staffService.getOne({ condition: { _id: staffId } });
     if (staff) {
       responseSuccess(res, staff);
     } else {
       throw new BaseError({
-        name: email,
+        name: staffId,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });

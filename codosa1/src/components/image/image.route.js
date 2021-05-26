@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 const imageRouter = Router();
-imageRouter.post("/avatar", upload.single("image"), imageController.addAvatar);
+imageRouter.post("/avatar",auth.passport, upload.single("image"), imageController.addAvatar);
 imageRouter.post(
   "/product",
   auth.passport,

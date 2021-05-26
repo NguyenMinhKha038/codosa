@@ -1,7 +1,7 @@
 import managerModel from "./manager.model";
-import { BaseService } from "../utils/BaseService";
+import { baseService } from "../utils/baseService";
 
-// class managerService extends BaseService{
+// class managerService extends baseService{
 //   constructor(){
 //     super(managerModel);
 //   }
@@ -9,8 +9,8 @@ import { BaseService } from "../utils/BaseService";
 // export default new managerService(managerModel)
 
 // export const managerService =(managerModel)=> {
-//   [...BaseService(managerModel)]
+//   [...baseService(managerModel)]
 // };
 export const managerService = {
-  ...BaseService(managerModel),
+  ...baseService(managerModel),
 };

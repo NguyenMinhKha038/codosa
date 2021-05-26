@@ -1,4 +1,4 @@
-// export class BaseService {
+// export class baseService {
 //   constructor(model) {
 //     this.model = model;
 //   }
@@ -73,8 +73,9 @@
 //     }
 //   }
 
-// }
-export const BaseService = (model) => {
+// }.
+import statusMiddleWare from "./status";
+export const baseService = (model) => {
   const create = async (data, option) => {
     try {
       const item = new model(data);
@@ -83,66 +84,57 @@ export const BaseService = (model) => {
       throw error;
     }
   };
-  const findByAny = async (query, populate) => {
+  const findOneAndUpdate = async (query, data, option) => {
     try {
-      let item = await model.find(query).populate(populate);
+      const item = await model.findOneAndUpdate(query, data, option);
       return item;
     } catch (errors) {
       throw errors;
     }
   };
-  const findOneByAny = async (query, populate) => {
+  const get = async (query) => {
     try {
-      const item = await model.findOne(query).populate(populate);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const getAll = async (populate) => {
-    try {
-      const item = await model.find().populate(populate);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const findByIdAndUpdate = async (id, data,option) => {
-    try {
-      let item = await model.findByIdAndUpdate(id, data, option);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const findOneAndUpdate = async (query, data,option) => {
-    try {
-      const item = await model.findOneAndUpdate(query, data,option);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const search = async (name, page, perPage) => {
-    try {
+      const { condition, skip, limit, populate, dataGet, option,sort } = query;
       let item = await model
-        .find({
-          name: { $regex: name, $options: "$i" },
-        })
-        .skip(page > 0 ? (page - 1) * perPage : 0)
-        .limit(Number(perPage));
+        .find(condition, dataGet, option)
+        .limit(limit)
+        .skip(skip)
+        .sort(sort)
+        .populate(populate);
       return item;
     } catch (error) {
       throw error;
     }
   };
+  const getOne = async(query,)=>{
+    try {
+      const { condition,populate, dataGet, option } = query;
+      let item = await model
+        .findOne(condition, dataGet, option)
+        .populate(populate);
+      return item;
+    } catch (error) {
+      throw error;
+    }
+  }
+  const findOneAndDelete = async (query, option) => {
+    try {
+      await model.findOneAndUpdate(
+        query,
+        { status: statusMiddleWare.personStatus.DISABLE },
+        option
+      );
+    } catch (error) {
+      throw error;
+    }
+  };
   return {
-    findOneByAny,
     findOneAndUpdate,
-    findByIdAndUpdate,
     create,
-    findByAny,
-    getAll,
-    search,
+    get,
+    getOne,
+    findOneAndDelete,
   };
 };
+
+//dung` bind gan method find, findOne.... vao baseService

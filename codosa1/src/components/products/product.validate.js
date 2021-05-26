@@ -1,4 +1,5 @@
 import { validate, ValidationError, Joi } from "express-validation";
+import { isValidObjectId } from "mongoose";
 const addProduct = {
   body: Joi.object({
     name: Joi.string()
@@ -31,10 +32,20 @@ const updateProduct = {
       .required(),
     amount: Joi.number().required(),
     price: Joi.number().required(),
-    
+
     newName: Joi.string()
       .regex(/[a-zA-Z0-9]{3,20}/)
       .required(),
   }),
 };
-export default { addProduct, nameProduct, updateProduct };
+const validateId = (req, res, next) => {
+  if (!isValidObjectId(req.params.id)) {
+    throw new BaseError({
+      name: req.params.id,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.MUST_BE_OBJECTID,
+    });
+  }
+  next();
+};
+export default { addProduct, nameProduct, updateProduct, validateId };

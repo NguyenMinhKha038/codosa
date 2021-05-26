@@ -4,7 +4,6 @@ import auth from "../utils/auth";
 import staffController from "./staff.controller";
 import staffValidate from "./staff.validate";
 const staffRoute = Router();
-
 staffRoute.post(
   "/register",
   validate(staffValidate.EmailNamePass),
@@ -16,20 +15,22 @@ staffRoute.post(
   staffController.staffLogin
 );
 staffRoute.use(auth.passport, auth.isStaff);
+staffRoute.get("/me", staffController.getInfo);
 staffRoute.put(
-  "/user",
+  "/user/:id",
+  staffValidate.validateId,
   validate(staffValidate.EmailNamePass),
   staffController.updateUser
 );
 staffRoute.delete(
-  "/user",
-  validate(staffValidate.Email),
+  "/user/:id",
+  staffValidate.validateId,
   staffController.deleteUser
 );
 staffRoute.get(
-  "/user",
-  validate(staffValidate.Email),
+  "/user/:id",
+  staffValidate.validateId,
   staffController.getUser
 );
-staffRoute.get("/info", staffController.getInfo);
+
 export default staffRoute;

@@ -5,6 +5,14 @@ import cartValidate from "./cart.validate";
 import auth from "../utils/auth";
 const cartRouter = Router();
 cartRouter.use(auth.passport, auth.isUser);
-cartRouter.get("/info", cartController.getCart);
-cartRouter.post("/add", validate(cartValidate.addCart), cartController.addCart);
+cartRouter.get("/", cartController.getCart);
+cartRouter.post("/", validate(cartValidate.addCart), cartController.addCart);
 export default cartRouter;
+
+/**
+ * cart
+ * create: api/cart 
+ * update: api/cart/:id
+ * get: api/cart
+ * api/cart/:id/cancel
+ */

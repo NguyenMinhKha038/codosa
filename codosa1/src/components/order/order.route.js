@@ -4,76 +4,48 @@ import auth from "../utils/auth";
 import orderController from "./order.controller";
 import orderValidate from "./order.validate";
 
-const orderRouter = Router();
-orderRouter.post(
-  "/create",
-  auth.passport,
-  auth.isUser,
+const userOrderRouter = Router();
+const adminOrderRouter = Router();
+const orderRouter=Router();
+orderRouter.use("/user",userOrderRouter);
+userOrderRouter.use(auth.passport, auth.isUser);
+userOrderRouter.post(
+  "/",
   validate(orderValidate.order),
   orderController.createOrder
 );
-orderRouter.put(
-  "/user-order",
-  auth.passport,
-  auth.isUser,
-  validate(orderValidate.idAddress),
+userOrderRouter.put(
+  "/:id",
+  orderValidate.validateId,
+  validate(orderValidate.order),
   orderController.updateOrder
 );
-orderRouter.get("/", auth.passport, auth.isUser, orderController.getOrder);
-orderRouter.delete(
-  "/user",
-  auth.passport,
-  auth.isUser,
-  validate(orderValidate.id),
+userOrderRouter.get("/", orderController.getOrder);
+userOrderRouter.delete(
+  "/:id",
+  orderValidate.validateId,
   orderController.userDeleteOrder
 );
-orderRouter.use(auth.passport, auth.isStaff);
-orderRouter.get(
-  "/user-order",
-  validate(orderValidate.email),
+
+orderRouter.use("/admin",adminOrderRouter);
+adminOrderRouter.use(auth.passport, auth.isStaff);
+adminOrderRouter.get(
+  "/:id",
+  orderValidate.validateId,
   orderController.getUserOrder
 );
-orderRouter.delete(
-  "/admin",
-  validate(orderValidate.id),
+adminOrderRouter.delete(
+  "/:id",
+  orderValidate.validateId,
   orderController.adminDeleteOrder
 );
 //status update
-orderRouter.put(
-  "/processing",
-  validate(orderValidate.id),
-  orderController.processingUpdate
+adminOrderRouter.put(
+  "/status/:orderId/:status",
+  orderValidate.validateStatus,
+  orderValidate.validateId,
+  orderController.updateStatus
 );
-orderRouter.put(
-  "/shipping",
-  validate(orderValidate.id),
-  orderController.shippingUpdate
-);
-orderRouter.put(
-  "/finish",
-  validate(orderValidate.id),
-  orderController.finishUpdate
-);
+adminOrderRouter.get("/status/:status", orderValidate.validateStatus,orderController.adminGetOrder);
 
-//get
-orderRouter.get(
-  "/waiting",
-  auth.passport,
-  auth.isStaff,
-  orderController.getWaitingOrder
-);
-orderRouter.get(
-  "/processing",
-  orderController.getProcessingOrder
-);
-orderRouter.get(
-  "/shipping",
-  auth.passport,
-  auth.isStaff,
-  orderController.getShippingOrder
-);
-orderRouter.get(
-  "/finish",
-  orderController.getFinishOrder
-);
-export default orderRouter;
+export default orderRouter ;

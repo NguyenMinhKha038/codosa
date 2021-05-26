@@ -12,7 +12,10 @@ const errorList = {
   CREATE_FAILD:"Create Faild",
   CART_EMPTY:"Cart is Emty",
   DELETE_FAILD:"Delete Faild",
-  UPDATE_FAILD:"Update Faild"
+  UPDATE_FAILD:"Update Faild",
+  MUST_BE_OBJECTID:"Must Be A ObjectID",
+  VALIDATE_STATUS:"Status Must Be From 0 To 4",
+  VALIDATE_PAGE_PERPAGE:"Page or PerPage Must Be A NumBer"
 };
 
 export { errorList };

@@ -7,23 +7,24 @@ import productValidate from "./product.validate";
 const productRouter = Router();
 productRouter.use(auth.passport,auth.isManagerOrStaff)
 productRouter.post(
-  "/add",
+  "/",
   validate(productValidate.addProduct),
   product.addProduct
 );
 productRouter.delete(
-  "/",
-  validate(productValidate.nameProduct),
+  "/:id",
+  productValidate.validateId,
   product.deleteProduct
 );
 productRouter.put(
-  "/",
+  "/:id",
+  productValidate.validateId,
   validate(productValidate.updateProduct),
   product.updateProduct
 );
 productRouter.get(
-  "/view",
-  validate(productValidate.nameProduct),
+  "/:id",
+  productValidate.validateId,
   product.getProduct
 );
 

@@ -1,5 +1,5 @@
 import passportModule from "passport";
-
+import passportMidleware from "./passport"
 const passport = (req, res, next) => {
   return passportModule.authenticate("user", { session: false })(
     req,
@@ -9,7 +9,6 @@ const passport = (req, res, next) => {
 };
 const isStaff = async (req, res, next) => {
   const role = req.user.role;
-  console.log(role);
   if (role == 1) {
     return next();
   } else {

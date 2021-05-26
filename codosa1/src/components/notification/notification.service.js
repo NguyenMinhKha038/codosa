@@ -1,7 +1,7 @@
 import notificationModel from "./notification.model";
-import {BaseService} from "../utils/BaseService"
+import { baseService } from "../utils/baseService";
 
-// class notificationService extends BaseService{
+// class notificationService extends baseService{
 //   constructor(){
 //     super(notificationModel);
 //   }
@@ -17,19 +17,21 @@ import {BaseService} from "../utils/BaseService"
 // }
 // export default new notificationService(notificationModel)
 const service = (notificationModel) => {
-  
-  const getNotification = async (page,perPage,populate) => {
+  const getNotification = async (page, perPage, populate) => {
     try {
-            let item = await notificationModel.find().populate(populate).skip(page > 0 ? (page - 1) * perPage : 0)
-            .limit(Number(perPage));
-            return item;
-          } catch (error) {
-            throw error
-          }
+      let item = await notificationModel
+        .find()
+        .populate(populate)
+        .skip(page > 0 ? (page - 1) * perPage : 0)
+        .limit(Number(perPage));
+      return item;
+    } catch (error) {
+      throw error;
+    }
   };
-  return {getNotification,...BaseService(notificationModel)}
+  return { getNotification, ...baseService(notificationModel) };
 };
 
-export const notificationService={
-  ...service(notificationModel)
-}
+export const notificationService = {
+  ...service(notificationModel),
+};

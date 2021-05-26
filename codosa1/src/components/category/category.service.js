@@ -1,7 +1,7 @@
 import categoryModel from "./category.model";
-import {BaseService} from "../utils/BaseService"
+import {baseService} from "../utils/baseService"
 
-// class categoryService extends BaseService{
+// class categoryService extends baseService{
 //   constructor(){
 //     super(categoryModel);
 //   }
@@ -10,5 +10,5 @@ import {BaseService} from "../utils/BaseService"
 // export default new categoryService(categoryModel)
 
 export const categoryService ={
-  ...BaseService(categoryModel) 
+  ...baseService(categoryModel) 
 }

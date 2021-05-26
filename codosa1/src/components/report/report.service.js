@@ -1,5 +1,5 @@
 import orderModel from "../order/order.model";
-import { BaseService } from "../utils/BaseService";
+import { baseService } from "../utils/baseService";
 
 const service = (orderModel) => {
   const reportProduct = async (query) => {
@@ -92,9 +92,7 @@ const service = (orderModel) => {
           },
         },
 
-        {
-          $addFields: { name: "$product.name" },
-        },
+        
       ]);
       return item;
     } catch (errors) {
@@ -102,7 +100,7 @@ const service = (orderModel) => {
     }
   };
 
-  return { reportProduct, reportCategory, ...BaseService(orderModel) };
+  return { reportProduct, reportCategory, ...baseService(orderModel) };
 };
 
 export const reportService = {

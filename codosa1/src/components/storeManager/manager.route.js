@@ -4,51 +4,54 @@ import auth from "../utils/auth";
 import managerController from "./manager.controller";
 import managerValidate from "./manager.validate";
 const managerRouter = Router();
-
+const CRUDuserRouter = Router();
+const CRUDstaffRouter = Router();
 managerRouter.post(
   "/register",
   validate(managerValidate.EmailNamePass),
   managerController.managerRegister
 );
-
 managerRouter.post(
   "/login",
   validate(managerValidate.EmailPass),
   managerController.managerLogin
 );
-managerRouter.use(auth.passport, auth.isManager);
-managerRouter.delete(
-  "/user",
-  validate(managerValidate.Email),
+managerRouter.get("/me",auth.passport, auth.isManager, managerController.getInfo);
+//manager CRUD user
+managerRouter.use("/user",CRUDuserRouter);
+CRUDuserRouter.use(auth.passport, auth.isManager);
+CRUDuserRouter.delete(
+  "/:id",
+  managerValidate.validateId,
   managerController.deleteUser
 );
-
-managerRouter.delete(
-  "/staff",
-  validate(managerValidate.Email),
-  managerController.deleteStaff
+CRUDuserRouter.get(
+  "/:id",
+  managerValidate.validateId,
+  managerController.getUser
 );
-
-managerRouter.put(
-  "/user",
+CRUDuserRouter.put(
+  "/:id",
+  managerValidate.validateId,
   validate(managerValidate.EmailNamePass),
   managerController.updateUser
 );
-managerRouter.put(
-  "/staff",
+//manager CRUD staff
+managerRouter.use("/staff",CRUDstaffRouter)
+CRUDstaffRouter.delete(
+  "/:id",
+  managerValidate.validateId,
+  managerController.deleteStaff
+);
+CRUDstaffRouter.put(
+  "/:id",
+  managerValidate.validateId,
   validate(managerValidate.EmailNamePass),
   managerController.updateStaff
 );
-
-managerRouter.get("/info", managerController.getInfo);
-managerRouter.get(
-  "/user",
-  validate(managerValidate.Email),
-  managerController.getUser
-);
-managerRouter.get(
-  "/staff",
-  validate(managerValidate.Email),
+CRUDstaffRouter.get(
+  "/:id",
+  managerValidate.validateId,
   managerController.getStaff
 );
 
