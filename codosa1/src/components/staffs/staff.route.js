@@ -3,6 +3,7 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import staffController from "./staff.controller";
 import staffValidate from "./staff.validate";
+import permission from "../utils/permission"
 const staffRoute = Router();
 staffRoute.post(
   "/register",
@@ -14,7 +15,7 @@ staffRoute.post(
   validate(staffValidate.EmailPass),
   staffController.staffLogin
 );
-staffRoute.use(auth.passport, auth.isStaff);
+staffRoute.use(auth.passport, auth.authenticate([permission.STAFF]));
 staffRoute.get("/me", staffController.getInfo);
 staffRoute.put(
   "/user/:id",

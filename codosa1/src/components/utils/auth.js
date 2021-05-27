@@ -1,5 +1,8 @@
 import passportModule from "passport";
-import passportMidleware from "./passport"
+import passportMidleware from "./passport";
+import { BaseError } from "../error/BaseError";
+import { errorList } from "../error/errorList";
+import statusCode from "../error/statusCode";
 const passport = (req, res, next) => {
   return passportModule.authenticate("user", { session: false })(
     req,
@@ -7,55 +10,25 @@ const passport = (req, res, next) => {
     next
   );
 };
-const isStaff = async (req, res, next) => {
-  const role = req.user.role;
-  if (role == 1) {
-    return next();
-  } else {
-    res.status(401).json({ message: "Must be Staff" });
-  }
-};
-const isUser = async (req, res, next) => {
-  try {
-    const role = req.user.role;
-
-    if (role === 0) {
-      next();
-    } else {
-      res.status(401).json({ Message: "Must be User" });
+const authenticate = (roleCheck) => {
+  return (req, res, next) => {
+    try {
+      const role = req.user.role;
+      if (roleCheck.includes(role)) {
+        next();
+      } else {
+        throw new BaseError({
+          name: role,
+          httpCode: statusCode.Unauthorized,
+          description: errorList.AUTHENTICATE_FAILD,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-};
-const isManager = async (req, res, next) => {
-  try {
-    const role = req.user.role;
-    if (role === 2) {
-      return next();
-    } else {
-      res.status(401).json({ message: req.user });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-const isManagerOrStaff = async (req, res, next) => {
-  try {
-    const role = req.user.role;
-    if (role === 1 || role === 2) {
-      next();
-    } else {
-      res.status(401).json({ message: req.user });
-    }
-  } catch (error) {
-    next(error);
-  }
+  };
 };
 export default {
-  isStaff,
-  isManager,
-  isUser,
-  isManagerOrStaff,
+  authenticate,
   passport,
 };

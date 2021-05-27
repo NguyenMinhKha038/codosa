@@ -2,6 +2,7 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import imageController from "./image.controller";
 import multer from "multer";
+import permission from "../utils/permission"
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
@@ -16,7 +17,7 @@ imageRouter.post("/avatar",auth.passport, upload.single("image"), imageControlle
 imageRouter.post(
   "/product",
   auth.passport,
-  auth.isStaff,
+  auth.authenticate([permission.STAFF]),
   upload.array("imgArray", 10),
   imageController.addProductImage
 );

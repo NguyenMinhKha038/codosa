@@ -3,9 +3,10 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import product from "../products/product.controller";
 import productValidate from "./product.validate";
+import permission from "../utils/permission"
 
 const productRouter = Router();
-productRouter.use(auth.passport,auth.isManagerOrStaff)
+productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 productRouter.post(
   "/",
   validate(productValidate.addProduct),

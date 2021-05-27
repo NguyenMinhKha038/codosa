@@ -11,11 +11,15 @@ import mongoose from "mongoose";
 const userRegister = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction(); //start transaction
-  const options = { session };
+  const option = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await userService.getOne({condition:{ email: email }}, null);
-    if (!checkExits) {
+    const checkExits = await userService.getOne({
+      condition: { email: email },
+      option: option
+    });
+    console.log(checkExits)
+    if (checkExits) {
       throw new BaseError({
         name: { name, email },
         httpCode: statusCode.ALREADY_EXITS,
@@ -31,7 +35,7 @@ const userRegister = async (req, res, next) => {
         role: statusMiddleWare.permission.USER,
         status: statusMiddleWare.personStatus.ACTIVE,
       },
-      options
+      option
     );
     await cartService.create(
       {
@@ -39,7 +43,7 @@ const userRegister = async (req, res, next) => {
         product: [],
         total: 0,
       },
-      options
+      option
     );
     await session.commitTransaction();
     responseSuccess(res, { name, email });
@@ -53,7 +57,7 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.getOne({ condition:{email: email} });
+    const user = await userService.getOne({ condition: { email: email }});
     if (!user) {
       throw new BaseError({
         name: { email, password },
@@ -83,6 +87,7 @@ const getInfo = async (req, res) => {
   } catch (error) {
     next(error);
   }
+  
 };
 
 export default { userLogin, userRegister, getInfo };

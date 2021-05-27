@@ -38,7 +38,7 @@ const addProduct = async (req, res, next) => {
       condition: { name: category },
       option: option,
     });
-    let newCategoryListProduct=[];
+    let newCategoryListProduct = [];
     if (!checkCategory) {
       await categoryService.create(
         {
@@ -48,7 +48,7 @@ const addProduct = async (req, res, next) => {
         },
         option
       );
-    }else{
+    } else {
       newCategoryListProduct = [...checkCategory.product];
     }
     newCategoryListProduct.push(newProduct._id);
@@ -70,7 +70,9 @@ const addProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
-    const product = await productService.getOne({ condition: { _id: productId } });
+    const product = await productService.getOne({
+      condition: { _id: productId },
+    });
     if (product) {
       responseSuccess(res, {
         product,
@@ -86,10 +88,14 @@ const getProduct = async (req, res, next) => {
   }
 };
 const deleteProduct = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session, new: true };
   try {
     const producId = req.params.id;
     const checkExits = await productService.getOne({
       condition: { _id: producId },
+      option: option,
     });
     if (!checkExits) {
       throw new BaseError({
@@ -98,10 +104,17 @@ const deleteProduct = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    const product = await productService.findOneAndDelete({ _id: producId });
+    const product = await productService.findOneAndDelete(
+      { _id: producId },
+      option
+    );
+    await session.commitTransaction();
     responseSuccess(res, product);
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 const updateProduct = async (req, res, next) => {

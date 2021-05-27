@@ -79,7 +79,7 @@ const getOrder = async (req, res, next) => {
     const userId = req.user._id;
     console.log(userId);
     const order = await orderService.get({ condition: { userId: userId } });
-    if (order.length==0) {
+    if (order.length == 0) {
       throw new BaseError({
         name: userId,
         httpCode: statusCode.NOT_FOUND,
@@ -109,10 +109,16 @@ const getUserOrder = async (req, res, next) => {
 };
 
 const updateOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const option = { session, new: true };
   try {
     const { address, phone } = req.body;
     const orderId = req.params.id;
-    const order = await orderService.get({ condition: { _id: orderId } });
+    const order = await orderService.getOne({
+      condition: { _id: orderId },
+      option: option,
+    });
     const status = order.status;
     if (status > 2) {
       throw new BaseError({
@@ -123,22 +129,31 @@ const updateOrder = async (req, res, next) => {
     }
     await orderService.findOneAndUpdate(
       { _id: orderId },
-      { address: address, updateDay: Date.now() }
+      { address: address, updateDay: Date.now() },
+      option
     );
+    await session.commitTransaction();
     responseSuccess(res, { orderId, address });
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 
 const userDeleteOrder = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const option = { session, new: true };
   try {
     const userId = req.user._id;
     const orderId = req.params.id;
-    const order = await orderService.get({
+    const order = await orderService.getOne({
       condition: {
         _id: orderId,
       },
+      option: option,
     });
     const status = order.status;
     if (status != 1) {
@@ -148,16 +163,26 @@ const userDeleteOrder = async (req, res, next) => {
         description: errorList.DELETE_ORDER_FAILD,
       });
     }
-    await orderService.findOneAndDelete({ _id: orderId });
+    await orderService.findOneAndDelete({ _id: orderId }, option);
+    await session.commitTransaction();
     responseSuccess(res, orderId);
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 const adminDeleteOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const option = { session, new: true };
   try {
     const orderId = req.params.id;
-    const order = await orderService.get({ condition: { _id: orderId } });
+    const order = await orderService.getOne({
+      condition: { _id: orderId },
+      option: option,
+    });
     const status = order.status;
     if (status == 4) {
       throw new BaseError(
@@ -166,14 +191,21 @@ const adminDeleteOrder = async (req, res) => {
         errorList.DELETE_ORDER_FAILD
       );
     }
-    await orderService.findOneAndDelete({ _id: orderId });
+    await orderService.findOneAndDelete({ _id: orderId }, option);
+    await session.commitTransaction();
     responseSuccess(res, orderId);
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 //Update status
 const updateStatus = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const option = { session, new: true };
   try {
     const { orderId, status } = req.params;
     const orderStatus = [
@@ -181,15 +213,19 @@ const updateStatus = async (req, res, next) => {
       statusMiddleWare.orderStatus.SHIPPING,
       statusMiddleWare.orderStatus.FINISH,
     ];
-    const order = await orderService.getOne({ condition: { _id: orderId } });
+    const order = await orderService.getOne({
+      condition: { _id: orderId },
+      option: option,
+    });
     if (order && order.status + 1 == status) {
       await orderService.findOneAndUpdate(
         { _id: orderId },
-        { status: orderStatus[status] }
+        { status: orderStatus[status] },
+        option
       );
+      await session.commitTransaction();
       responseSuccess(res, order);
-    }
-    else{
+    } else {
       throw new BaseError({
         name: orderId,
         httpCode: statusCode.BAD_REQUEST,
@@ -197,7 +233,10 @@ const updateStatus = async (req, res, next) => {
       });
     }
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 //get Order

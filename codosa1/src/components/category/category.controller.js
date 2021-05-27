@@ -7,12 +7,16 @@ import { categoryService } from "./category.service";
 import { productService } from "../products/product.service";
 import mongoose from "mongoose";
 const addCategory = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session, new: true };
   try {
     const categoryName = req.body.category;
     const checkCategory = await categoryService.getOne({
       condition: {
         name: categoryName,
       },
+      option: option,
     });
     if (checkCategory) {
       throw new BaseError({
@@ -21,13 +25,20 @@ const addCategory = async (req, res, next) => {
         description: errorList.ALREADY_EXITS,
       });
     }
-    let category = await categoryService.create({
-      name: categoryName,
-      status: statusMiddleWare.categoryStatus.ACTIVE,
-    });
+    let category = await categoryService.create(
+      {
+        name: categoryName,
+        status: statusMiddleWare.categoryStatus.ACTIVE,
+      },
+      option
+    );
+    await session.commitTransaction();
     responseSuccess(res, category);
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 const deleteCategory = async (req, res, next) => {
@@ -52,7 +63,7 @@ const deleteCategory = async (req, res, next) => {
 };
 const getListCategory = async (req, res, next) => {
   try {
-    const categories = await categoryService.get({populate:"product"});
+    const categories = await categoryService.get({ populate: "product" });
     let list = categories.map((x) => x._id);
     if (list.length == 0) {
       throw new BaseError({

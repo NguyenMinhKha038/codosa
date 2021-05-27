@@ -2,9 +2,10 @@ import cartController from "../cart/cart.controller";
 import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import cartValidate from "./cart.validate";
+import permission from "../utils/permission"
 import auth from "../utils/auth";
 const cartRouter = Router();
-cartRouter.use(auth.passport, auth.isUser);
+cartRouter.use(auth.passport, auth.authenticate([permission.USER]));
 cartRouter.get("/", cartController.getCart);
 cartRouter.post("/", validate(cartValidate.addCart), cartController.addCart);
 export default cartRouter;

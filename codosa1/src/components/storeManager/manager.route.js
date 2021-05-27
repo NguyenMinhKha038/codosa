@@ -3,6 +3,7 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import managerController from "./manager.controller";
 import managerValidate from "./manager.validate";
+import permission from "../utils/permission"
 const managerRouter = Router();
 const CRUDuserRouter = Router();
 const CRUDstaffRouter = Router();
@@ -16,10 +17,10 @@ managerRouter.post(
   validate(managerValidate.EmailPass),
   managerController.managerLogin
 );
-managerRouter.get("/me",auth.passport, auth.isManager, managerController.getInfo);
+managerRouter.get("/me",auth.passport, auth.authenticate([permission.MANAGER]), managerController.getInfo);
 //manager CRUD user
 managerRouter.use("/user",CRUDuserRouter);
-CRUDuserRouter.use(auth.passport, auth.isManager);
+CRUDuserRouter.use(auth.passport, auth.authenticate([permission.MANAGER]));
 CRUDuserRouter.delete(
   "/:id",
   managerValidate.validateId,

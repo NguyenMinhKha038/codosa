@@ -8,9 +8,15 @@ import { responseSuccess } from "../error/baseResponese";
 import { staffService } from "./staff.service";
 import { userService } from "../users/user.service";
 const staffRegister = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session };
   try {
     const { email, name, password } = req.body;
-    const checkExits = await staffService.getOne({ condition: { email: email } });
+    const checkExits = await staffService.getOne({
+      condition: { email: email },
+      option: option,
+    });
     if (checkExits) {
       throw new BaseError({
         name: name,
@@ -27,11 +33,15 @@ const staffRegister = async (req, res, next) => {
         role: statusMiddleWare.permission.STAFF,
         status: statusMiddleWare.permission.USER,
       },
-      null
+      option
     );
+    await session.commitTransaction();
     responseSuccess(res, { email, name });
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -62,9 +72,15 @@ const staffLogin = async (req, res) => {
 };
 
 const deleteUser = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session };
   try {
     const userId = req.params.id;
-    const checkExits = await userService.getOne({ condition: { _id: userId } });
+    const checkExits = await userService.getOne({
+      condition: { _id: userId },
+      option: option,
+    });
     if (!checkExits) {
       throw new BaseError({
         name: email,
@@ -72,10 +88,14 @@ const deleteUser = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    await userService.findOneAndDelete({ _id: userId });
+    await userService.findOneAndDelete({ _id: userId }, option);
+    await session.commitTransaction();
     responseSuccess(res, email);
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 

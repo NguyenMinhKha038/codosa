@@ -24,14 +24,18 @@ const getCart = async (req, res, next) => {
   }
 };
 const addCart = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session, new: true };
   try {
     const product = req.body.product;
     const userId = req.user._id;
     for (const value of product) {
-      const checkExits = await productService.getOne(
-        {condition:{ _id: value.productId },populate:"product.productId"},
-        
-      );
+      const checkExits = await productService.getOne({
+        condition: { _id: value.productId },
+        populate: "product.productId",
+        option: option,
+      });
       if (checkExits == null) {
         throw new BaseError({
           name: userId,
@@ -54,12 +58,16 @@ const addCart = async (req, res, next) => {
     }
     await cartService.findOneAndUpdate(
       { userId: userId },
-      { product: product }
+      { product: product },
+      option
     );
-
+    await session.commitTransaction();
     responseSuccess(res, "product");
   } catch (error) {
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 

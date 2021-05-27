@@ -106,7 +106,7 @@ export const baseService = (model) => {
       throw error;
     }
   };
-  const getOne = async(query,)=>{
+  const getOne = async(query)=>{
     try {
       const { condition,populate, dataGet, option } = query;
       let item = await model

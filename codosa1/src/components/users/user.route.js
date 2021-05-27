@@ -3,7 +3,7 @@ import { validate, ValidationError, Joi } from "express-validation";
 import { express, Router } from "express";
 import auth from "../utils/auth";
 import userValidate from "./user.validate";
-import cartController from "../cart/cart.controller";
+import permission from "../utils/permission"
 
 const userRouter = Router();
 userRouter.post(
@@ -16,5 +16,5 @@ userRouter.post(
   validate(userValidate.checkEmailNamePass),
   userController.userRegister
 );
-userRouter.get("/me", auth.passport, auth.isUser, userController.getInfo);
+userRouter.get("/me", auth.passport, auth.authenticate([permission.USER]), userController.getInfo);
 export default userRouter;

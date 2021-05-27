@@ -3,12 +3,13 @@ import { validate, ValidationError, Joi } from "express-validation";
 import auth from "../utils/auth";
 import orderController from "./order.controller";
 import orderValidate from "./order.validate";
+import permission from "../utils/permission"
 
 const userOrderRouter = Router();
 const adminOrderRouter = Router();
 const orderRouter=Router();
 orderRouter.use("/user",userOrderRouter);
-userOrderRouter.use(auth.passport, auth.isUser);
+userOrderRouter.use(auth.passport, auth.authenticate([permission.USER]));
 userOrderRouter.post(
   "/",
   validate(orderValidate.order),
@@ -28,7 +29,7 @@ userOrderRouter.delete(
 );
 
 orderRouter.use("/admin",adminOrderRouter);
-adminOrderRouter.use(auth.passport, auth.isStaff);
+adminOrderRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
 adminOrderRouter.get(
   "/:id",
   orderValidate.validateId,
