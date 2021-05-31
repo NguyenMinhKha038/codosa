@@ -5,13 +5,13 @@ import swaggerUi from "swagger-ui-express";
 import database from "./config/connectDb";
 import router from "./components/router";
 import swaggerDocument from "../swagger/swagger.json";
+import logger from "./components/logger/createLogger";
 database();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use("/api",router);
+app.use("/api", router);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
@@ -31,14 +31,17 @@ app.use((error, req, res, next) => {
       },
     });
   }
-  return res.status(error.httpCode || 500).json({
-    error: {
-      status: error.httpCode || 500,
-      message: error.message || "Internal Server Error",
-    },
-  });
+  return (
+    console.log(error.message),
+    res.status(error.httpCode || 500).json({
+      error: {
+        status: error.httpCode || 500,
+        message: error.message || "Internal Server Error",
+      }
+    }),
+    logger.log(error.message,error.httpCode )
+  );
 });
-
 const PORT = process.env.PORT || 8088;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

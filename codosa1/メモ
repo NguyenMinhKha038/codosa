@@ -61,3 +61,13 @@ params
  /user/me 
  /user/staff/:id
  GET /user/admin {page, limit, status}
+
+ref category_id sang product ok
+su73 dung5 === thay == ok
+them dieu kien update vd order can user_id ok
+cach dat ten
+kiem Validate trong model ok
+3 bien thi object ok
+bien, ham...cach khai bao phai tuong minh
+xem lai ve transaction(khong lam dung khi khong can thiet) ok
+doc document mongodb

@@ -9,17 +9,12 @@ import { userService } from "./user.service";
 import { cartService } from "../cart/cart.service";
 import mongoose from "mongoose";
 const userRegister = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const { name, email, password } = req.body;
-    const checkExits = await userService.getOne({
+    const userExits = await userService.getOne({
       condition: { email: email },
-      option: option
     });
-    console.log(checkExits)
-    if (checkExits) {
+    if (userExits) {
       throw new BaseError({
         name: { name, email },
         httpCode: statusCode.ALREADY_EXITS,
@@ -27,37 +22,23 @@ const userRegister = async (req, res, next) => {
       });
     }
     const hash = await bcrypt.hash(password, 10);
-    const newUser = await userService.create(
-      {
-        name,
-        password: hash,
-        email,
-        role: statusMiddleWare.permission.USER,
-        status: statusMiddleWare.personStatus.ACTIVE,
-      },
-      option
-    );
-    await cartService.create(
-      {
-        userId: newUser._id,
-        product: [],
-        total: 0,
-      },
-      option
-    );
-    await session.commitTransaction();
+    const newUser = await userService.create({
+      name,
+      password: hash,
+      email,
+    });
+    await cartService.create({
+      userId: newUser._id,
+    });
     responseSuccess(res, { name, email });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.getOne({ condition: { email: email }});
+    const user = await userService.getOne({ condition: { email: email } });
     if (!user) {
       throw new BaseError({
         name: { email, password },
@@ -83,11 +64,10 @@ const userLogin = async (req, res, next) => {
 const getInfo = async (req, res) => {
   try {
     const { name, role, email } = req.user;
-    responseSuccess(res, { name, role, email });
+    responseSuccess(res, { name: name, role: role, email: email });
   } catch (error) {
     next(error);
   }
-  
 };
 
 export default { userLogin, userRegister, getInfo };

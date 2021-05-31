@@ -31,28 +31,28 @@ const addCart = async (req, res, next) => {
     const product = req.body.product;
     const userId = req.user._id;
     for (const value of product) {
-      const checkExits = await productService.getOne({
+      const productExits = await productService.getOne({
         condition: { _id: value.productId },
         populate: "product.productId",
         option: option,
       });
-      if (checkExits == null) {
+      if (productExits === null) {
         throw new BaseError({
           name: userId,
           httpCode: statusCode.NOT_FOUND,
           description: "No product exists " + value.productId,
         });
-      } else if (checkExits.amount == 0) {
+      } else if (productExits.quantity === 0) {
         throw new BaseError({
           name: userId,
           httpCode: statusCode.NOT_FOUND,
-          description: checkExits.name + " Out of stock ",
+          description: productExits.name + " Out of stock ",
         });
-      } else if (value.amount > checkExits.amount) {
+      } else if (value.quantity > productExits.quantity) {
         throw new BaseError({
           name: userId,
           httpCode: statusCode.NOT_FOUND,
-          description: checkExits.name + " Exceed the number of existence ",
+          description: productExits.name + " Exceed the number of existence ",
         });
       }
     }
@@ -62,7 +62,7 @@ const addCart = async (req, res, next) => {
       option
     );
     await session.commitTransaction();
-    responseSuccess(res, "product");
+    responseSuccess(res, product);
   } catch (error) {
     await session.abortTransaction();
     next(error);

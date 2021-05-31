@@ -106,9 +106,12 @@ export const baseService = (model) => {
       throw error;
     }
   };
+  // const getOne = async ({query, select, options})
   const getOne = async(query)=>{
     try {
+
       const { condition,populate, dataGet, option } = query;
+      //model.findOne()
       let item = await model
         .findOne(condition, dataGet, option)
         .populate(populate);

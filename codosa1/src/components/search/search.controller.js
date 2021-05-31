@@ -10,12 +10,12 @@ const search = async (req, res, next) => {
     const name = req.body.name;
     const product = await productService.get({
       condition: { name: { $regex: name, $options: "$i" } },
-      dataGet:["name","amount","price"],
+      dataGet:["name","quantity","price"],
       limit: Number(perPage),
       skip: page > 0 ? (page - 1) * perPage : 0,
     });
     let arrProduct = product.map((x) => x);
-    if (arrProduct.length == 0) {
+    if (arrProduct.length === 0) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.NOT_FOUND,

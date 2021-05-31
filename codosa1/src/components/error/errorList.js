@@ -17,6 +17,7 @@ const errorList = {
   VALIDATE_STATUS: "Status Must Be From 0 To 4",
   VALIDATE_PAGE_PERPAGE: "Page or PerPage Must Be A NumBer",
   AUTHENTICATE_FAILD: "Unauthorized",
+  CATEGORY_ID_NOT_FOUND:"CategoryId Not Found"
 };
 
 export { errorList };

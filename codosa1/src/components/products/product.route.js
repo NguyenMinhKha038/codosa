@@ -9,7 +9,7 @@ const productRouter = Router();
 productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 productRouter.post(
   "/",
-  validate(productValidate.addProduct),
+  //validate(productValidate.addProduct),
   product.addProduct
 );
 productRouter.delete(

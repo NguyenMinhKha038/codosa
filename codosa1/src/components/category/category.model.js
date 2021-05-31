@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import statusMiddleWare from "../utils/status";
 const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
@@ -7,10 +8,6 @@ const categorySchema = new Schema({
     require: true,
     unique: true,
   },
-  product:[{
-    type:Schema.Types.ObjectId,
-    ref:"product"
-  }],
   image: {
     type:Array,
     default:null
@@ -18,6 +15,7 @@ const categorySchema = new Schema({
   status: {
     type: Number,
     require: true,
+    default:statusMiddleWare.categoryStatus.ACTIVE
   },
 });
 export default mongoose.model("category", categorySchema);

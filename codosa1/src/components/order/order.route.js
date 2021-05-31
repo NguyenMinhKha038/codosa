@@ -8,7 +8,6 @@ import permission from "../utils/permission"
 const userOrderRouter = Router();
 const adminOrderRouter = Router();
 const orderRouter=Router();
-orderRouter.use("/user",userOrderRouter);
 userOrderRouter.use(auth.passport, auth.authenticate([permission.USER]));
 userOrderRouter.post(
   "/",
@@ -27,8 +26,6 @@ userOrderRouter.delete(
   orderValidate.validateId,
   orderController.userDeleteOrder
 );
-
-orderRouter.use("/admin",adminOrderRouter);
 adminOrderRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
 adminOrderRouter.get(
   "/:id",
@@ -48,5 +45,9 @@ adminOrderRouter.put(
   orderController.updateStatus
 );
 adminOrderRouter.get("/status/:status", orderValidate.validateStatus,orderController.adminGetOrder);
+
+orderRouter.use("/user",userOrderRouter)
+orderRouter.use("/admin",adminOrderRouter);
+
 
 export default orderRouter ;

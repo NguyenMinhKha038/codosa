@@ -17,9 +17,9 @@ const service = (orderModel) => {
         {
           $group: {
             _id: "$products.productId",
-            amount: { $sum: "$products.amount" },
+            quantity: { $sum: "$products.quantity" },
             revenue: {
-              $sum: { $multiply: ["$products.price", "$products.amount"] },
+              $sum: { $multiply: ["$products.price", "$products.quantity"] },
             },
           },
         },
@@ -27,7 +27,7 @@ const service = (orderModel) => {
         {
           $project: {
             productId: "$_id",
-            amount: "$amount",
+            quantity: "$quantity",
             revenue: "$revenue",
           },
         },
@@ -61,16 +61,16 @@ const service = (orderModel) => {
         {
           $group: {
             _id: "$products.productId",
-            amount: { $sum: "$products.amount" },
+            quantity: { $sum: "$products.quantity" },
             revenue: {
-              $sum: { $multiply: ["$products.price", "$products.amount"] },
+              $sum: { $multiply: ["$products.price", "$products.quantity"] },
             },
           },
         },
         {
           $project: {
             productId: "$_id",
-            amount: "$amount",
+            quantity: "$quantity",
             revenue: "$revenue",
           },
         },

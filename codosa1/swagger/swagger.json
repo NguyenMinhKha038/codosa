@@ -974,8 +974,8 @@
             "required": true
           },
           {
-            "name": "amount",
-            "description": "Product's Amount",
+            "name": "quantity",
+            "description": "Product's quantity",
             "type": "number",
             "required": true
           },{
@@ -1020,7 +1020,7 @@
               "properties":{
                 "Result":{
                   "type":"object",
-                  "example":"name:Converse Chuck Taylor II,amount:2000,price:25000000,description:giay dep"
+                  "example":"name:Converse Chuck Taylor II,quantity:2000,price:25000000,description:giay dep"
                 }
                 
               }
@@ -1046,8 +1046,8 @@
             "required": true
           },
           {
-            "name": "amount",
-            "description": "Product's Amount",
+            "name": "quantity",
+            "description": "Product's quantity",
             "type": "number",
             "required": true
           },{
@@ -1092,7 +1092,7 @@
               "properties":{
                 "Result":{
                   "type":"object",
-                  "example":"name:Converse Chuck Taylor II,amount:2000,price:27000000,newname:Palladium"
+                  "example":"name:Converse Chuck Taylor II,quantity:2000,price:27000000,newname:Palladium"
                 }
                 
               }
@@ -1183,7 +1183,7 @@
               "properties":{
                 "Result":{
                   "type":"object",
-                  "example":"name:Converse Chuck Taylor II,amount:2000,price:27000000"
+                  "example":"name:Converse Chuck Taylor II,quantity:2000,price:27000000"
                 }
               }
             }

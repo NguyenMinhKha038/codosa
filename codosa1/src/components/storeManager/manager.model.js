@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import statusMiddleWare from "../utils/status";
 const Schema = mongoose.Schema;
 //sm is Store Manager
 const managerSchema = new Schema({
@@ -13,6 +14,7 @@ const managerSchema = new Schema({
   role: {
     type: Number,
     required: true,
+    default:statusMiddleWare.permission.MANAGER
   },
   email: {
     type: String,
@@ -22,10 +24,14 @@ const managerSchema = new Schema({
   status: {
     type: Number,
     require: true,
+    default:statusMiddleWare.personStatus.ACTIVE,
+    min:0,
+    max:1
   },
   image: {
     type: String,
-    max: 50,
+    default:null
+
   },
 });
 export default mongoose.model("manager", managerSchema);

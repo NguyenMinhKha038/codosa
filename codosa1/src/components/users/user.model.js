@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import statusMiddleWare from "../utils/status";
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -13,6 +14,7 @@ const userSchema = new Schema({
   role: {
     type: Number,
     require: true,
+    default:statusMiddleWare.permission.USER
   },
   email: {
     type: String,
@@ -22,10 +24,13 @@ const userSchema = new Schema({
   status: {
     type: Number,
     require: true,
+    max:1,
+    min:0,
+    default:statusMiddleWare.personStatus.ACTIVE
   },
   image: {
     type: String,
-    max: 50,
+    default:null
   },
 });
 export default mongoose.model("user", userSchema);

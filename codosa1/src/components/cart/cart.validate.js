@@ -5,7 +5,7 @@ const addCart = {
       .items(
         Joi.object({
           productId: Joi.string().required(),
-          amount: Joi.number().min(1).required(),
+          quantity: Joi.number().min(1).required(),
         }).required()
       )
       .required(),

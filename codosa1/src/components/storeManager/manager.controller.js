@@ -10,16 +10,12 @@ import { userService } from "../users/user.service";
 import { staffService } from "../staffs/staff.service";
 
 const managerRegister = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const { email, name, password } = req.body;
-    const checkExits = await managerService.getOne({
+    const managerExits = await managerService.getOne({
       condition: { email: email },
-      option: option,
     });
-    if (checkExits) {
+    if (managerExits) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.ALREADY_EXITS,
@@ -27,23 +23,14 @@ const managerRegister = async (req, res, next) => {
       });
     }
     const hash = await bcrypt.hash(password, 10);
-    await managerService.create(
-      {
-        name,
-        password: hash,
-        email,
-        role: statusMiddleWare.permission.MANAGER,
-        status: statusMiddleWare.personStatus.ACTIVE,
-      },
-      option
-    );
-    await session.commitTransaction();
+    await managerService.create({
+      name,
+      password: hash,
+      email,
+    });
     responseSuccess(res, { email, name });
   } catch (err) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -76,78 +63,56 @@ const managerLogin = async (req, res, next) => {
 };
 
 const deleteUser = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const userId = req.params.id;
-    const checkExits = await userService.getOne({
+    const userExits = await userService.getOne({
       condition: { _id: userId },
-      option: option,
     });
-    if (!checkExits) {
+    if (!userExits) {
       throw new BaseError({
         name: email,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });
     }
-    await userService.findOneAndDelete({ _id: userId }, option);
-    await session.commitTransaction();
+    await userService.findOneAndDelete({ _id: userId });
     responseSuccess(res, userId);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const deleteStaff = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
-    const userId = req.params.id;
-    const checkExits = await staffService.getOne({
-      condition: { _id: userId },
-      option: option,
+    const staffId = req.params.id;
+    const staffExits = await staffService.getOne({
+      condition: { _id: staffId },
     });
-    if (!checkExits) {
+    if (!staffExits) {
       throw new BaseError({
-        name: userId,
+        name: staffId,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });
     }
-    await staffService.findOneAndDelete({ _id: userId }, option);
-    await session.commitTransaction();
-    responseSuccess(res, userId);
+    await staffService.findOneAndDelete({ _id: staffId });
+    responseSuccess(res, staffId);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const updateUser = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const { email, name, password } = req.body;
     const userId = req.params.id;
-    const findUser = userService.getOne({
+    const user = userService.getOne({
       condition: { _id: userId },
-      option: option,
     });
-    if (findUser) {
+    if (user) {
       const hash = await bcrypt.hash(password, 10);
       await userService.findOneAndUpdate(
         { _id: userId },
-        { name: name, password: hash, email: email },
-        option
+        { name: name, password: hash, email: email }
       );
-      await session.commitTransaction();
       responseSuccess(res, { email, name });
     }
     throw new BaseError({
@@ -156,31 +121,22 @@ const updateUser = async (req, res, next) => {
       description: errorList.FIND_ERROR,
     });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const updateStaff = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const { email, name, password } = req.body;
     const staffId = req.params.id;
-    const findStaff = staffService.getOne({
+    const staff = staffService.getOne({
       condition: { _id: staffId },
-      option: option,
     });
-    if (findStaff) {
+    if (staff) {
       const hash = await bcrypt.hash(password, 10);
       await staffService.findOneAndUpdate(
         { _id: staffId },
-        { name: name, password: hash, email: email },
-        option
+        { name: name, password: hash, email: email }
       );
-      await session.commitTransaction();
       responseSuccess(res, { email, name });
     }
     throw new BaseError({
@@ -189,10 +145,7 @@ const updateStaff = async (req, res, next) => {
       description: errorList.FIND_ERROR,
     });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const getUser = async (req, res, next) => {
@@ -232,7 +185,7 @@ const getStaff = async (req, res, next) => {
 const getInfo = async (req, res, next) => {
   try {
     const { name, role, email } = req.user;
-    responseSuccess(res, { name, role, email });
+    responseSuccess(res, { name: name, role: role, email: email });
   } catch (error) {
     next(error);
   }

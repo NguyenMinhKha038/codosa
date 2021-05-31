@@ -7,63 +7,44 @@ import { responseSuccess } from "../error/baseResponese";
 import { productService } from "./product.service";
 import { categoryService } from "../category/category.service";
 const addProduct = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session, new: true };
   try {
-    const { name, amount, price, category, description } = req.body;
-    const checkProduct = await productService.getOne({
-      condition: { name: name },
-      option: option,
-    });
-    if (checkProduct) {
-      throw new BaseError({
-        name: { name, amount, price, category, description },
-        httpCode: statusCode.ALREADY_EXITS,
-        description: errorList.ALREADY_EXITS,
+    const { name, quantity, price, categoryId, description } = req.body;
+    await Promise.all([
+      productService.getOne({
+        condition: { name: name },
+      }),
+      categoryService.getOne({
+        condition: { _id: categoryId },
+      }),
+    ])
+      .then((value) => {
+        if (value[0] !== null) {
+          throw new BaseError({
+            name: name,
+            httpCode: statusCode.ALREADY_EXITS,
+            description: errorList.ALREADY_EXITS,
+          });
+        } else if (value[1] === null) {
+          throw new BaseError({
+            name: categoryId,
+            httpCode: statusCode.BAD_REQUEST,
+            description: errorList.CATEGORY_ID_NOT_FOUND,
+          });
+        }
+      })
+      .catch((error) => {
+        next(error);
       });
-    }
-    let newProduct = await productService.create(
-      {
-        name,
-        amount,
-        price,
-        category,
-        description,
-        status: statusMiddleWare.productStatus.ACTIVE,
-      },
-      option
-    );
-    const checkCategory = await categoryService.getOne({
-      condition: { name: category },
-      option: option,
+    let newProduct = await productService.create({
+      name,
+      quantity,
+      price,
+      categoryId,
+      description,
     });
-    let newCategoryListProduct = [];
-    if (!checkCategory) {
-      await categoryService.create(
-        {
-          name: category,
-          product: newProduct._id,
-          status: statusMiddleWare.categoryStatus.ACTIVE,
-        },
-        option
-      );
-    } else {
-      newCategoryListProduct = [...checkCategory.product];
-    }
-    newCategoryListProduct.push(newProduct._id);
-    await categoryService.findOneAndUpdate(
-      { name: category },
-      { product: newCategoryListProduct }
-    ),
-      option;
-    await session.commitTransaction();
     responseSuccess(res, newProduct);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -88,47 +69,32 @@ const getProduct = async (req, res, next) => {
   }
 };
 const deleteProduct = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session, new: true };
   try {
     const producId = req.params.id;
-    const checkExits = await productService.getOne({
+    const productExits = await productService.getOne({
       condition: { _id: producId },
-      option: option,
     });
-    if (!checkExits) {
+    if (!productExits) {
       throw new BaseError({
         name: producId,
         httpCode: statusCode.NOT_FOUND,
         description: errorList.FIND_ERROR,
       });
     }
-    const product = await productService.findOneAndDelete(
-      { _id: producId },
-      option
-    );
-    await session.commitTransaction();
+    const product = await productService.findOneAndDelete({ _id: producId });
     responseSuccess(res, product);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const updateProduct = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session, new: true };
   try {
-    const { amount, price, newName, description } = req.body;
+    const { quantity, price, newName, description } = req.body;
     const productId = req.params.id;
-    const checkExits = await productService.getOne({
+    const productExits = await productService.getOne({
       condition: { _id: productId },
-      option: option,
     });
-    if (!checkExits) {
+    if (!productExits) {
       throw new BaseError({
         name: productId,
         httpCode: statusCode.NOT_FOUND,
@@ -137,16 +103,20 @@ const updateProduct = async (req, res, next) => {
     }
     await productService.findOneAndUpdate(
       { _id: productId },
-      { name: newName, amount: amount, price: price, description: description },
-      option
+      {
+        name: newName,
+        quantity: quantity,
+        price: price,
+        description: description,
+      }
     );
-    await session.commitTransaction();
-    responseSuccess(res, { newName, amount, price });
+    responseSuccess(res, {
+      newName: newName,
+      quantity: quantity,
+      price: price,
+    });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 

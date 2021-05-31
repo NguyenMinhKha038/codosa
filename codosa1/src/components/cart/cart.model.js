@@ -13,13 +13,14 @@ const cartModel = new Schema({
         type: Schema.Types.ObjectId,
         ref: "product",
       },
-      amount: {
+      quantity: {
         type: Number,
         min: 0,
         default: 0,
       },
-    },
-  ],
+    }
+  ]
+  
 });
 
 export default mongoose.model("cart", cartModel);

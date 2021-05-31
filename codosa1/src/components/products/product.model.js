@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import statusMiddleWare from "../utils/status";
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema({
@@ -7,7 +8,7 @@ const productSchema = new Schema({
     unique: true,
     require: true,
   },
-  amount: {
+  quantity: {
     type: Number,
     require: true,
     min: 0,
@@ -17,8 +18,9 @@ const productSchema = new Schema({
     require: true,
     min: 0,
   },
-  category: {
-    type: String,
+  categoryId: {
+    type: Schema.Types.ObjectId,
+    ref:'category',
     require: true,
   },
   description: {
@@ -28,11 +30,13 @@ const productSchema = new Schema({
   status: {
     type: Number,
     require: true,
+    default:statusMiddleWare.productStatus.ACTIVE,
+    max:1,
+    min:0
   },
-  image: [
-    {
-      type: String,
-    },
-  ],
+  image: {
+    type:Array,
+    default:null
+  }
 });
 export default mongoose.model("product", productSchema);

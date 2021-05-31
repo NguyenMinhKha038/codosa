@@ -7,38 +7,26 @@ import { categoryService } from "./category.service";
 import { productService } from "../products/product.service";
 import mongoose from "mongoose";
 const addCategory = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session, new: true };
   try {
     const categoryName = req.body.category;
-    const checkCategory = await categoryService.getOne({
+    const categoryExits = await categoryService.getOne({
       condition: {
         name: categoryName,
       },
-      option: option,
     });
-    if (checkCategory) {
+    if (categoryExits) {
       throw new BaseError({
         name: categoryName,
         httpCode: statusCode.ALREADY_EXITS,
         description: errorList.ALREADY_EXITS,
       });
     }
-    let category = await categoryService.create(
-      {
-        name: categoryName,
-        status: statusMiddleWare.categoryStatus.ACTIVE,
-      },
-      option
-    );
-    await session.commitTransaction();
+    let category = await categoryService.create({
+      name: categoryName,
+    });
     responseSuccess(res, category);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 const deleteCategory = async (req, res, next) => {
@@ -47,11 +35,10 @@ const deleteCategory = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const categoryId = req.params.id;
-    const category = await categoryService.findOneAndDelete(
-      { _id: categoryId },
-      option
-    );
-    await productService.findOneAndDelete({ category: category.name }, option);
+    await Promise.all([
+      categoryService.findOneAndDelete({ _id: categoryId }, option),
+      productService.findOneAndDelete({ categoryId: categoryId }, option),
+    ]);
     await session.commitTransaction();
     responseSuccess(res, categoryId);
   } catch (error) {
@@ -63,9 +50,8 @@ const deleteCategory = async (req, res, next) => {
 };
 const getListCategory = async (req, res, next) => {
   try {
-    const categories = await categoryService.get({ populate: "product" });
-    let list = categories.map((x) => x._id);
-    if (list.length == 0) {
+    const categories = await categoryService.get();
+    if (categories.length === 0) {
       throw new BaseError({
         name: categories,
         httpCode: statusCode.BAD_REQUEST,
@@ -80,11 +66,10 @@ const getListCategory = async (req, res, next) => {
 const getAllProduct = async (req, res, next) => {
   try {
     const categoryId = req.params.id;
-    const listProduct = await categoryService.get({
-      condition: { _id: categoryId },
-      populate: "product",
+    const listProduct = await productService.get({
+      condition: { categoryId: categoryId },
     });
-    if (listProduct.length == 0) {
+    if (listProduct.length === 0) {
       throw new BaseError({
         name: categoryId,
         httpCode: statusCode.BAD_REQUEST,
@@ -97,31 +82,16 @@ const getAllProduct = async (req, res, next) => {
   }
 };
 const updateCategory = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session, new: true };
   try {
     const { name, newName } = req.body;
     const categoryId = req.params.id;
-    await Promise.all([
-      categoryService.findOneAndUpdate(
-        { _id: categoryId },
-        { name: newName },
-        option
-      ),
-      productService.findManyAndUpdate(
-        { category: name },
-        { category: newName },
-        option
-      ),
-    ]);
-    await session.commitTransaction();
+    await categoryService.findOneAndUpdate(
+      { _id: categoryId },
+      { name: newName },
+    );
     responseSuccess(res, { name, newName });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 export default {

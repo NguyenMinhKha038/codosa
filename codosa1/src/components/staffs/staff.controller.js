@@ -8,16 +8,12 @@ import { responseSuccess } from "../error/baseResponese";
 import { staffService } from "./staff.service";
 import { userService } from "../users/user.service";
 const staffRegister = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const { email, name, password } = req.body;
-    const checkExits = await staffService.getOne({
+    const staffExits = await staffService.getOne({
       condition: { email: email },
-      option: option,
     });
-    if (checkExits) {
+    if (staffExits) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.ALREADY_EXITS,
@@ -25,23 +21,14 @@ const staffRegister = async (req, res, next) => {
       });
     }
     const hash = await bcrypt.hash(password, 10);
-    await staffService.create(
-      {
-        name,
-        password: hash,
-        email,
-        role: statusMiddleWare.permission.STAFF,
-        status: statusMiddleWare.permission.USER,
-      },
-      option
-    );
-    await session.commitTransaction();
+    await staffService.create({
+      name,
+      password: hash,
+      email,
+    });
     responseSuccess(res, { email, name });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -72,14 +59,10 @@ const staffLogin = async (req, res) => {
 };
 
 const deleteUser = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
-  const option = { session };
   try {
     const userId = req.params.id;
     const checkExits = await userService.getOne({
       condition: { _id: userId },
-      option: option,
     });
     if (!checkExits) {
       throw new BaseError({
@@ -88,14 +71,10 @@ const deleteUser = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    await userService.findOneAndDelete({ _id: userId }, option);
-    await session.commitTransaction();
+    await userService.findOneAndDelete({ _id: userId });
     responseSuccess(res, email);
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -107,7 +86,7 @@ const updateUser = async (req, res, next) => {
       { email: email },
       { name: name, password: hash }
     );
-    responseSuccess(res, { email, name, password });
+    responseSuccess(res, { email, name });
   } catch (error) {
     next(error);
   }
@@ -134,7 +113,7 @@ const getUser = async (req, res, next) => {
 const getInfo = async (req, res, next) => {
   try {
     const { email, name, role } = req.user;
-    responseSuccess(res, { email, name, role });
+    responseSuccess(res, { email: email, name: name, role: role });
   } catch (error) {
     next(error);
   }

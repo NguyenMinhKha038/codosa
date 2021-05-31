@@ -14,7 +14,7 @@ managerRouter.post(
 );
 managerRouter.post(
   "/login",
-  validate(managerValidate.EmailPass),
+  validate(managerValidate.EmailPass),  //chu dat ten validate vd validate =login
   managerController.managerLogin
 );
 managerRouter.get("/me",auth.passport, auth.authenticate([permission.MANAGER]), managerController.getInfo);

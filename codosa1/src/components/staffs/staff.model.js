@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import statusMiddleWare from "../utils/status";
 const Schema = mongoose.Schema;
 
 const staffSchema = new Schema({
@@ -13,6 +14,7 @@ const staffSchema = new Schema({
   role: {
     type: Number,
     require: true,
+    default:statusMiddleWare.permission.STAFF
   },
   email: {
     type: String,
@@ -22,7 +24,13 @@ const staffSchema = new Schema({
   status: {
     type: Number,
     required: true,
+    default:statusMiddleWare.permission.USER,
+    min:0,
+    max:1
   },
-  image: String,
+  image: {
+    type:String,
+    default:null
+  },
 });
 export default mongoose.model("staff", staffSchema);
