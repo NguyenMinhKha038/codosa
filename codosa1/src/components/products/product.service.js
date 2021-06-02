@@ -43,33 +43,33 @@ import { baseService } from "../utils/baseService";
 
 
 
-const service = (productModel) => {
+// const service = (productModel) => {
   
-  const findManyAndUpdate = async (query, data,option) => {
-    try {
-      let item = await productModel.updateMany(query, data, option);
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
-  const findMany = async (query) => {
-    try {
-      let item = await productModel.find(...query, {
-        new: true,
-      });
-      return item;
-    } catch (errors) {
-      throw errors;
-    }
-  };
+//   const findManyAndUpdate = async (query, data,option) => {
+//     try {
+//       let item = await productModel.updateMany(query, data, option);
+//       return item;
+//     } catch (errors) {
+//       throw errors;
+//     }
+//   };
+//   const findMany = async (query) => {
+//     try {
+//       let item = await productModel.find(...query, {
+//         new: true,
+//       });
+//       return item;
+//     } catch (errors) {
+//       throw errors;
+//     }
+//   };
   
   
-  return {findMany,findManyAndUpdate,...baseService(productModel)}
-};
+//   return {findMany,findManyAndUpdate,...baseService(productModel)}
+// };
 
 export const productService ={
-  ...service(productModel)
+  ...baseService(productModel)
 }
 
 

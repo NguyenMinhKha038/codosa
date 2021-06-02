@@ -34,4 +34,5 @@ const managerSchema = new Schema({
 
   },
 });
-export default mongoose.model("manager", managerSchema);
+const managerModel = mongoose.model("manager", managerSchema);
+export default managerModel;

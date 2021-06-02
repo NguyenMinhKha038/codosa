@@ -16,10 +16,9 @@ const createOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const { address, phone } = req.body;
-    const cart = await cartService.getOne({
-      condition: { userId: userId },
+    const cart = await cartService.getOne({ userId: userId }, null, {
       populate: "product.productId",
-      option: option,
+      option,
     });
     if (!cart.product) {
       throw new BaseError({
@@ -76,7 +75,7 @@ const createOrder = async (req, res, next) => {
 const getOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const order = await orderService.get({ condition: { userId: userId } });
+    const order = await orderService.get({ userId });
     if (order.length === 0) {
       throw new BaseError({
         name: userId,
@@ -91,8 +90,8 @@ const getOrder = async (req, res, next) => {
 };
 const getUserOrder = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const order = await orderService.get({ condition: { userId: userId } });
+    const userId = req.params.userId;
+    const order = await orderService.get({ userId });
     if (!order) {
       throw new BaseError({
         name: _id,
@@ -109,10 +108,11 @@ const getUserOrder = async (req, res, next) => {
 const updateOrder = async (req, res, next) => {
   try {
     const { address, phone } = req.body;
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
     const userId = req.user._id;
     const order = await orderService.getOne({
-      condition: { _id: orderId, userId: userId },
+      _id: orderId,
+      userId: userId,
     });
     const status = order.status;
     if (status > 2) {
@@ -135,11 +135,10 @@ const updateOrder = async (req, res, next) => {
 const userDeleteOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
     const order = await orderService.getOne({
-      condition: {
-        _id: orderId,userId:userId
-      },
+      _id: orderId,
+      userId: userId,
     });
     const status = order.status;
     if (status != 1) {
@@ -149,7 +148,7 @@ const userDeleteOrder = async (req, res, next) => {
         description: errorList.DELETE_ORDER_FAILD,
       });
     }
-    await orderService.findOneAndDelete({ _id: orderId, userId:userId });
+    await orderService.findOneAndDisable({ _id: orderId, userId: userId });
     responseSuccess(res, orderId);
   } catch (error) {
     next(error);
@@ -157,19 +156,17 @@ const userDeleteOrder = async (req, res, next) => {
 };
 const adminDeleteOrder = async (req, res) => {
   try {
-    const orderId = req.params.id;
-    const order = await orderService.getOne({
-      condition: { _id: orderId },
-    });
+    const orderId = req.params.orderId;
+    const order = await orderService.getOne({ _id: orderId });
     const status = order.status;
-    if (status == 4) {
+    if (status === 4) {
       throw new BaseError(
         orderId,
         statusCode.BAD_REQUEST,
         errorList.DELETE_ORDER_FAILD
       );
     }
-    await orderService.findOneAndDelete({ _id: orderId });
+    await orderService.findOneAndDisable({ _id: orderId });
     responseSuccess(res, orderId);
   } catch (error) {
     next(error);
@@ -184,10 +181,8 @@ const updateStatus = async (req, res, next) => {
       statusMiddleWare.orderStatus.SHIPPING,
       statusMiddleWare.orderStatus.FINISH,
     ];
-    const order = await orderService.getOne({
-      condition: { _id: orderId },
-    });
-    if (order && order.status + 1 == status) {
+    const order = await orderService.getOne({ _id: orderId });
+    if (order && order.status + 1 === status) {
       await orderService.findOneAndUpdate(
         { _id: orderId },
         { status: orderStatus[status] }
@@ -207,7 +202,7 @@ const updateStatus = async (req, res, next) => {
 const adminGetOrder = async (req, res, next) => {
   try {
     const status = req.params.status;
-    const orders = await orderService.get({ condition: { status: status } });
+    const orders = await orderService.get({ status });
     responseSuccess(res, orders);
   } catch (error) {
     next(error);

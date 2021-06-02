@@ -92,35 +92,24 @@ export const baseService = (model) => {
       throw errors;
     }
   };
-  const get = async (query) => {
+  const get = async (query, select, options) => {
     try {
-      const { condition, skip, limit, populate, dataGet, option,sort } = query;
-      let item = await model
-        .find(condition, dataGet, option)
-        .limit(limit)
-        .skip(skip)
-        .sort(sort)
-        .populate(populate);
+      let item = await model.find(query, select, options);
       return item;
     } catch (error) {
       throw error;
     }
   };
   // const getOne = async ({query, select, options})
-  const getOne = async(query)=>{
+  const getOne = async (query, select, options) => {
     try {
-
-      const { condition,populate, dataGet, option } = query;
-      //model.findOne()
-      let item = await model
-        .findOne(condition, dataGet, option)
-        .populate(populate);
+      let item = await model.findOne(query, select, options);
       return item;
     } catch (error) {
       throw error;
     }
-  }
-  const findOneAndDelete = async (query, option) => {
+  };
+  const findOneAndDisable = async (query, option) => {
     try {
       await model.findOneAndUpdate(
         query,
@@ -131,12 +120,14 @@ export const baseService = (model) => {
       throw error;
     }
   };
+ 
   return {
     findOneAndUpdate,
     create,
     get,
     getOne,
-    findOneAndDelete,
+    findOneAndDisable,
+    
   };
 };
 

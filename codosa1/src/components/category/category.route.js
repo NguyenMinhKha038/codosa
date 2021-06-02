@@ -4,6 +4,7 @@ import categoryController from "../category/category.controller";
 import categoryValidate from "./category.validate";
 import { validate, ValidationError, Joi } from "express-validation";
 import permission from "../utils/permission"
+import baseValidate from "../utils/validate"
 const categoryRouter = Router();
 categoryRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]));
 categoryRouter.post(
@@ -12,20 +13,20 @@ categoryRouter.post(
   categoryController.addCategory
 );
 categoryRouter.delete(
-  "/:id",
-  categoryValidate.validateId,
+  "/:categoryId",
+  baseValidate.validateId,
   categoryController.deleteCategory
 );
 categoryRouter.put(
-  "/:id",
+  "/:categoryId",
   validate(categoryValidate.updateCategory),
-  categoryValidate.validateId,
+  baseValidate.validateId,
   categoryController.updateCategory
 );
 categoryRouter.get("/", categoryController.getListCategory);
 categoryRouter.get(
-  "/product/:id",
-  categoryValidate.validateId,
+  "/product/:categoryId",
+  baseValidate.validateId,
   categoryController.getAllProduct
 );
 export default categoryRouter;

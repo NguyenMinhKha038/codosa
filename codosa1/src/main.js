@@ -6,6 +6,7 @@ import database from "./config/connectDb";
 import router from "./components/router";
 import swaggerDocument from "../swagger/swagger.json";
 import logger from "./components/logger/createLogger";
+
 database();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -32,14 +33,13 @@ app.use((error, req, res, next) => {
     });
   }
   return (
-    console.log(error.message),
     res.status(error.httpCode || 500).json({
       error: {
         status: error.httpCode || 500,
         message: error.message || "Internal Server Error",
       }
     }),
-    logger.log(error.message,error.httpCode )
+    logger.error({ message: error.message})
   );
 });
 const PORT = process.env.PORT || 8088;

@@ -7,7 +7,7 @@ import { notificationService } from "./notification.service";
 const getNotification = async (req, res, next) => {
   const { page, perPage } = req.params;
   try {
-    const notifications = await notificationService.get({
+    const notifications = await notificationService.get(null,null,{
       skip: page > 0 ? (page - 1) * perPage : 0,
       limit: Number(perPage),
       populate: "orderId",

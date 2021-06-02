@@ -33,7 +33,7 @@ const userSchema = new Schema({
     default:null
   },
 });
-export default mongoose.model("user", userSchema);
-
-
 const userModel = mongoose.model("user", userSchema);
+export default userModel;
+
+

@@ -4,16 +4,17 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import userValidate from "./user.validate";
 import permission from "../utils/permission"
+import baseValidate from "../utils/validate"
 
 const userRouter = Router();
 userRouter.post(
   "/login",
-  validate(userValidate.checkEmailPass),
+  validate(baseValidate.validateLogin),
   userController.userLogin
 );
 userRouter.post(
   "/register",
-  validate(userValidate.checkEmailNamePass),
+  validate(baseValidate.validateRegister),
   userController.userRegister
 );
 userRouter.get("/me", auth.passport, auth.authenticate([permission.USER]), userController.getInfo);

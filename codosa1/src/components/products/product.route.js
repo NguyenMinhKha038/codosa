@@ -3,31 +3,34 @@ import { express, Router } from "express";
 import auth from "../utils/auth";
 import product from "../products/product.controller";
 import productValidate from "./product.validate";
-import permission from "../utils/permission"
+import permission from "../utils/permission";
+import baseValidate from "../utils/validate";
 
 const productRouter = Router();
 productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 productRouter.post(
-  "/",
-  //validate(productValidate.addProduct),
+  "/:categoryId",
+  baseValidate.validateId,
+  validate(productValidate.productInfor),
   product.addProduct
 );
 productRouter.delete(
-  "/:id",
-  productValidate.validateId,
+  "/:productId",
+  baseValidate.validateId,
   product.deleteProduct
 );
 productRouter.put(
-  "/:id",
-  productValidate.validateId,
-  validate(productValidate.updateProduct),
+  "/:productId",
+  baseValidate.validateId,
+  validate(productValidate.productInfor),
   product.updateProduct
 );
 productRouter.get(
-  "/:id",
-  productValidate.validateId,
+  "/:productId",
+  baseValidate.validateId,
   product.getProduct
 );
+productRouter.get("/:categoryId",baseValidate.validateId,product.getAllByCategory);
 
 
 

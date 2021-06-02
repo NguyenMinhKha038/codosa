@@ -11,9 +11,7 @@ import mongoose from "mongoose";
 const userRegister = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-    const userExits = await userService.getOne({
-      condition: { email: email },
-    });
+    const userExits = await userService.getOne({ email });
     if (userExits) {
       throw new BaseError({
         name: { name, email },
@@ -38,7 +36,7 @@ const userRegister = async (req, res, next) => {
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.getOne({ condition: { email: email } });
+    const user = await userService.getOne({ email });
     if (!user) {
       throw new BaseError({
         name: { email, password },

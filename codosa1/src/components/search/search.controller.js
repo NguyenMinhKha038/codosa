@@ -8,12 +8,14 @@ const search = async (req, res, next) => {
   try {
     const { page, perPage } = req.params;
     const name = req.body.name;
-    const product = await productService.get({
-      condition: { name: { $regex: name, $options: "$i" } },
-      dataGet:["name","quantity","price"],
-      limit: Number(perPage),
-      skip: page > 0 ? (page - 1) * perPage : 0,
-    });
+    const product = await productService.get(
+      {
+        name: { $regex: name, $options: "$i" },
+      },
+      ["name", "quantity", "price"],
+
+      { limit: Number(perPage), skip: page > 0 ? (page - 1) * perPage : 0 }
+    );
     let arrProduct = product.map((x) => x);
     if (arrProduct.length === 0) {
       throw new BaseError({

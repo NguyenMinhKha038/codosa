@@ -1,21 +1,10 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const reportProduct = {
-  body: Joi.object({
-    fromDay: Joi.date()
-      .less(Joi.ref("toDay"))
-      .required()
-      .error((errors) => console.log(errors)),
-    toDay: Joi.date()
-      .required()
-      .error((errors) => console.log(errors)),
-  }),
-};
-const reportCategory = {
+
+const Day = {
   body: Joi.object({
     toDay: Joi.date()
-      .required()
-      .error((errors) => console.log(errors)),
+      .required(),
     fromDay: Joi.date().less(Joi.ref("toDay")).required(),
   }),
 };
-export default { reportProduct, reportCategory };
+export default {Day};

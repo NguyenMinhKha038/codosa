@@ -18,4 +18,5 @@ const categorySchema = new Schema({
     default:statusMiddleWare.categoryStatus.ACTIVE
   },
 });
-export default mongoose.model("category", categorySchema);
+const categoryModel = mongoose.model("category", categorySchema);
+export default categoryModel;

@@ -1,36 +1,24 @@
 import winston from "winston";
 import customizeLevels from "./customizeLogger";
-winston.addColors(customizeLevels.colors);
-// const logger = winston.createLogger({
-//   level: "info",
-//   format: winston.format.json(),
-//   defaultMeta: { service: "user-service" },
-//   colorize: true,
-//   transports: [
-//     //
-//     // - Write all logs with level `error` and below to `error.log`
-//     // - Write all logs with level `info` and below to `combined.log`
-//     //
-//     new winston.transports.File({ filename: "error.log", level: "error" }),
-//     new winston.transports.File({ filename: "combined.log" }),
-//   ],
-// });
+import dotenv from "dotenv";
+dotenv.config();
+
 const loggerwithColor = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.colorize({ all: true }),
   winston.format.printf((info) => {
-    return `${info.timestamp} ${info.level}: ${info.message}`;
+    return `${info.timestamp } ${info.level }: ${ info.message}`;
   })
 );
 const loggerNonColor = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.printf((info) => {
-    return `${info.timestamp} ${info.level}: ${info.message}`;
+    return `${info.timestamp } ${info.level }: ${ info.message}`;
   })
 )
 const level = () => {
-  const env = process.env.NODE_ENV || 'development';
-  const isDevelopment = env === 'development';
+  const env = process.env.NODE_ENV || 'DEV';
+  const isDevelopment = env === 'DEV';
   return isDevelopment ? 'debug' : 'warn';
 };
 const transports = [
@@ -38,19 +26,20 @@ const transports = [
     format: loggerwithColor,
   }),
   new winston.transports.File({
-    filename: './error.log',
+    filename: "error.log",
     level: 'error',
     format: loggerNonColor,
   }),
   new winston.transports.File({
-    filename: './allLog.log',
-    format: loggerwithColor,
+    filename: 'allLog.log',
+    level: 'info',
+    format: loggerNonColor,
   }),
 ];
-
 const logger = winston.createLogger({
   level: level(),
   levels:customizeLevels.levels,
+  format: winston.format.json(),
   transports,
 });
-export default logger;
+ export default logger;

@@ -4,33 +4,34 @@ import auth from "../utils/auth";
 import staffController from "./staff.controller";
 import staffValidate from "./staff.validate";
 import permission from "../utils/permission"
+import baseValidate from "../utils/validate"
 const staffRoute = Router();
 staffRoute.post(
   "/register",
-  validate(staffValidate.EmailNamePass),
+  validate(baseValidate.validateRegister),
   staffController.staffRegister
 );
 staffRoute.post(
   "/login",
-  validate(staffValidate.EmailPass),
+  validate(baseValidate.validateLogin),
   staffController.staffLogin
 );
 staffRoute.use(auth.passport, auth.authenticate([permission.STAFF]));
 staffRoute.get("/me", staffController.getInfo);
 staffRoute.put(
   "/user/:id",
-  staffValidate.validateId,
+  baseValidate.validateId,
   validate(staffValidate.EmailNamePass),
   staffController.updateUser
 );
 staffRoute.delete(
   "/user/:id",
-  staffValidate.validateId,
+  baseValidate.validateId,
   staffController.deleteUser
 );
 staffRoute.get(
   "/user/:id",
-  staffValidate.validateId,
+  baseValidate.validateId,
   staffController.getUser
 );
 

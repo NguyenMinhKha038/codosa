@@ -4,17 +4,18 @@ import auth from "../utils/auth";
 import managerController from "./manager.controller";
 import managerValidate from "./manager.validate";
 import permission from "../utils/permission"
+import baseValidate from "../utils/validate";
 const managerRouter = Router();
 const CRUDuserRouter = Router();
 const CRUDstaffRouter = Router();
 managerRouter.post(
   "/register",
-  validate(managerValidate.EmailNamePass),
+  validate(baseValidate.validateRegister),
   managerController.managerRegister
 );
 managerRouter.post(
   "/login",
-  validate(managerValidate.EmailPass),  //chu dat ten validate vd validate =login
+  validate(baseValidate.validateLogin),  //chu dat ten validate vd validate =login
   managerController.managerLogin
 );
 managerRouter.get("/me",auth.passport, auth.authenticate([permission.MANAGER]), managerController.getInfo);
@@ -23,17 +24,17 @@ managerRouter.use("/user",CRUDuserRouter);
 CRUDuserRouter.use(auth.passport, auth.authenticate([permission.MANAGER]));
 CRUDuserRouter.delete(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   managerController.deleteUser
 );
 CRUDuserRouter.get(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   managerController.getUser
 );
 CRUDuserRouter.put(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   validate(managerValidate.EmailNamePass),
   managerController.updateUser
 );
@@ -41,18 +42,18 @@ CRUDuserRouter.put(
 managerRouter.use("/staff",CRUDstaffRouter)
 CRUDstaffRouter.delete(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   managerController.deleteStaff
 );
 CRUDstaffRouter.put(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   validate(managerValidate.EmailNamePass),
   managerController.updateStaff
 );
 CRUDstaffRouter.get(
   "/:id",
-  managerValidate.validateId,
+  baseValidate.validateId,
   managerController.getStaff
 );
 

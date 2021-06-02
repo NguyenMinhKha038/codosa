@@ -7,10 +7,12 @@ import { productService } from "../products/product.service";
 const getCart = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const carts = await cartService.getOne({
-      condition: { userId: userId },
-      populate: "product.productId",
-    });
+    const carts = await cartService.getOne(
+      {
+        userId: userId,
+      },
+      { populate: "product.productId" }
+    );
     if (!carts) {
       throw new BaseError({
         name: userId,
@@ -31,11 +33,12 @@ const addCart = async (req, res, next) => {
     const product = req.body.product;
     const userId = req.user._id;
     for (const value of product) {
-      const productExits = await productService.getOne({
-        condition: { _id: value.productId },
-        populate: "product.productId",
-        option: option,
-      });
+      const productExits = await productService.getOne(
+        {
+          _id: value.productId,
+        },
+        { populate: "product.productId", option }
+      );
       if (productExits === null) {
         throw new BaseError({
           name: userId,

@@ -8,12 +8,12 @@ const reportRouter = Router();
 reportRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 reportRouter.get(
   "/product",
-  validate(reportValidate.reportProduct),
+  validate(reportValidate.Day),
   reportController.reportProduct
 );
 reportRouter.get(
   "/category",
-  validate(reportValidate.reportCategory),
+  validate(reportValidate.Day),
   reportController.reportCategory
 );
 export default reportRouter;

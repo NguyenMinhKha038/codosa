@@ -33,4 +33,5 @@ const staffSchema = new Schema({
     default:null
   },
 });
-export default mongoose.model("staff", staffSchema);
+const staffModel =mongoose.model("staff", staffSchema);
+export default staffModel;

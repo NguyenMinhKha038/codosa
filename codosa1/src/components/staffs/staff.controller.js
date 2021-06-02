@@ -10,9 +10,7 @@ import { userService } from "../users/user.service";
 const staffRegister = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const staffExits = await staffService.getOne({
-      condition: { email: email },
-    });
+    const staffExits = await staffService.getOne({ email });
     if (staffExits) {
       throw new BaseError({
         name: name,
@@ -35,7 +33,7 @@ const staffRegister = async (req, res, next) => {
 const staffLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let staff = await staffService.getOne({ condition: { email: email } });
+    let staff = await staffService.getOne({ email });
     if (!staff) {
       throw new BaseError({
         name: email,
@@ -61,9 +59,7 @@ const staffLogin = async (req, res) => {
 const deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    const checkExits = await userService.getOne({
-      condition: { _id: userId },
-    });
+    const checkExits = await userService.getOne({ _id: userId });
     if (!checkExits) {
       throw new BaseError({
         name: email,
@@ -71,7 +67,7 @@ const deleteUser = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    await userService.findOneAndDelete({ _id: userId });
+    await userService.findOneAndDisable({ _id: userId });
     responseSuccess(res, email);
   } catch (error) {
     next(error);
@@ -95,7 +91,7 @@ const updateUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    const user = await userService.getOne({ condition: { _id: userId } });
+    const user = await userService.getOne({ _id: userId });
     if (user) {
       responseSuccess(res, user);
     } else {

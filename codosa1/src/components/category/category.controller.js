@@ -9,11 +9,7 @@ import mongoose from "mongoose";
 const addCategory = async (req, res, next) => {
   try {
     const categoryName = req.body.category;
-    const categoryExits = await categoryService.getOne({
-      condition: {
-        name: categoryName,
-      },
-    });
+    const categoryExits = await categoryService.getOne({ name: categoryName });
     if (categoryExits) {
       throw new BaseError({
         name: categoryName,
@@ -34,10 +30,10 @@ const deleteCategory = async (req, res, next) => {
   session.startTransaction();
   const option = { session, new: true };
   try {
-    const categoryId = req.params.id;
+    const categoryId = req.params.categoryId;
     await Promise.all([
-      categoryService.findOneAndDelete({ _id: categoryId }, option),
-      productService.findOneAndDelete({ categoryId: categoryId }, option),
+      categoryService.findOneAndDisable({ _id: categoryId }, option),
+      productService.findOneAndDisable({ categoryId: categoryId }, option),
     ]);
     await session.commitTransaction();
     responseSuccess(res, categoryId);
@@ -65,10 +61,8 @@ const getListCategory = async (req, res, next) => {
 };
 const getAllProduct = async (req, res, next) => {
   try {
-    const categoryId = req.params.id;
-    const listProduct = await productService.get({
-      condition: { categoryId: categoryId },
-    });
+    const categoryId = req.params.categoryId;
+    const listProduct = await productService.get({ categoryId: categoryId });
     if (listProduct.length === 0) {
       throw new BaseError({
         name: categoryId,
@@ -84,10 +78,10 @@ const getAllProduct = async (req, res, next) => {
 const updateCategory = async (req, res, next) => {
   try {
     const { name, newName } = req.body;
-    const categoryId = req.params.id;
+    const categoryId = req.params.categoryId;
     await categoryService.findOneAndUpdate(
       { _id: categoryId },
-      { name: newName },
+      { name: newName }
     );
     responseSuccess(res, { name, newName });
   } catch (error) {
