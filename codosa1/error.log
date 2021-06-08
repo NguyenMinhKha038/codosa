@@ -2,3 +2,101 @@
 2021-06-03 06:17:24:1724 error: Can Not Found
 2021-06-03 06:27:45:2745 error: Can Not Found
 2021-06-03 06:28:27:2827 error: Can Not Found
+2021-06-06 05:40:47:4047 error: Not found
+2021-06-06 05:42:08:428 error: Not found
+2021-06-06 05:42:15:4215 error: Not found
+2021-06-06 05:42:43:4243 error: Not found
+2021-06-06 05:43:30:4330 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:44:07:447 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:44:53:4453 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:45:55:4555 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:46:54:4654 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:47:09:479 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:47:52:4752 error: ClientSession cannot be serialized to BSON.
+2021-06-06 05:50:13:5013 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:50:55:5055 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:51:41:5141 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:51:59:5159 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:52:37:5237 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:53:18:5318 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:54:45:5445 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 05:58:04:584 error: Cast to embedded failed for value "1" (type string) at path "products"
+2021-06-06 06:02:51:251 error: Cast to embedded failed for value "2" (type string) at path "products"
+2021-06-06 06:03:10:310 error: Cast to embedded failed for value "2" (type string) at path "products"
+2021-06-06 06:03:27:327 error: Cast to embedded failed for value "2" (type string) at path "products"
+2021-06-06 06:19:33:1933 error: Not found
+2021-06-06 06:39:37:3937 error: Unexpected token } in JSON at position 213
+2021-06-06 06:39:42:3942 error: Cannot read property 'concat' of undefined
+2021-06-07 07:22:18:2218 error: Unauthorized
+2021-06-07 07:23:14:2314 error: Not found
+2021-06-07 07:25:47:2547 error: Not found
+2021-06-07 07:26:47:2647 error: Not found
+2021-06-07 07:38:54:3854 error: Not found
+2021-06-07 07:39:50:3950 error: Unexpected number in JSON at position 40
+2021-06-07 07:39:57:3957 error: Not found
+2021-06-07 07:40:16:4016 error: Not found
+2021-06-07 07:40:32:4032 error: Can Not Found
+2021-06-07 07:41:56:4156 error: Can Not Found
+2021-06-07 07:42:09:429 error: Promise.map is not a function
+2021-06-07 07:42:34:4234 error: Promise.map is not a function
+2021-06-07 07:42:43:4243 error: Promise.map is not a function
+2021-06-07 07:43:00:430 error: Promise.map is not a function
+2021-06-07 07:46:39:4639 error: Promise.map is not a function
+2021-06-07 07:47:08:478 error: Promise.map is not a function
+2021-06-07 07:50:08:508 error: Promise.map is not a function
+2021-06-07 07:51:29:5129 error: Promise.map is not a function
+2021-06-07 07:51:43:5143 error: Promise.map is not a function
+2021-06-07 07:53:11:5311 error: Promise.map is not a function
+2021-06-07 07:55:12:5512 error: a is not defined
+2021-06-07 07:56:02:562 error: Promise.map is not a function
+2021-06-07 07:57:31:5731 error: a is not defined
+2021-06-07 07:58:26:5826 error: a is not defined
+2021-06-07 08:01:02:12 error: Promise.map is not a function
+2021-06-07 08:04:42:442 error: Promise.map is not a function
+2021-06-07 08:07:04:74 error: Promise.map is not a function
+2021-06-07 08:11:46:1146 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:13:01:131 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:13:55:1355 error: Promise.map is not a function
+2021-06-07 08:15:18:1518 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:17:24:1724 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:18:19:1819 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:18:42:1842 error: Promise.map is not a function
+2021-06-07 08:19:51:1951 error: Promise.map is not a function
+2021-06-07 08:21:24:2124 error: Promise.map is not a function
+2021-06-07 08:26:14:2614 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:26:47:2647 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:27:34:2734 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:30:08:308 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:30:19:3019 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:31:02:312 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:33:13:3313 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:34:52:3452 error: Cannot create namespace webstore.orders in multi-document transaction.
+2021-06-07 08:42:10:4210 error: Promise.map is not a function
+2021-06-09 03:01:38:138 error: Invalid status code: [ [Object] ]
+2021-06-09 03:03:03:33 error: Invalid status code: [ [Object] ]
+2021-06-09 03:05:16:516 error: Invalid status code: [ [Object] ]
+2021-06-09 03:05:43:543 error: Invalid status code: [ [Object] ]
+2021-06-09 03:07:12:712 error: Invalid status code: [ [Object], [Object] ]
+2021-06-09 03:07:14:714 error: Invalid status code: [ [Object], [Object] ]
+2021-06-09 03:08:36:836 error: Invalid status code: [ [Object] ]
+2021-06-09 03:09:02:92 error: Invalid status code: [ [Object] ]
+2021-06-09 03:09:21:921 error: Invalid status code: [ [Object] ]
+2021-06-09 03:11:54:1154 error: Invalid status code: [ [Object] ]
+2021-06-09 03:13:42:1342 error: Invalid status code: [ [Object] ]
+2021-06-09 03:14:29:1429 error: Invalid status code: [ [Object] ]
+2021-06-09 03:14:54:1454 error: Invalid status code: NaN
+2021-06-09 03:15:24:1524 error: Invalid status code: NaN
+2021-06-09 03:16:17:1617 error: Invalid status code: NaN
+2021-06-09 03:18:51:1851 error: Invalid status code: NaN
+2021-06-09 03:19:29:1929 error: Invalid status code: NaN
+2021-06-09 03:20:14:2014 error: Invalid status code: NaN
+2021-06-09 03:20:58:2058 error: Invalid status code: NaN
+2021-06-09 03:21:27:2127 error: Invalid status code: [{"status":1,"deliveryDay":null,"finishDay":null,"_id":"60bd79d7481fd458a786456a","userId":"60bc0c739f671062ea8aeb90","products":[{"_id":"60bd79d7481fd458a786456b","productId":"60b76f237e7ee765a0a2260b","quantity":2,"price":250000},{"_id":"60bd79d7481fd458a786456c","productId":"60bbfca49faa1433305aa082","quantity":1,"price":250000}],"total":750000,"address":"Vinhome","phone":"0965707061","createdAt":"2021-06-07T01:43:51.422Z","updatedAt":"2021-06-07T01:43:51.422Z","__v":0}]
+2021-06-09 03:22:39:2239 error: statusCode is not defined
+2021-06-09 03:22:57:2257 error: Invalid status code: [ [Object] ]
+2021-06-09 03:23:25:2325 error: Invalid status code: [ [Object] ]
+2021-06-09 03:26:57:2657 error: Invalid status code: [ [Object] ]
+2021-06-09 03:30:27:3027 error: Invalid status code: [ [Object] ]
+2021-06-09 03:30:59:3059 error: Invalid status code: [ [Object] ]
+2021-06-09 03:31:15:3115 error: httpCode is not defined
+2021-06-09 03:31:16:3116 error: httpCode is not defined

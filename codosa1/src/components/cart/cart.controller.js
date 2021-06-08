@@ -4,68 +4,47 @@ import statusCode from "../error/statusCode";
 import { responseSuccess } from "../error/baseResponese";
 import { cartService } from "./cart.service";
 import { productService } from "../products/product.service";
+import mongoose from "mongoose";
 const getCart = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const carts = await cartService.getOne(
+    const cart = await cartService.getOne(
       {
         userId: userId,
       },
+      null,
       { populate: "product.productId" }
     );
-    if (!carts) {
+    if (!cart) {
       throw new BaseError({
         name: userId,
         httpCode: statusCode.NOT_FOUND,
         description: errorList.CART_EMPTY,
       });
     }
-    responseSuccess(res, carts.product);
+    responseSuccess(res, 200, cart.products);
   } catch (error) {
     next(error);
   }
 };
 const addCart = async (req, res, next) => {
   const session = await mongoose.startSession();
-  session.startTransaction(); //start transaction
+  session.startTransaction();
   const option = { session, new: true };
   try {
-    const product = req.body.product;
+    const products = req.body.products;
     const userId = req.user._id;
-    for (const value of product) {
-      const productExits = await productService.getOne(
-        {
-          _id: value.productId,
-        },
-        { populate: "product.productId", option }
-      );
-      if (productExits === null) {
-        throw new BaseError({
-          name: userId,
-          httpCode: statusCode.NOT_FOUND,
-          description: "No product exists " + value.productId,
-        });
-      } else if (productExits.quantity === 0) {
-        throw new BaseError({
-          name: userId,
-          httpCode: statusCode.NOT_FOUND,
-          description: productExits.name + " Out of stock ",
-        });
-      } else if (value.quantity > productExits.quantity) {
-        throw new BaseError({
-          name: userId,
-          httpCode: statusCode.NOT_FOUND,
-          description: productExits.name + " Exceed the number of existence ",
-        });
-      }
-    }
+    checkProducts(products, option);
+    const cart = await cartService.getOne({ userId: userId }, null, option);
+    const productsOfCart = cart.products;
+    const newProductsOfCart = productsOfCart.concat(products);
     await cartService.findOneAndUpdate(
       { userId: userId },
-      { product: product },
+      { products: newProductsOfCart },
       option
     );
     await session.commitTransaction();
-    responseSuccess(res, product);
+    responseSuccess(res, 200, newProductsOfCart);
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -73,5 +52,59 @@ const addCart = async (req, res, next) => {
     session.endSession();
   }
 };
-
-export default { getCart, addCart };
+const updateCart = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); //start transaction
+  const option = { session, new: true };
+  try {
+    const products = req.body.products;
+    const cartId = req.params.cartId;
+    const userId = req.user._id;
+    checkProducts(products, option);
+    await cartService.findOneAndUpdate(
+      { userId: userId, _id: cartId },
+      { products: products },
+      option
+    );
+    await session.commitTransaction();
+    responseSuccess(res, 200, products);
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
+  }
+};
+const checkProducts = async (products, option) => {
+  for (const value of products) {
+    const product = await productService.getOne(
+      {
+        _id: value.productId,
+      },
+      null,
+      option
+    );
+    if (product === null) {
+      throw new BaseError({
+        name: value.productId,
+        httpCode: statusCode.NOT_FOUND,
+        description: "No product exists " + value.productId,
+      });
+    }
+    if (product.quantity <= 0) {
+      throw new BaseError({
+        name: value.productId,
+        httpCode: statusCode.NOT_FOUND,
+        description: product.name + " Out of stock ",
+      });
+    }
+    if (value.quantity > product.quantity) {
+      throw new BaseError({
+        name: value.productId,
+        httpCode: statusCode.NOT_FOUND,
+        description: product.name + " Exceed the number of existence ",
+      });
+    }
+  }
+};
+export default { getCart, addCart, updateCart };

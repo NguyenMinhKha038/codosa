@@ -1,7 +1,7 @@
 import { validate, ValidationError, Joi } from "express-validation";
-const addCart = {
+const productsOfCart = {
   body: Joi.object({
-    product: Joi.array()
+    products: Joi.array()
       .items(
         Joi.object({
           productId: Joi.string().required(),
@@ -12,4 +12,5 @@ const addCart = {
   }),
 };
 
-export default { addCart };
+
+export default { productsOfCart };

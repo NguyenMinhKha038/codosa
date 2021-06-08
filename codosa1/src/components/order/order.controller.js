@@ -8,6 +8,8 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { productService } from "../products/product.service";
 import { notificationService } from "../notification/notification.service";
 import { cartService } from "../cart/cart.service";
+import Promise from "bluebird";
+mongoose.Promise = Promise;
 // CRUD order
 const createOrder = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -17,10 +19,10 @@ const createOrder = async (req, res, next) => {
     const userId = req.user._id;
     const { address, phone } = req.body;
     const cart = await cartService.getOne({ userId: userId }, null, {
-      populate: "product.productId",
+      populate: "products.productId",
       option,
     });
-    if (!cart.product) {
+    if (!cart.products) {
       throw new BaseError({
         name: "Cart",
         httpCode: statusCode.NOT_FOUND,
@@ -29,14 +31,14 @@ const createOrder = async (req, res, next) => {
     }
     let total = 0;
     let orderInfo = [];
-    await cart.product.map(async (value) => {
+    await Promise.map(cart.products, (value) => {
       total += value.productId.price * value.quantity;
       orderInfo.push({
         productId: value.productId._id,
         quantity: value.quantity,
         price: value.productId.price,
       });
-      await productService.findOneAndUpdate(
+      productService.findOneAndUpdate(
         { _id: value.productId._id },
         { quantity: value.productId.quantity - value.quantity },
         option
@@ -60,10 +62,14 @@ const createOrder = async (req, res, next) => {
         },
         option
       ),
-      cartService.findOneAndUpdate({ userId: userId }, { product: [] }, option),
+      cartService.findOneAndUpdate(
+        { userId: userId },
+        { products: [] },
+        option
+      ),
     ]);
     await session.commitTransaction();
-    responseSuccess(res, order);
+    responseSuccess(res, 200, orderInfo);
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -72,7 +78,7 @@ const createOrder = async (req, res, next) => {
   }
 };
 
-const getOrder = async (req, res, next) => {
+const userGetOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const order = await orderService.get({ userId });
@@ -83,12 +89,12 @@ const getOrder = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, order);
+    responseSuccess(res, 200, order);
   } catch (error) {
     next(error);
   }
 };
-const getUserOrder = async (req, res, next) => {
+const adminGetOrder = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const order = await orderService.get({ userId });
@@ -99,7 +105,7 @@ const getUserOrder = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, order);
+    responseSuccess(res, 200, order);
   } catch (error) {
     next(error);
   }
@@ -126,7 +132,7 @@ const updateOrder = async (req, res, next) => {
       { _id: orderId, userId: userId },
       { address: address, phone: phone, updateDay: Date.now() }
     );
-    responseSuccess(res, orderUpdated);
+    responseSuccess(res, 200, orderUpdated);
   } catch (error) {
     next(error);
   }
@@ -141,7 +147,7 @@ const userDeleteOrder = async (req, res, next) => {
       userId: userId,
     });
     const status = order.status;
-    if (status != 1) {
+    if (status !== 1) {
       throw new BaseError({
         name: orderId,
         httpCode: statusCode.BAD_REQUEST,
@@ -149,7 +155,7 @@ const userDeleteOrder = async (req, res, next) => {
       });
     }
     await orderService.findOneAndDisable({ _id: orderId, userId: userId });
-    responseSuccess(res, orderId);
+    responseSuccess(res, 204, orderId);
   } catch (error) {
     next(error);
   }
@@ -167,7 +173,7 @@ const adminDeleteOrder = async (req, res) => {
       );
     }
     await orderService.findOneAndDisable({ _id: orderId });
-    responseSuccess(res, orderId);
+    responseSuccess(res, 204, orderId);
   } catch (error) {
     next(error);
   }
@@ -187,7 +193,7 @@ const updateStatus = async (req, res, next) => {
         { _id: orderId },
         { status: orderStatus[status] }
       );
-      responseSuccess(res, order);
+      responseSuccess(res, 200, order);
     }
     throw new BaseError({
       name: orderId,
@@ -199,22 +205,22 @@ const updateStatus = async (req, res, next) => {
   }
 };
 //get Order
-const adminGetOrder = async (req, res, next) => {
+const adminGetOrderByStatus = async (req, res, next) => {
   try {
     const status = req.params.status;
     const orders = await orderService.get({ status });
-    responseSuccess(res, orders);
+    responseSuccess(res, 200, orders);
   } catch (error) {
     next(error);
   }
 };
 export default {
   createOrder,
-  getOrder,
+  userGetOrder,
   updateOrder,
   userDeleteOrder,
   adminDeleteOrder,
   updateStatus,
   adminGetOrder,
-  getUserOrder,
+  adminGetOrderByStatus,
 };

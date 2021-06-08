@@ -1,4 +1,3 @@
-import statusMiddleWare from "../utils/status";
 import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
@@ -9,18 +8,18 @@ import mongoose from "mongoose";
 const addCategory = async (req, res, next) => {
   try {
     const categoryName = req.body.category;
-    const categoryExits = await categoryService.getOne({ name: categoryName });
-    if (categoryExits) {
+    const existedCategory = await categoryService.getOne({ name: categoryName });
+    if (existedCategory) {
       throw new BaseError({
         name: categoryName,
         httpCode: statusCode.ALREADY_EXITS,
         description: errorList.ALREADY_EXITS,
       });
     }
-    let category = await categoryService.create({
+    const category = await categoryService.create({
       name: categoryName,
     });
-    responseSuccess(res, category);
+    responseSuccess(res,201, category);
   } catch (error) {
     next(error);
   }
@@ -36,7 +35,7 @@ const deleteCategory = async (req, res, next) => {
       productService.findOneAndDisable({ categoryId: categoryId }, option),
     ]);
     await session.commitTransaction();
-    responseSuccess(res, categoryId);
+    responseSuccess(res,204, categoryId);
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -54,7 +53,7 @@ const getListCategory = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, categories);
+    responseSuccess(res,200, categories);
   } catch (error) {
     next(error);
   }
@@ -70,7 +69,7 @@ const getAllProduct = async (req, res, next) => {
         description: errorList.FIND_ERROR3b,
       });
     }
-    responseSuccess(res, listProduct);
+    responseSuccess(res,200, listProduct);
   } catch (error) {
     next(error);
   }
@@ -83,7 +82,7 @@ const updateCategory = async (req, res, next) => {
       { _id: categoryId },
       { name: newName }
     );
-    responseSuccess(res, { name, newName });
+    responseSuccess(res,200, { name, newName });
   } catch (error) {
     next(error);
   }

@@ -28,7 +28,7 @@ const userRegister = async (req, res, next) => {
     await cartService.create({
       userId: newUser._id,
     });
-    responseSuccess(res, { name, email });
+    responseSuccess(res, 201, { name, email });
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ const userLogin = async (req, res, next) => {
     };
     const token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    responseSuccess(res, token);
+    responseSuccess(res, 200, token);
   } catch (error) {
     next(error);
   }
@@ -62,7 +62,7 @@ const userLogin = async (req, res, next) => {
 const getInfo = async (req, res) => {
   try {
     const { name, role, email } = req.user;
-    responseSuccess(res, { name: name, role: role, email: email });
+    responseSuccess(res, 200, { name: name, role: role, email: email });
   } catch (error) {
     next(error);
   }

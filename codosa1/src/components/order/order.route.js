@@ -6,49 +6,49 @@ import orderValidate from "./order.validate";
 import permission from "../utils/permission"
 import baseValidate from "../utils/validate"
 
-const userOrderRouter = Router();
-const adminOrderRouter = Router();
+const userRouter = Router();
+const adminRouter = Router();
 const orderRouter=Router();
-userOrderRouter.use(auth.passport, auth.authenticate([permission.USER]));
-adminOrderRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
-userOrderRouter.post(
+userRouter.use(auth.passport, auth.authenticate([permission.USER]));
+adminRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
+userRouter.post(
   "/",
   validate(orderValidate.receiverInfor),
   orderController.createOrder
 );
-userOrderRouter.put(
+userRouter.put(
   "/:orderId",
   baseValidate.validateId,
   validate(orderValidate.receiverInfor),
   orderController.updateOrder
 );
-userOrderRouter.get("/", orderController.getOrder);
-userOrderRouter.delete(
+userRouter.get("/", orderController.userGetOrder);
+userRouter.delete(
   "/:orderId",
   baseValidate.validateId,
   orderController.userDeleteOrder
 );
 
-adminOrderRouter.get(
+adminRouter.get(
   "/:userId",
   baseValidate.validateId,
-  orderController.getUserOrder
+  orderController.adminGetOrder
 );
-adminOrderRouter.delete(
+adminRouter.delete(
   "/:orderId",
   baseValidate.validateId,
   orderController.adminDeleteOrder
 );
 //status update
-adminOrderRouter.put(
+adminRouter.put(
   "/status/:orderId/:status",
   orderValidate.validateStatus,
   baseValidate.validateId,
   orderController.updateStatus
 );
-adminOrderRouter.get("/status/:status", orderValidate.validateStatus,orderController.adminGetOrder);
-orderRouter.use("/user",userOrderRouter)
-orderRouter.use("/admin",adminOrderRouter);
+adminRouter.get("/status/:status", orderValidate.validateStatus,orderController.adminGetOrderByStatus);
+orderRouter.use("/user",userRouter)
+orderRouter.use("/admin",adminRouter);
 
 
 export default orderRouter ;

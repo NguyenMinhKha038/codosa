@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import statusMiddleWare from "../utils/status";
 import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
@@ -24,7 +23,7 @@ const staffRegister = async (req, res, next) => {
       password: hash,
       email,
     });
-    responseSuccess(res, { email, name });
+    responseSuccess(res, 201, { email, name });
   } catch (error) {
     next(error);
   }
@@ -50,7 +49,7 @@ const staffLogin = async (req, res) => {
     };
     let token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    responseSuccess(res, token);
+    responseSuccess(res, 200, token);
   } catch (error) {
     next(error);
   }
@@ -68,7 +67,7 @@ const deleteUser = async (req, res, next) => {
       });
     }
     await userService.findOneAndDisable({ _id: userId });
-    responseSuccess(res, email);
+    responseSuccess(res, 204, email);
   } catch (error) {
     next(error);
   }
@@ -76,13 +75,22 @@ const deleteUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
+    const userId = req.params.id;
     const { email, name, password } = req.body;
+    const user = await userService.getOne({ _id: userId });
+    if (!user) {
+      throw new BaseError({
+        name: email,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
+    }
     const hash = await bcrypt.hash(password, 10);
     await userService.findOneAndUpdate(
       { email: email },
       { name: name, password: hash }
     );
-    responseSuccess(res, { email, name });
+    responseSuccess(res, 200, { email, name });
   } catch (error) {
     next(error);
   }
@@ -92,15 +100,18 @@ const getUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
     const user = await userService.getOne({ _id: userId });
-    if (user) {
-      responseSuccess(res, user);
-    } else {
+    if (!user) {
       throw new BaseError({
         name: email,
         httpCode: statusCode.NOT_FOUND,
         description: errorList.FIND_ERROR,
       });
     }
+    responseSuccess(res, 200, {
+      name: user.name,
+      status: user.status,
+      email: user.email,
+    });
   } catch (error) {
     next(error);
   }
@@ -109,7 +120,7 @@ const getUser = async (req, res, next) => {
 const getInfo = async (req, res, next) => {
   try {
     const { email, name, role } = req.user;
-    responseSuccess(res, { email: email, name: name, role: role });
+    responseSuccess(res, 200, { email: email, name: name, role: role });
   } catch (error) {
     next(error);
   }

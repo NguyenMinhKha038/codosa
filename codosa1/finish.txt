@@ -1,0 +1,10 @@
+/orderRouter sửa lại userRouter,adminRouter ok
+/product : những id k liên quan đến chính cái nó get () để hết vào body ok
+line 13 : sửa lại như trong ảnh ok
+/validate :regex chỉ sử dụng cho validateId,string không cần ok
+/cart(add):product sửa products ok
+/check exits:sửa lại exitedProduct vd product,... ok
+/addCart : thêm sản phẩm ok
+/cartController : sửa if(productsExits.quantity <=0) ok
+/orderController-createOrder : cart.product.map tham khảo sửa lại bằng promise.map() ok
+/staff(get user):không trả về những thông tin mật ok

@@ -1,6 +1,6 @@
 import logger from "../logger/createLogger";
-const responseSuccess = (res, data) => {
-  const httpCode = 200;
+const responseSuccess = (res, httpCode,data) => {
+  //const statusCode = JSON.stringify(httpCode);
   const message = "Successful";
   return (
     res.status(httpCode).json({ data: data, message: message }),

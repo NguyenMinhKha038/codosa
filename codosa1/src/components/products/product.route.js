@@ -9,7 +9,7 @@ import baseValidate from "../utils/validate";
 const productRouter = Router();
 productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 productRouter.post(
-  "/:categoryId",
+  "/",
   baseValidate.validateId,
   validate(productValidate.productInfor),
   product.addProduct
@@ -30,7 +30,7 @@ productRouter.get(
   baseValidate.validateId,
   product.getProduct
 );
-productRouter.get("/:categoryId",baseValidate.validateId,product.getAllByCategory);
+productRouter.post("/category",validate(productValidate.categoryId),product.getAllByCategory);
 
 
 

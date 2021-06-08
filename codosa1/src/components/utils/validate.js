@@ -3,11 +3,9 @@ import { isValidObjectId } from "mongoose";
 const validateRegister = {
   body: Joi.object({
     name: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
     email: Joi.string().email().required(),
     password: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,30}/)
       .required()
   }),
 };
@@ -15,7 +13,6 @@ const validateLogin = {
   body: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
   }),
 };
@@ -28,7 +25,6 @@ const validateEmailName = {
   body: Joi.object({
     email: Joi.string().email().required(),
     name: Joi.string()
-      .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
   }),
 };

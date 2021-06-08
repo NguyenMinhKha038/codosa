@@ -1,15 +1,18 @@
 import { validate, ValidationError, Joi } from "express-validation";
-import { isValidObjectId } from "mongoose";
+import validateId from "joi-oid";
 const productInfor = {
   body: Joi.object({
-    name: Joi.string()
-      .required(),
+    name: Joi.string().required(),
     quantity: Joi.number().min(1).required(),
     price: Joi.number().min(0).required(),
-    description: Joi.string()
-      .regex(/[a-zA-Z0-9]{10,60}/)
-      .required(),
+    description: Joi.string().required(),
+    categoryId: validateId.objectId(),
   }),
 };
 
-export default { productInfor};
+const categoryId = {
+  body: Joi.object({
+    categoryId: validateId.objectId(),
+  }),
+};
+export default { productInfor, categoryId };

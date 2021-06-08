@@ -8,7 +8,6 @@ const receiverInfor = {
   body: Joi.object({
     phone: Joi.string().length(10).required(),
     address: Joi.string()
-      .regex(/[a-zA-Z0-9]{10,60}/)
       .required(),
   }),
 };

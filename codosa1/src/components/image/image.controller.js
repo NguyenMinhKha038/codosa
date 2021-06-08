@@ -14,7 +14,7 @@ const addAvatar = async (req, res, next) => {
     const service = [userService, staffService, managerService];
     const { email, role } = req.user;
     await service[role].findOneAndUpdate({ email: email }, { image: imgPath });
-    responseSuccess(res, imgPath);
+    responseSuccess(res, 201, imgPath);
   } catch (error) {
     next(error);
   }
@@ -49,7 +49,7 @@ const addProductImage = async (req, res, next) => {
       ),
     ]);
     await session.commitTransaction();
-    responseSuccess(res, arrImage);
+    responseSuccess(res, 201, arrImage);
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

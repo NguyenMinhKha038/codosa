@@ -7,7 +7,7 @@ const cartSchema = new Schema({
     require: true,
     ref: "user",
   },
-  product: [
+  products: [
     {
       productId: {
         type: Schema.Types.ObjectId,
@@ -18,6 +18,7 @@ const cartSchema = new Schema({
         min: 0,
         default: 0,
       },
+      
     }
   ]
   
