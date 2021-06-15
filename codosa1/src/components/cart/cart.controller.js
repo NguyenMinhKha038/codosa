@@ -34,7 +34,7 @@ const addCart = async (req, res, next) => {
   try {
     const products = req.body.products;
     const userId = req.user._id;
-    checkProducts(products, option);
+    await checkProducts(products, option);
     const cart = await cartService.getOne({ userId: userId }, null, option);
     const productsOfCart = cart.products;
     const newProductsOfCart = productsOfCart.concat(products);
@@ -58,9 +58,9 @@ const updateCart = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const products = req.body.products;
-    const cartId = req.params.cartId;
+    const cartId = req.params.id;
     const userId = req.user._id;
-    checkProducts(products, option);
+    await checkProducts(products, option);
     await cartService.findOneAndUpdate(
       { userId: userId, _id: cartId },
       { products: products },
@@ -84,7 +84,7 @@ const checkProducts = async (products, option) => {
       null,
       option
     );
-    if (product === null) {
+    if (!product ) {
       throw new BaseError({
         name: value.productId,
         httpCode: statusCode.NOT_FOUND,

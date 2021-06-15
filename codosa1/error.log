@@ -100,3 +100,40 @@
 2021-06-09 03:30:59:3059 error: Invalid status code: [ [Object] ]
 2021-06-09 03:31:15:3115 error: httpCode is not defined
 2021-06-09 03:31:16:3116 error: httpCode is not defined
+2021-06-15 09:41:54:4154 error: Not found
+2021-06-15 09:42:07:427 error: Not found
+2021-06-15 09:42:13:4213 error: Not found
+2021-06-15 09:43:53:4353 error: Not found
+2021-06-15 09:44:46:4446 error: Not found
+2021-06-15 09:44:52:4452 error: Not found
+2021-06-15 09:46:21:4621 error: Not found
+2021-06-15 09:50:02:502 error: limit is not defined
+2021-06-15 09:53:05:535 error: Not found
+2021-06-15 09:58:25:5825 error: Not found
+2021-06-15 09:59:49:5949 error: Not found
+2021-06-15 10:00:43:043 error: Not found
+2021-06-15 10:07:45:745 error: Parameter "filter" to find() must be an object, got 60bc0c739f671062ea8aeb90
+2021-06-15 10:08:55:855 error: Options must be an object, got "limit:1"
+2021-06-15 10:09:16:916 error: Options must be an object, got "{limit:1}"
+2021-06-15 10:09:50:950 error: Parameter "filter" to find() must be an object, got 60bc0c739f671062ea8aeb90
+2021-06-15 10:12:03:123 error: Parameter "filter" to find() must be an object, got {userId:60bc0c739f671062ea8aeb90}
+2021-06-15 10:15:51:1551 error: Not found
+2021-06-15 10:22:58:2258 error: Cast to ObjectId failed for value "60bc0c739f671062ea8aeb90/select?total/limit?2" (type string) at path "userId" for model "order"
+2021-06-15 10:23:18:2318 error: Cast to ObjectId failed for value "60bc0c739f671062ea8aeb90/select=total" (type string) at path "userId" for model "order"
+2021-06-15 10:32:05:325 error: userId is not defined
+2021-06-15 10:33:04:334 error: Options must be an object, got "1"
+2021-06-15 10:33:15:3315 error: Options must be an object, got "limit=1"
+2021-06-15 10:33:28:3328 error: Options must be an object, got "limit:1"
+2021-06-15 10:33:28:3328 error: Options must be an object, got "limit:1"
+2021-06-15 10:36:16:3616 error: Parameter "filter" to find() must be an object, got userId=60bc0c739f671062ea8aeb90
+2021-06-15 10:38:11:3811 error: select is not defined
+2021-06-15 10:44:22:4422 error: Not found
+2021-06-15 10:44:35:4435 error: Not found
+2021-06-15 10:44:36:4436 error: Not found
+2021-06-15 10:44:54:4454 error: Not found
+2021-06-15 10:45:28:4528 error: Not found
+2021-06-15 10:58:08:588 error: Can Not Found
+2021-06-15 11:06:36:636 error: Not found
+2021-06-15 11:09:34:934 error: Not found
+2021-06-15 11:09:42:942 error: Not found
+2021-06-15 11:49:37:4937 error: Not found

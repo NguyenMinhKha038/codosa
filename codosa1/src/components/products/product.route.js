@@ -7,6 +7,11 @@ import permission from "../utils/permission";
 import baseValidate from "../utils/validate";
 
 const productRouter = Router();
+productRouter.get(
+  "/:page/:perPage",
+  productValidate.pagePerPage,
+  product.getProduct
+);
 productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
 productRouter.post(
   "/",
@@ -25,11 +30,7 @@ productRouter.put(
   validate(productValidate.productInfor),
   product.updateProduct
 );
-productRouter.get(
-  "/:productId",
-  baseValidate.validateId,
-  product.getProduct
-);
+
 productRouter.post("/category",validate(productValidate.categoryId),product.getAllByCategory);
 
 

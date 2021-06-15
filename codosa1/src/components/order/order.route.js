@@ -28,10 +28,8 @@ userRouter.delete(
   baseValidate.validateId,
   orderController.userDeleteOrder
 );
-
 adminRouter.get(
-  "/:userId",
-  baseValidate.validateId,
+  "/?query",
   orderController.adminGetOrder
 );
 adminRouter.delete(
@@ -46,7 +44,7 @@ adminRouter.put(
   baseValidate.validateId,
   orderController.updateStatus
 );
-adminRouter.get("/status/:status", orderValidate.validateStatus,orderController.adminGetOrderByStatus);
+
 orderRouter.use("/user",userRouter)
 orderRouter.use("/admin",adminRouter);
 

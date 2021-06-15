@@ -96,8 +96,8 @@ const userGetOrder = async (req, res, next) => {
 };
 const adminGetOrder = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
-    const order = await orderService.get({ userId });
+    const query = req.query;
+    const order = await orderService.get(query);
     if (!order) {
       throw new BaseError({
         name: _id,
@@ -205,15 +205,7 @@ const updateStatus = async (req, res, next) => {
   }
 };
 //get Order
-const adminGetOrderByStatus = async (req, res, next) => {
-  try {
-    const status = req.params.status;
-    const orders = await orderService.get({ status });
-    responseSuccess(res, 200, orders);
-  } catch (error) {
-    next(error);
-  }
-};
+
 export default {
   createOrder,
   userGetOrder,
@@ -222,5 +214,4 @@ export default {
   adminDeleteOrder,
   updateStatus,
   adminGetOrder,
-  adminGetOrderByStatus,
 };

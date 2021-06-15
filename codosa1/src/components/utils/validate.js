@@ -2,18 +2,15 @@ import { validate, ValidationError, Joi } from "express-validation";
 import { isValidObjectId } from "mongoose";
 const validateRegister = {
   body: Joi.object({
-    name: Joi.string()
-      .required(),
+    name: Joi.string().required(),
     email: Joi.string().email().required(),
-    password: Joi.string()
-      .required()
+    password: Joi.string().required(),
   }),
 };
 const validateLogin = {
   body: Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string()
-      .required(),
+    password: Joi.string().required(),
   }),
 };
 const validateEmail = {
@@ -24,8 +21,20 @@ const validateEmail = {
 const validateEmailName = {
   body: Joi.object({
     email: Joi.string().email().required(),
-    name: Joi.string()
-      .required(),
+    name: Joi.string().required(),
+  }),
+};
+const validateNamePass = {
+  body: Joi.object({
+    name: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+};
+const validateEmailNamePass = {
+  body: Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 };
 const validateId = (req, res, next) => {
@@ -43,5 +52,7 @@ export default {
   validateLogin,
   validateEmail,
   validateEmailName,
-  validateId
+  validateId,
+  validateNamePass,
+  validateEmailNamePass
 };

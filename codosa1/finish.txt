@@ -1,10 +1,22 @@
-/orderRouter sửa lại userRouter,adminRouter ok
-/product : những id k liên quan đến chính cái nó get () để hết vào body ok
-line 13 : sửa lại như trong ảnh ok
-/validate :regex chỉ sử dụng cho validateId,string không cần ok
-/cart(add):product sửa products ok
-/check exits:sửa lại exitedProduct vd product,... ok
-/addCart : thêm sản phẩm ok
-/cartController : sửa if(productsExits.quantity <=0) ok
-/orderController-createOrder : cart.product.map tham khảo sửa lại bằng promise.map() ok
-/staff(get user):không trả về những thông tin mật ok
+/orderRouter sửa lại userRouter,adminRouter
+/product : những id k liên quan đến chính cái nó get () để hết vào body
+line 13 : sửa lại như trong ảnh
+/validate :regex chỉ sử dụng cho validateId,string không cần
+/cart(add):product sửa products
+/check exits:sửa lại exitedProduct vd product,...
+/addCart : thêm sản phẩm 
+/cartController : sửa if(productsExits.quantity <=0)
+/orderController-createOrder : cart.product.map tham khảo sửa lại bằng promise.map()
+/staff(get user):không trả về những thông tin mật
+
+"Làm sao để cuộc sống sinh viên thoải mái hơn"
+
+
+validate id cart ok
+kiểm tra null sửa dụng ! ok
+thêm async/await trong checkProduct() ok
+order-adminRouter.get() cho basic hơn=>linh hoạt trong params,query ok
+productRouter.get()=> cho phép user get ok
+lấy order theo quyền 
+kiểm tra newName lúc update đã tồn tại chưa ok
+quản lý đối tượng nào thì api nằm trong component đó vd staff update-delete user nằm trong component user ok

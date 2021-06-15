@@ -18,7 +18,7 @@ const addProduct = async (req, res, next) => {
         description: errorList.ALREADY_EXITS,
       });
     }
-    if (category === null) {
+    if (!category) {
       throw new BaseError({
         name: categoryId,
         httpCode: statusCode.BAD_REQUEST,
@@ -40,8 +40,9 @@ const addProduct = async (req, res, next) => {
 
 const getProduct = async (req, res, next) => {
   try {
-    const productId = req.params.productId;
-    const product = await productService.getOne({ _id: productId });
+    const {page,perPage}= req.params;
+    console.log("page",page)
+    const product = await productService.get(null,null,{limit: Number(perPage), skip: page > 0 ? (page - 1) * perPage : 0});
     if (!product) {
       throw new BaseError({
         name: productId,
@@ -77,12 +78,22 @@ const updateProduct = async (req, res, next) => {
   try {
     const { quantity, price, newName, description } = req.body;
     const productId = req.params.productId;
-    const existedProduct = await productService.getOne({ _id: productId });
+    const [existedProduct,existedNewName] = await Promise.all([
+      productService.getOne({ _id: productId }),
+      productService.getOne({name:newName})
+    ]);
     if (!existedProduct) {
       throw new BaseError({
         name: productId,
         httpCode: statusCode.NOT_FOUND,
         description: errorList.FIND_ERROR,
+      });
+    }
+    if(existedNewName){
+      throw new BaseError({
+        name: productId,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.ALREADY_EXITS,
       });
     }
     const updatedProduct = await productService.findOneAndUpdate(

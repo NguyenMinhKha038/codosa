@@ -67,5 +67,65 @@ const getInfo = async (req, res) => {
     next(error);
   }
 };
+const adminDeleteUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const userExits = await userService.getOne({ _id: userId });
+    if (!userExits) {
+      throw new BaseError({
+        name: email,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    await userService.findOneAndDisable({ _id: userId });
+    responseSuccess(res, 204, userId);
+  } catch (error) {
+    next(error);
+  }
+};
+const adminUpdateUser = async (req, res, next) => {
+  try {
+    const {  name, password } = req.body;
+    const userId = req.params.id;
+    const user = userService.getOne({ _id: userId });
+    if (!user) {
+      throw new BaseError({
+        name: userId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    const hash = await bcrypt.hash(password, 10);
+    await userService.findOneAndUpdate(
+      { _id: userId },
+      { name: name, password: hash }
+    );
+    responseSuccess(res, 200,  name );
+  } catch (error) {
+    next(error);
+  }
+};
+const adminGetUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await userService.getOne({ _id: userId });
+    if (!user) {
+      throw new BaseError({
+        name: userId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    responseSuccess(res, 200, {
+      name: user.name,
+      email: user.email,
+      status: user.status,
+      role: user.role,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-export default { userLogin, userRegister, getInfo };
+export default { userLogin, userRegister, getInfo,adminDeleteUser,adminUpdateUser,adminGetUser };

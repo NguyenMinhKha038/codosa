@@ -54,69 +54,6 @@ const staffLogin = async (req, res) => {
     next(error);
   }
 };
-
-const deleteUser = async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const checkExits = await userService.getOne({ _id: userId });
-    if (!checkExits) {
-      throw new BaseError({
-        name: email,
-        httpCode: statusCode.NOT_FOUND,
-        description: errorList.FIND_ERROR,
-      });
-    }
-    await userService.findOneAndDisable({ _id: userId });
-    responseSuccess(res, 204, email);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateUser = async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const { email, name, password } = req.body;
-    const user = await userService.getOne({ _id: userId });
-    if (!user) {
-      throw new BaseError({
-        name: email,
-        httpCode: statusCode.NOT_FOUND,
-        description: errorList.FIND_ERROR,
-      });
-    }
-    const hash = await bcrypt.hash(password, 10);
-    await userService.findOneAndUpdate(
-      { email: email },
-      { name: name, password: hash }
-    );
-    responseSuccess(res, 200, { email, name });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getUser = async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const user = await userService.getOne({ _id: userId });
-    if (!user) {
-      throw new BaseError({
-        name: email,
-        httpCode: statusCode.NOT_FOUND,
-        description: errorList.FIND_ERROR,
-      });
-    }
-    responseSuccess(res, 200, {
-      name: user.name,
-      status: user.status,
-      email: user.email,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const getInfo = async (req, res, next) => {
   try {
     const { email, name, role } = req.user;
@@ -125,11 +62,71 @@ const getInfo = async (req, res, next) => {
     next(error);
   }
 };
+const managerGetStaff = async (req, res, next) => {
+  try {
+    const staffId = req.params.id;
+    const staff = await staffService.getOne({ _id: staffId });
+    if (!staff) {
+      throw new BaseError({
+        name: staffId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    responseSuccess(res, 200, {
+      name: staff.name,
+      email: staff.email,
+      status: staff.status,
+      role: staff.role,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const managerUpdateStaff = async (req, res, next) => {
+  try {
+    const { email, name, password } = req.body;
+    const staffId = req.params.id;
+    const staff = staffService.getOne({ _id: staffId });
+    if (!staff) {
+      throw new BaseError({
+        name: staffId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    const hash = await bcrypt.hash(password, 10);
+    await staffService.findOneAndUpdate(
+      { _id: staffId },
+      { name: name, password: hash}
+    );
+    responseSuccess(res, 200, name );
+  } catch (error) {
+    next(error);
+  }
+};
+const managerDeleteStaff = async (req, res, next) => {
+  try {
+    const staffId = req.params.id;
+    const staffExits = await staffService.getOne({ _id: staffId });
+    if (!staffExits) {
+      throw new BaseError({
+        name: staffId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
+    await staffService.findOneAndDisable({ _id: staffId });
+    responseSuccess(res, 204, staffId);
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   staffRegister,
   staffLogin,
-  deleteUser,
-  updateUser,
-  getUser,
   getInfo,
+  managerGetStaff,
+  managerUpdateStaff,
+  managerDeleteStaff
 };

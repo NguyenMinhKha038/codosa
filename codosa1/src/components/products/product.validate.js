@@ -15,4 +15,15 @@ const categoryId = {
     categoryId: validateId.objectId(),
   }),
 };
-export default { productInfor, categoryId };
+const pagePerPage = (req, res, next) => {
+  const { page, perPage } = req.params;
+  if (isNaN(page ) || isNaN(perPage)) {
+    throw new BaseError({
+      name: req.params.id,
+      httpCode: statusCode.BAD_REQUEST,
+      description: errorList.VALIDATE_PAGE_PERPAGE,
+    });
+  }
+  next();
+};
+export default { productInfor, categoryId ,pagePerPage};
