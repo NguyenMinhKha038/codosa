@@ -14,6 +14,8 @@ const authenticate = (roleCheck) => {
   return (req, res, next) => {
     try {
       const role = req.user.role;
+      console.log("role",role)
+      console.log("roleCheck",roleCheck)
       if (roleCheck.includes(role)) {
         next();
       } else {

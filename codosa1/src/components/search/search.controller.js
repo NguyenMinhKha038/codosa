@@ -6,7 +6,7 @@ import { productService } from "../products/product.service";
 
 const search = async (req, res, next) => {
   try {
-    const { page, perPage } = req.params;
+    const { page, perPage } = req.query;
     const name = req.body.name;
     const product = await productService.get(
       {
@@ -17,7 +17,7 @@ const search = async (req, res, next) => {
       { limit: Number(perPage), skip: page > 0 ? (page - 1) * perPage : 0 }
     );
     let arrProduct = product.map((x) => x);
-    if (arrProduct.length === 0) {
+    if (!arrProduct.length) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.NOT_FOUND,

@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import statusMiddleWare from "../utils/status";
 import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
@@ -108,21 +107,16 @@ const adminUpdateUser = async (req, res, next) => {
 };
 const adminGetUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const user = await userService.getOne({ _id: userId });
-    if (!user) {
+    const query = req.query
+    const user = await userService.get(query);
+    if (!user.length) {
       throw new BaseError({
-        name: userId,
+        name: query,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, {
-      name: user.name,
-      email: user.email,
-      status: user.status,
-      role: user.role,
-    });
+    responseSuccess(res, 200, user);
   } catch (error) {
     next(error);
   }

@@ -15,7 +15,7 @@ const getCart = async (req, res, next) => {
       null,
       { populate: "product.productId" }
     );
-    if (!cart) {
+    if (!cart.length) {
       throw new BaseError({
         name: userId,
         httpCode: statusCode.NOT_FOUND,
@@ -58,11 +58,10 @@ const updateCart = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const products = req.body.products;
-    const cartId = req.params.id;
     const userId = req.user._id;
     await checkProducts(products, option);
     await cartService.findOneAndUpdate(
-      { userId: userId, _id: cartId },
+      { userId},
       { products: products },
       option
     );

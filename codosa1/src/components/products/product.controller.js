@@ -40,12 +40,12 @@ const addProduct = async (req, res, next) => {
 
 const getProduct = async (req, res, next) => {
   try {
-    const {page,perPage}= req.params;
-    console.log("page",page)
+    const {page,perPage}= req.query;
+    console.log(status)
     const product = await productService.get(null,null,{limit: Number(perPage), skip: page > 0 ? (page - 1) * perPage : 0});
-    if (!product) {
+    if (!product.length) {
       throw new BaseError({
-        name: productId,
+        name: status,
         httpCode: statusCode.NOT_FOUND,
         description: errorList.FIND_ERROR,
       });
@@ -110,24 +110,11 @@ const updateProduct = async (req, res, next) => {
     next(error);
   }
 };
-const getAllByCategory = async (req, res, next) => {
-  try {
-    const categoryId = req.body.categoryId;
-    const products = await productService.get(
-      { categoryId: categoryId },
-      null,
-      { populate: "category" }
-    );
-    responseSuccess(res, 200, products);
-  } catch (error) {
-    next(error);
-  }
-};
+
 
 export default {
   addProduct,
   getProduct,
   deleteProduct,
-  updateProduct,
-  getAllByCategory,
+  updateProduct
 };

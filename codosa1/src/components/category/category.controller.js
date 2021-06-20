@@ -32,6 +32,14 @@ const deleteCategory = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const categoryId = req.params.categoryId;
+    const category = await categoryService.getOne({_id:categoryId});
+    if(!category){
+      throw new BaseError({
+        name: categoryId,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR,
+      });
+    }
     await Promise.all([
       categoryService.findOneAndDisable({ _id: categoryId }, option),
       productService.findOneAndDisable({ categoryId: categoryId }, option),
@@ -48,7 +56,7 @@ const deleteCategory = async (req, res, next) => {
 const getListCategory = async (req, res, next) => {
   try {
     const categories = await categoryService.get();
-    if (categories.length === 0) {
+    if (!categories.length) {
       throw new BaseError({
         name: categories,
         httpCode: statusCode.BAD_REQUEST,
@@ -62,9 +70,9 @@ const getListCategory = async (req, res, next) => {
 };
 const getAllProduct = async (req, res, next) => {
   try {
-    const categoryId = req.params.categoryId;
+    const categoryId = req.query.categoryId;
     const listProduct = await productService.get({ categoryId: categoryId });
-    if (listProduct.length === 0) {
+    if (!listProduct.length) {
       throw new BaseError({
         name: categoryId,
         httpCode: statusCode.BAD_REQUEST,

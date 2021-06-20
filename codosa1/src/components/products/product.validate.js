@@ -1,29 +1,30 @@
 import { validate, ValidationError, Joi } from "express-validation";
-import validateId from "joi-oid";
+
 const productInfor = {
   body: Joi.object({
     name: Joi.string().required(),
     quantity: Joi.number().min(1).required(),
     price: Joi.number().min(0).required(),
     description: Joi.string().required(),
-    categoryId: validateId.objectId(),
+    categoryId: Joi.string()
+      .regex(/^[0-9a-fA-F]{24}$/)
+      .required(),
+    productId: Joi.string()
+      .regex(/^[0-9a-fA-F]{24}$/)
+      .required(),
   }),
 };
 
-const categoryId = {
-  body: Joi.object({
-    categoryId: validateId.objectId(),
+const productId = {
+  params: Joi.object({
+    productId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
   }),
 };
-const pagePerPage = (req, res, next) => {
-  const { page, perPage } = req.params;
-  if (isNaN(page ) || isNaN(perPage)) {
-    throw new BaseError({
-      name: req.params.id,
-      httpCode: statusCode.BAD_REQUEST,
-      description: errorList.VALIDATE_PAGE_PERPAGE,
-    });
-  }
-  next();
+
+const validateGetProduct = {
+  query: Joi.object({
+    page: Joi.number().min(1).required(),
+    perPage: Joi.number().min(1).max(30).required()
+  }),
 };
-export default { productInfor, categoryId ,pagePerPage};
+export default { productInfor, productId, validateGetProduct };

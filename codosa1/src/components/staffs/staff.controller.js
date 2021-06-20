@@ -64,11 +64,11 @@ const getInfo = async (req, res, next) => {
 };
 const managerGetStaff = async (req, res, next) => {
   try {
-    const staffId = req.params.id;
-    const staff = await staffService.getOne({ _id: staffId });
-    if (!staff) {
+    const query = req.query
+    const staff = await staffService.get(query);
+    if (!staff.length) {
       throw new BaseError({
-        name: staffId,
+        name: query,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });

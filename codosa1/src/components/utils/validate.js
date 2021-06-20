@@ -37,15 +37,10 @@ const validateEmailNamePass = {
     password: Joi.string().required(),
   }),
 };
-const validateId = (req, res, next) => {
-  if (!isValidObjectId(req.params.id)) {
-    throw new BaseError({
-      name: req.params.id,
-      httpCode: statusCode.BAD_REQUEST,
-      description: errorList.MUST_BE_OBJECTID,
-    });
-  }
-  next();
+const validateId = {
+  params: Joi.object({
+    id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+  }),
 };
 export default {
   validateRegister,

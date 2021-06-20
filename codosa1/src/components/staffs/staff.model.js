@@ -24,7 +24,7 @@ const staffSchema = new Schema({
   status: {
     type: Number,
     required: true,
-    default:statusMiddleWare.permission.USER,
+    default:statusMiddleWare.personStatus.ACTIVE,
     min:0,
     max:1
   },

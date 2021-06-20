@@ -1,13 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import statusMiddleWare from "../utils/status";
 import { BaseError } from "../error/BaseError";
 import { errorList } from "../error/errorList";
 import statusCode from "../error/statusCode";
 import { responseSuccess } from "../error/baseResponese";
 import { managerService } from "./manager.service";
-import { userService } from "../users/user.service";
-import { staffService } from "../staffs/staff.service";
 
 const managerRegister = async (req, res, next) => {
   try {

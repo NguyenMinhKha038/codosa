@@ -9,6 +9,7 @@ import { productService } from "../products/product.service";
 import { notificationService } from "../notification/notification.service";
 import { cartService } from "../cart/cart.service";
 import Promise from "bluebird";
+import orderModel from "./order.model";
 mongoose.Promise = Promise;
 // CRUD order
 const createOrder = async (req, res, next) => {
@@ -22,11 +23,11 @@ const createOrder = async (req, res, next) => {
       populate: "products.productId",
       option,
     });
-    if (!cart.products) {
+    if (!cart.products.length) {
       throw new BaseError({
         name: "Cart",
-        httpCode: statusCode.NOT_FOUND,
-        description: errorList.FIND_ERROR,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.CART_EMPTY,
       });
     }
     let total = 0;
@@ -82,10 +83,10 @@ const userGetOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const order = await orderService.get({ userId });
-    if (order.length === 0) {
+    if (!order.length) {
       throw new BaseError({
         name: userId,
-        httpCode: statusCode.NOT_FOUND,
+        httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });
     }
@@ -98,11 +99,11 @@ const adminGetOrder = async (req, res, next) => {
   try {
     const query = req.query;
     const order = await orderService.get(query);
-    if (!order) {
+    if (!order.length) {
       throw new BaseError({
-        name: _id,
-        httpCode: statusCode.NOT_FOUND,
-        description: errorList.FIND_ERROR,
+        name: query,
+        httpCode: statusCode.BAD_REQUEST,
+        description: errorList.FIND_ERROR ,
       });
     }
     responseSuccess(res, 200, order);
@@ -124,7 +125,7 @@ const updateOrder = async (req, res, next) => {
     if (status > 2) {
       throw new BaseError({
         name: order,
-        httpCode: statusCode.NOT_FOUND,
+        httpCode: statusCode.BAD_REQUEST,
         description: errorList.UPDATE_ORDER_FAILD,
       });
     }

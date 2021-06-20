@@ -5,7 +5,7 @@ import { responseSuccess } from "../error/baseResponese";
 import { notificationService } from "./notification.service";
 
 const getNotification = async (req, res, next) => {
-  const { page, perPage } = req.params;
+  const { page, perPage } = req.query;
   try {
     const notifications = await notificationService.get(null, null, {
       skip: page > 0 ? (page - 1) * perPage : 0,

@@ -11,9 +11,8 @@ userRouter.use(auth.passport, auth.authenticate([permission.USER]));
 userRouter.get("/", cartController.getCart);
 userRouter.post("/", validate(cartValidate.productsOfCart), cartController.addCart);
 userRouter.put(
-  "/:id",
+  "/",
   validate(cartValidate.productsOfCart),
-  baseValidate.validateId,
   cartController.updateCart
 );
 cartRouter.use("/user", userRouter);

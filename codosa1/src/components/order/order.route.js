@@ -8,7 +8,7 @@ import baseValidate from "../utils/validate"
 
 const userRouter = Router();
 const adminRouter = Router();
-const orderRouter=Router();
+const mainRouter=Router();
 userRouter.use(auth.passport, auth.authenticate([permission.USER]));
 adminRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
 userRouter.post(
@@ -18,35 +18,36 @@ userRouter.post(
 );
 userRouter.put(
   "/:orderId",
-  baseValidate.validateId,
+  validate(orderValidate.validateOrderId),
   validate(orderValidate.receiverInfor),
   orderController.updateOrder
 );
 userRouter.get("/", orderController.userGetOrder);
 userRouter.delete(
   "/:orderId",
-  baseValidate.validateId,
+  validate(orderValidate.validateOrderId),
   orderController.userDeleteOrder
 );
 adminRouter.get(
-  "/?query",
+  "/",
+  validate(orderValidate.validateAdminGetOrder),
   orderController.adminGetOrder
 );
 adminRouter.delete(
   "/:orderId",
-  baseValidate.validateId,
+  validate(orderValidate.validateOrderId),
   orderController.adminDeleteOrder
 );
 //status update
 adminRouter.put(
   "/status/:orderId/:status",
   orderValidate.validateStatus,
-  baseValidate.validateId,
+  validate(orderValidate.validateOrderId),
   orderController.updateStatus
 );
 
-orderRouter.use("/user",userRouter)
-orderRouter.use("/admin",adminRouter);
+mainRouter.use("/user",userRouter)
+mainRouter.use("/admin",adminRouter);
 
 
-export default orderRouter ;
+export default mainRouter ;

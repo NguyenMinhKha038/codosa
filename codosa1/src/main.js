@@ -15,31 +15,61 @@ app.use("/api", router);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
-  const error = new Error("Not found");
-  error.httpCode = 404;
-  next(error);
+  return (
+    res.status(404).json({
+      error: {
+        status: 404,
+        message: "Page Not Found",
+      },
+    }),
+    logger.error({ message: "Page Not Found" })
+  );
 });
 
 app.use((error, req, res, next) => {
   if (error.details) {
-    error.details.body.forEach((element) => {
-      error.message = element.message;
-    });
-    return res.status(error.statusCode || 500).json({
-      error: {
-        status: error.statusCode || 500,
-        message: error.message || "Internal Server Error",
-      },
-    });
+    if (error.details.body) {
+      error.details.body.forEach((element) => {
+        error.message = element.message;
+      });
+      return res.status(error.statusCode || 500).json({
+        error: {
+          status: error.statusCode || 500,
+          message: error.message || "Internal Server Error",
+        },
+      });
+    }
+    if (error.details.params) {
+      error.details.params.forEach((element) => {
+        error.message = element.message;
+      });
+      return res.status(error.statusCode || 500).json({
+        error: {
+          status: error.statusCode || 500,
+          message: error.message || "Internal Server Error",
+        },
+      });
+    }
+    if (error.details.query) {
+      error.details.query.forEach((element) => {
+        error.message = element.message;
+      });
+      return res.status(error.statusCode || 500).json({
+        error: {
+          status: error.statusCode || 500,
+          message: error.message || "Internal Server Error",
+        },
+      });
+    }
   }
   return (
     res.status(error.httpCode || 500).json({
       error: {
         status: error.httpCode || 500,
         message: error.message || "Internal Server Error",
-      }
+      },
     }),
-    logger.error({ message: error.message})
+    logger.error({ message: error.message })
   );
 });
 const PORT = process.env.PORT || 8088;

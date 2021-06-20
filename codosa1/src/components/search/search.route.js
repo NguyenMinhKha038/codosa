@@ -3,5 +3,5 @@ import { validate, ValidationError, Joi } from "express-validation";
 import searchController from "../search/search.controller";
 import searchValidate from "./search.validate";
 const searchRoute = Router();
-searchRoute.get("/:page/:perPage", searchValidate.pagePerPage,validate(searchValidate.nameSearch),searchController.search);
+searchRoute.get("/", validate(searchValidate.validateSearch),searchController.search);
 export default searchRoute;

@@ -4,35 +4,32 @@ import auth from "../utils/auth";
 import product from "../products/product.controller";
 import productValidate from "./product.validate";
 import permission from "../utils/permission";
-import baseValidate from "../utils/validate";
 
 const productRouter = Router();
 productRouter.get(
-  "/:page/:perPage",
-  productValidate.pagePerPage,
+  "/",
+  validate(productValidate.validateGetProduct),
   product.getProduct
 );
-productRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
+productRouter.use(
+  auth.passport,
+  auth.authenticate([permission.MANAGER, permission.STAFF])
+);
 productRouter.post(
   "/",
-  baseValidate.validateId,
   validate(productValidate.productInfor),
   product.addProduct
 );
 productRouter.delete(
   "/:productId",
-  baseValidate.validateId,
+  validate(productValidate.productId),
   product.deleteProduct
 );
 productRouter.put(
   "/:productId",
-  baseValidate.validateId,
+  validate(productValidate.productId),
   validate(productValidate.productInfor),
   product.updateProduct
 );
-
-productRouter.post("/category",validate(productValidate.categoryId),product.getAllByCategory);
-
-
 
 export default productRouter;

@@ -8,6 +8,7 @@ import baseValidate from "../utils/validate"
 
 const userRouter = Router();
 const adminRouter= Router();
+const mainRouter = Router();
 userRouter.post(
   "/login",
   validate(baseValidate.validateLogin),
@@ -22,19 +23,20 @@ userRouter.get("/me", auth.passport, auth.authenticate([permission.USER]), userC
 adminRouter.use(auth.passport, auth.authenticate([permission.MANAGER,permission.STAFF]))
 adminRouter.delete(
   "/:id",
-  baseValidate.validateId,
+  validate(baseValidate.validateId),
   userController.adminDeleteUser
 );
 adminRouter.put(
   "/:id",
-  baseValidate.validateId,
+  validate(baseValidate.validateId),
   validate(baseValidate.validateNamePass),
   userController.adminUpdateUser
 );
 adminRouter.get(
-  "/:id",
-  baseValidate.validateId,
+  "/",
+  validate(userValidate.validateAdminGet),
   userController.adminGetUser
 );
-userRouter.use("/admin",adminRouter)
-export default userRouter;
+mainRouter.use(userRouter);
+mainRouter.use("/admin",adminRouter);
+export default mainRouter;
