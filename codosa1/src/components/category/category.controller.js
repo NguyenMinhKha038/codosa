@@ -70,8 +70,8 @@ const getListCategory = async (req, res, next) => {
 };
 const getAllProduct = async (req, res, next) => {
   try {
-    const categoryId = req.query.categoryId;
-    const listProduct = await productService.get({ categoryId: categoryId });
+    const query = req.query;
+    const listProduct = await productService.get(query);
     if (!listProduct.length) {
       throw new BaseError({
         name: categoryId,
@@ -86,10 +86,10 @@ const getAllProduct = async (req, res, next) => {
 };
 const updateCategory = async (req, res, next) => {
   try {
-    const { name, newName } = req.body;
+    const newName  = req.body.newName;
     const categoryId = req.params.categoryId;
     const [existedCategory, existedNewName] = await Promise.all([
-      categoryService.getOne({ name: name }),
+      categoryService.getOne({ _id: categoryId }),
       categoryService.getOne({ name: newName }),
     ]);
     if (!existedCategory) {

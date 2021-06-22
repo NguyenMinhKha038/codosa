@@ -15,7 +15,7 @@ const getCart = async (req, res, next) => {
       null,
       { populate: "product.productId" }
     );
-    if (!cart.length) {
+    if (!cart.products.length) {
       throw new BaseError({
         name: userId,
         httpCode: statusCode.NOT_FOUND,

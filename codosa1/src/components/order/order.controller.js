@@ -166,7 +166,7 @@ const adminDeleteOrder = async (req, res) => {
     const orderId = req.params.orderId;
     const order = await orderService.getOne({ _id: orderId });
     const status = order.status;
-    if (status === 4) {
+    if (!order || status === 4) {
       throw new BaseError(
         orderId,
         statusCode.BAD_REQUEST,

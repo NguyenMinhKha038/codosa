@@ -12,7 +12,7 @@ const getNotification = async (req, res, next) => {
       limit: Number(perPage),
       populate: "orderId",
     });
-    if (!notifications) {
+    if (!notifications.length) {
       throw new BaseError({
         name: "Notification",
         httpCode: statusCode.NOT_FOUND,

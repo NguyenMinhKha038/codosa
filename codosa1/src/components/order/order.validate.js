@@ -11,18 +11,14 @@ const receiverInfor = {
   }),
 };
 
-const validateStatus = (req, res, next) => {
-  const statusArr = [0, 1, 2, 3, 4];
-  const status = Number(req.params.status);
-  if (statusArr.includes(status) === false) {
-    throw new BaseError({
-      name: status,
-      httpCode: statusCode.BAD_REQUEST,
-      description: errorList.VALIDATE_STATUS,
-    });
-  }
-  next();
-};
+const validateUpdateStatus = {
+  params: Joi.object({
+    orderId: Joi.string()
+      .regex(/^[0-9a-fA-F]{24}$/)
+      .required(),
+    status:Joi.number().min(1).max(4).required()
+  }),
+}
 const validateOrderId = {
   params: Joi.object({
     orderId: Joi.string()
@@ -43,7 +39,7 @@ const validateAdminGetOrder= {
 };
 export default {
   receiverInfor,
-  validateStatus,
+  validateUpdateStatus,
   validateOrderId,
   validateAdminGetOrder
 };

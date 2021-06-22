@@ -12,7 +12,8 @@ const validateManagerGet = {
   query: Joi.object({
     name:Joi.string(),
     status:Joi.number().min(0).max(1),
-    email: Joi.string().email()
+    email: Joi.string().email(),
+    _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
   }),
 };
 const validateId = {

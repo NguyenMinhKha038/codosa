@@ -41,8 +41,7 @@ adminRouter.delete(
 //status update
 adminRouter.put(
   "/status/:orderId/:status",
-  orderValidate.validateStatus,
-  validate(orderValidate.validateOrderId),
+  validate(orderValidate.validateUpdateStatus),
   orderController.updateStatus
 );
 

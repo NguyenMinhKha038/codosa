@@ -10,8 +10,8 @@ import mongoose from "mongoose";
 const userRegister = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-    const userExits = await userService.getOne({ email });
-    if (userExits) {
+    const existedUser = await userService.getOne({ email });
+    if (existedUser) {
       throw new BaseError({
         name: { name, email },
         httpCode: statusCode.ALREADY_EXITS,
@@ -69,10 +69,10 @@ const getInfo = async (req, res) => {
 const adminDeleteUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    const userExits = await userService.getOne({ _id: userId });
-    if (!userExits) {
+    const user = await userService.getOne({ _id: userId });
+    if (!user) {
       throw new BaseError({
-        name: email,
+        name: userId,
         httpCode: statusCode.BAD_REQUEST,
         description: errorList.FIND_ERROR,
       });

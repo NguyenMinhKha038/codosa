@@ -6,8 +6,7 @@ import { productService } from "../products/product.service";
 
 const search = async (req, res, next) => {
   try {
-    const { page, perPage } = req.query;
-    const name = req.body.name;
+    const { page, perPage,name } = req.query;
     const product = await productService.get(
       {
         name: { $regex: name, $options: "$i" },

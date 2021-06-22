@@ -41,7 +41,6 @@ const addProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const {page,perPage}= req.query;
-    console.log(status)
     const product = await productService.get(null,null,{limit: Number(perPage), skip: page > 0 ? (page - 1) * perPage : 0});
     if (!product.length) {
       throw new BaseError({
@@ -76,11 +75,12 @@ const deleteProduct = async (req, res, next) => {
 };
 const updateProduct = async (req, res, next) => {
   try {
-    const { quantity, price, newName, description } = req.body;
+    const { quantity, price, newName, description ,categoryId} = req.body;
     const productId = req.params.productId;
-    const [existedProduct,existedNewName] = await Promise.all([
+    const [existedProduct,existedNewName,existedCategory] = await Promise.all([
       productService.getOne({ _id: productId }),
-      productService.getOne({name:newName})
+      productService.getOne({name:newName}),
+      categoryService.getOne({_id:categoryId})
     ]);
     if (!existedProduct) {
       throw new BaseError({
@@ -96,6 +96,13 @@ const updateProduct = async (req, res, next) => {
         description: errorList.ALREADY_EXITS,
       });
     }
+    if(!existedCategory){
+      throw new BaseError({
+        name: categoryId,
+        httpCode: statusCode.NOT_FOUND,
+        description: errorList.FIND_ERROR,
+      });
+    }
     const updatedProduct = await productService.findOneAndUpdate(
       { _id: productId },
       {
@@ -103,6 +110,7 @@ const updateProduct = async (req, res, next) => {
         quantity: quantity,
         price: price,
         description: description,
+        categoryId
       }
     );
     responseSuccess(res, 200, updatedProduct);

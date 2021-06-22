@@ -7,7 +7,6 @@ const categoryValidate = {
 
 const updateCategory = {
   body: Joi.object({
-    name: Joi.string().required(),
     newname: Joi.string().required(),
   }),
 };

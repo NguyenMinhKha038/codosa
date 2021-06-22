@@ -9,8 +9,8 @@ import { userService } from "../users/user.service";
 const staffRegister = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const staffExits = await staffService.getOne({ email });
-    if (staffExits) {
+    const existedStaff = await staffService.getOne({ email });
+    if (existedStaff) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.ALREADY_EXITS,
@@ -85,7 +85,7 @@ const managerGetStaff = async (req, res, next) => {
 };
 const managerUpdateStaff = async (req, res, next) => {
   try {
-    const { email, name, password } = req.body;
+    const { name, password } = req.body;
     const staffId = req.params.id;
     const staff = staffService.getOne({ _id: staffId });
     if (!staff) {
@@ -108,8 +108,8 @@ const managerUpdateStaff = async (req, res, next) => {
 const managerDeleteStaff = async (req, res, next) => {
   try {
     const staffId = req.params.id;
-    const staffExits = await staffService.getOne({ _id: staffId });
-    if (!staffExits) {
+    const staff = await staffService.getOne({ _id: staffId });
+    if (!staff) {
       throw new BaseError({
         name: staffId,
         httpCode: statusCode.BAD_REQUEST,

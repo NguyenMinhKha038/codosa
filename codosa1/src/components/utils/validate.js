@@ -39,7 +39,7 @@ const validateEmailNamePass = {
 };
 const validateId = {
   params: Joi.object({
-    id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
   }),
 };
 export default {

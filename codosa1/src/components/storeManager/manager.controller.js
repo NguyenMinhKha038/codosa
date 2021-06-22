@@ -9,8 +9,8 @@ import { managerService } from "./manager.service";
 const managerRegister = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-    const managerExits = await managerService.getOne({ email });
-    if (managerExits) {
+    const existedManager = await managerService.getOne({ email });
+    if (existedManager) {
       throw new BaseError({
         name: name,
         httpCode: statusCode.ALREADY_EXITS,
