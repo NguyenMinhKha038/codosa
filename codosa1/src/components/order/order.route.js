@@ -3,14 +3,17 @@ import { validate, ValidationError, Joi } from "express-validation";
 import auth from "../utils/auth";
 import orderController from "./order.controller";
 import orderValidate from "./order.validate";
-import permission from "../utils/permission"
-import baseValidate from "../utils/validate"
+import permission from "../utils/permission";
+import baseValidate from "../utils/validate";
 
 const userRouter = Router();
 const adminRouter = Router();
-const mainRouter=Router();
+const mainRouter = Router();
 userRouter.use(auth.passport, auth.authenticate([permission.USER]));
-adminRouter.use(auth.passport, auth.authenticate([permission.STAFF,permission.MANAGER]));
+adminRouter.use(
+  auth.passport,
+  auth.authenticate([permission.STAFF, permission.MANAGER])
+);
 userRouter.post(
   "/",
   validate(orderValidate.receiverInfor),
@@ -22,7 +25,10 @@ userRouter.put(
   validate(orderValidate.receiverInfor),
   orderController.updateOrder
 );
-userRouter.get("/", orderController.userGetOrder);
+userRouter.get(
+  "/",
+  orderController.userGetOrder
+);
 userRouter.delete(
   "/:orderId",
   validate(orderValidate.validateOrderId),
@@ -45,8 +51,7 @@ adminRouter.put(
   orderController.updateStatus
 );
 
-mainRouter.use("/user",userRouter)
-mainRouter.use("/admin",adminRouter);
+mainRouter.use("/user", userRouter);
+mainRouter.use("/admin", adminRouter);
 
-
-export default mainRouter ;
+export default mainRouter;

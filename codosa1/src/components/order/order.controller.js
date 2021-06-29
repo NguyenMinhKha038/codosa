@@ -82,7 +82,14 @@ const createOrder = async (req, res, next) => {
 const userGetOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const order = await orderService.get({ userId });
+    const { page, perPage } = req.query;
+    const order = await orderService.get(
+      { userId },
+      null,
+      {
+        populate: "products.productId",
+      }
+    );
     if (!order.length) {
       throw new BaseError({
         name: userId,
@@ -103,7 +110,7 @@ const adminGetOrder = async (req, res, next) => {
       throw new BaseError({
         name: query,
         httpCode: statusCode.BAD_REQUEST,
-        description: errorList.FIND_ERROR ,
+        description: errorList.FIND_ERROR,
       });
     }
     responseSuccess(res, 200, order);
@@ -122,7 +129,7 @@ const updateOrder = async (req, res, next) => {
       userId: userId,
     });
     const status = order.status;
-    if (status > 2) {
+    if (status > 2 || status === 0) {
       throw new BaseError({
         name: order,
         httpCode: statusCode.BAD_REQUEST,
@@ -190,11 +197,11 @@ const updateStatus = async (req, res, next) => {
     ];
     const order = await orderService.getOne({ _id: orderId });
     if (order && order.status + 1 === status) {
-      await orderService.findOneAndUpdate(
+      const updatedOrder = await orderService.findOneAndUpdate(
         { _id: orderId },
         { status: orderStatus[status] }
       );
-      responseSuccess(res, 200, order);
+      responseSuccess(res, 200, updatedOrder);
     }
     throw new BaseError({
       name: orderId,

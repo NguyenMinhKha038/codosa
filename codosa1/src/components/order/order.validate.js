@@ -37,6 +37,7 @@ const validateAdminGetOrder= {
   
   }),
 };
+
 export default {
   receiverInfor,
   validateUpdateStatus,

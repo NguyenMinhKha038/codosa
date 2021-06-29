@@ -110,7 +110,7 @@ const updateCategory = async (req, res, next) => {
       { _id: categoryId },
       { name: newName }
     );
-    responseSuccess(res, 200, { name, newName });
+    responseSuccess(res, 200, {newName });
   } catch (error) {
     next(error);
   }
