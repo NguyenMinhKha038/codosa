@@ -23,7 +23,7 @@ const search = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res,200, arrProduct);
+    return responseSuccess(res,200, arrProduct);
   } catch (error) {
     next(error);
   }

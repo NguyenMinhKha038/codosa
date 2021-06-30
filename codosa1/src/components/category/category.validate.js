@@ -22,6 +22,8 @@ const validateCategoryIdInQuery = {
     categoryId: Joi.string()
       .regex(/^[0-9a-fA-F]{24}$/)
       .required(),
+    page: Joi.number().min(1).required(),
+    perPage: Joi.number().min(1).max(30).required(),
   }),
 };
 export default {

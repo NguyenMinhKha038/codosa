@@ -23,7 +23,7 @@ const staffRegister = async (req, res, next) => {
       password: hash,
       email,
     });
-    responseSuccess(res, 201, { email, name });
+    return responseSuccess(res, 201, { email, name });
   } catch (error) {
     next(error);
   }
@@ -49,7 +49,7 @@ const staffLogin = async (req, res) => {
     };
     let token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    responseSuccess(res, 200, token);
+    return responseSuccess(res, 200, token);
   } catch (error) {
     next(error);
   }
@@ -57,7 +57,7 @@ const staffLogin = async (req, res) => {
 const getInfo = async (req, res, next) => {
   try {
     const { email, name, role } = req.user;
-    responseSuccess(res, 200, { email: email, name: name, role: role });
+    return responseSuccess(res, 200, { email: email, name: name, role: role });
   } catch (error) {
     next(error);
   }
@@ -73,7 +73,7 @@ const managerGetStaff = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, {
+    return responseSuccess(res, 200, {
       name: staff.name,
       email: staff.email,
       status: staff.status,
@@ -100,7 +100,7 @@ const managerUpdateStaff = async (req, res, next) => {
       { _id: staffId },
       { name: name, password: hash}
     );
-    responseSuccess(res, 200, name );
+    return responseSuccess(res, 200, name );
   } catch (error) {
     next(error);
   }
@@ -117,7 +117,7 @@ const managerDeleteStaff = async (req, res, next) => {
       });
     }
     await staffService.findOneAndDisable({ _id: staffId });
-    responseSuccess(res, 204, staffId);
+    return responseSuccess(res, 204, staffId);
   } catch (error) {
     next(error);
   }

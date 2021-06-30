@@ -27,7 +27,7 @@ const userRegister = async (req, res, next) => {
     await cartService.create({
       userId: newUser._id,
     });
-    responseSuccess(res, 201, { name, email });
+    return responseSuccess(res, 201, { name, email });
   } catch (error) {
     next(error);
   }
@@ -52,7 +52,7 @@ const userLogin = async (req, res, next) => {
     };
     const token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    responseSuccess(res, 200, token);
+    return responseSuccess(res, 200, token);
   } catch (error) {
     next(error);
   }
@@ -61,7 +61,7 @@ const userLogin = async (req, res, next) => {
 const getInfo = async (req, res) => {
   try {
     const { name, role, email } = req.user;
-    responseSuccess(res, 200, { name: name, role: role, email: email });
+    return responseSuccess(res, 200, { name: name, role: role, email: email });
   } catch (error) {
     next(error);
   }
@@ -78,7 +78,7 @@ const adminDeleteUser = async (req, res, next) => {
       });
     }
     await userService.findOneAndDisable({ _id: userId });
-    responseSuccess(res, 204, userId);
+    return responseSuccess(res, 204, userId);
   } catch (error) {
     next(error);
   }
@@ -100,7 +100,7 @@ const adminUpdateUser = async (req, res, next) => {
       { _id: userId },
       { name: name, password: hash }
     );
-    responseSuccess(res, 200,  name );
+    return responseSuccess(res, 200,  name );
   } catch (error) {
     next(error);
   }
@@ -116,7 +116,7 @@ const adminGetUser = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, user);
+    return responseSuccess(res, 200, user);
   } catch (error) {
     next(error);
   }

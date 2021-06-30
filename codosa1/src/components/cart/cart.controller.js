@@ -22,7 +22,7 @@ const getCart = async (req, res, next) => {
         description: errorList.CART_EMPTY,
       });
     }
-    responseSuccess(res, 200, cart.products);
+    return responseSuccess(res, 200, cart.products);
   } catch (error) {
     next(error);
   }
@@ -66,7 +66,7 @@ const updateCart = async (req, res, next) => {
       option
     );
     await session.commitTransaction();
-    responseSuccess(res, 200, products);
+    return responseSuccess(res, 200, products);
   } catch (error) {
     await session.abortTransaction();
     next(error);

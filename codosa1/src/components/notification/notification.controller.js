@@ -19,7 +19,7 @@ const getNotification = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, notifications);
+    return responseSuccess(res, 200, notifications);
   } catch (error) {
     next(error);
   }

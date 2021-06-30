@@ -23,7 +23,7 @@ const managerRegister = async (req, res, next) => {
       password: hash,
       email,
     });
-    responseSuccess(res, 201, { email, name });
+    return responseSuccess(res, 201, { email, name });
   } catch (err) {
     next(error);
   }
@@ -49,7 +49,7 @@ const managerLogin = async (req, res, next) => {
     };
     const token = jwt.sign(payload, process.env.privateKey);
     req.user = token;
-    responseSuccess(res, 200, token);
+    return responseSuccess(res, 200, token);
   } catch (error) {
     next(error);
   }
@@ -58,7 +58,7 @@ const managerLogin = async (req, res, next) => {
 const getInfo = async (req, res, next) => {
   try {
     const { name, role, email } = req.user;
-    responseSuccess(res, 200, { name: name, role: role, email: email });
+    return responseSuccess(res, 200, { name: name, role: role, email: email });
   } catch (error) {
     next(error);
   }

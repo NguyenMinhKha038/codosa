@@ -32,7 +32,7 @@ const addProduct = async (req, res, next) => {
       categoryId,
       description,
     });
-    responseSuccess(res, 201, newProduct);
+    return responseSuccess(res, 201, newProduct);
   } catch (error) {
     next(error);
   }
@@ -49,7 +49,7 @@ const getProduct = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, product);
+    return responseSuccess(res, 200, product);
   } catch (error) {
     next(error);
   }
@@ -68,7 +68,7 @@ const deleteProduct = async (req, res, next) => {
     const disabledProduct = await productService.findOneAndDisable({
       _id: producId,
     });
-    responseSuccess(res, 204, disabledProduct);
+    return responseSuccess(res, 204, disabledProduct);
   } catch (error) {
     next(error);
   }
@@ -113,7 +113,7 @@ const updateProduct = async (req, res, next) => {
         categoryId
       }
     );
-    responseSuccess(res, 200, updatedProduct);
+    return responseSuccess(res, 200, updatedProduct);
   } catch (error) {
     next(error);
   }

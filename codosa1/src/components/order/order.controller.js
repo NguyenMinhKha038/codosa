@@ -21,7 +21,7 @@ const createOrder = async (req, res, next) => {
     const { address, phone } = req.body;
     const cart = await cartService.getOne({ userId: userId }, null, {
       populate: "products.productId",
-      option,
+      option
     });
     if (!cart.products.length) {
       throw new BaseError({
@@ -70,7 +70,7 @@ const createOrder = async (req, res, next) => {
       ),
     ]);
     await session.commitTransaction();
-    responseSuccess(res, 200, orderInfo);
+    return responseSuccess(res, 200, orderInfo);
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -83,13 +83,9 @@ const userGetOrder = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const { page, perPage } = req.query;
-    const order = await orderService.get(
-      { userId },
-      null,
-      {
-        populate: "products.productId",
-      }
-    );
+    const order = await orderService.get({ userId }, null, {
+      populate: "products.productId",
+    });
     if (!order.length) {
       throw new BaseError({
         name: userId,
@@ -97,7 +93,7 @@ const userGetOrder = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, order);
+    return responseSuccess(res, 200, order);
   } catch (error) {
     next(error);
   }
@@ -113,7 +109,7 @@ const adminGetOrder = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, order);
+    return responseSuccess(res, 200, order);
   } catch (error) {
     next(error);
   }
@@ -140,7 +136,7 @@ const updateOrder = async (req, res, next) => {
       { _id: orderId, userId: userId },
       { address: address, phone: phone, updateDay: Date.now() }
     );
-    responseSuccess(res, 200, orderUpdated);
+    return responseSuccess(res, 200, orderUpdated);
   } catch (error) {
     next(error);
   }
@@ -163,7 +159,7 @@ const userDeleteOrder = async (req, res, next) => {
       });
     }
     await orderService.findOneAndDisable({ _id: orderId, userId: userId });
-    responseSuccess(res, 204, orderId);
+    return responseSuccess(res, 204, orderId);
   } catch (error) {
     next(error);
   }
@@ -181,7 +177,7 @@ const adminDeleteOrder = async (req, res) => {
       );
     }
     await orderService.findOneAndDisable({ _id: orderId });
-    responseSuccess(res, 204, orderId);
+    return responseSuccess(res, 204, orderId);
   } catch (error) {
     next(error);
   }
@@ -190,18 +186,28 @@ const adminDeleteOrder = async (req, res) => {
 const updateStatus = async (req, res, next) => {
   try {
     const { orderId, status } = req.params;
-    const orderStatus = [
-      statusMiddleWare.orderStatus.PROCESSING,
-      statusMiddleWare.orderStatus.SHIPPING,
-      statusMiddleWare.orderStatus.FINISH,
-    ];
+
     const order = await orderService.getOne({ _id: orderId });
-    if (order && order.status + 1 === status) {
+    if (order && order.status + 1 === Number(status)) {
+      if (Number(status) === 4) {
+        const updatedOrder = await orderService.findOneAndUpdate(
+          { _id: orderId },
+          { status: status, finishDay: Date.now() }
+        );
+        return responseSuccess(res, 200, updatedOrder);
+      }
+      if (Number(status) === 3) {
+        const updatedOrder = await orderService.findOneAndUpdate(
+          { _id: orderId },
+          { status: status, deliveryDay: Date.now() }
+        );
+        return responseSuccess(res, 200, updatedOrder);
+      }
       const updatedOrder = await orderService.findOneAndUpdate(
         { _id: orderId },
-        { status: orderStatus[status] }
+        { status: status }
       );
-      responseSuccess(res, 200, updatedOrder);
+      return responseSuccess(res, 200, updatedOrder);
     }
     throw new BaseError({
       name: orderId,

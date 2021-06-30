@@ -6,12 +6,12 @@ import auth from "../utils/auth";
 import permission from "../utils/permission"
 const reportRouter = Router();
 reportRouter.use(auth.passport,auth.authenticate([permission.MANAGER,permission.STAFF]))
-reportRouter.get(
+reportRouter.post(
   "/product",
   validate(reportValidate.Day),
   reportController.reportProduct
 );
-reportRouter.get(
+reportRouter.post(
   "/category",
   validate(reportValidate.Day),
   reportController.reportCategory

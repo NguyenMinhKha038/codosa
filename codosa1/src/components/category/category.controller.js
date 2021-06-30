@@ -21,7 +21,7 @@ const addCategory = async (req, res, next) => {
     const category = await categoryService.create({
       name: categoryName,
     });
-    responseSuccess(res, 201, category);
+    return responseSuccess(res, 201, category);
   } catch (error) {
     next(error);
   }
@@ -32,8 +32,8 @@ const deleteCategory = async (req, res, next) => {
   const option = { session, new: true };
   try {
     const categoryId = req.params.categoryId;
-    const category = await categoryService.getOne({_id:categoryId});
-    if(!category){
+    const category = await categoryService.getOne({ _id: categoryId });
+    if (!category) {
       throw new BaseError({
         name: categoryId,
         httpCode: statusCode.BAD_REQUEST,
@@ -45,7 +45,7 @@ const deleteCategory = async (req, res, next) => {
       productService.findOneAndDisable({ categoryId: categoryId }, option),
     ]);
     await session.commitTransaction();
-    responseSuccess(res, 204, categoryId);
+    return responseSuccess(res, 204, categoryId);
   } catch (error) {
     await session.abortTransaction();
     next(error);
@@ -63,15 +63,18 @@ const getListCategory = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, categories);
+    return responseSuccess(res, 200, categories);
   } catch (error) {
     next(error);
   }
 };
 const getAllProduct = async (req, res, next) => {
   try {
-    const query = req.query;
-    const listProduct = await productService.get(query);
+    const { page, perPage, categoryId } = req.query;
+    const listProduct = await productService.get({ _id: categoryId }, null, {
+      limit: Number(perPage),
+      skip: page > 0 ? (page - 1) * perPage : 0,
+    });
     if (!listProduct.length) {
       throw new BaseError({
         name: categoryId,
@@ -79,14 +82,14 @@ const getAllProduct = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, listProduct);
+    return responseSuccess(res, 200, listProduct);
   } catch (error) {
     next(error);
   }
 };
 const updateCategory = async (req, res, next) => {
   try {
-    const newName  = req.body.newName;
+    const newName = req.body.newName;
     const categoryId = req.params.categoryId;
     const [existedCategory, existedNewName] = await Promise.all([
       categoryService.getOne({ _id: categoryId }),
@@ -110,7 +113,7 @@ const updateCategory = async (req, res, next) => {
       { _id: categoryId },
       { name: newName }
     );
-    responseSuccess(res, 200, {newName });
+    return responseSuccess(res, 200, { newName });
   } catch (error) {
     next(error);
   }

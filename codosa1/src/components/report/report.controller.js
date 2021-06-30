@@ -18,7 +18,7 @@ const reportProduct = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, report);
+    return responseSuccess(res, 200, report);
   } catch (error) {
     next(error);
   }
@@ -37,7 +37,7 @@ const reportCategory = async (req, res, next) => {
         description: errorList.FIND_ERROR,
       });
     }
-    responseSuccess(res, 200, report);
+    return responseSuccess(res, 200, report);
   } catch (error) {
     next(error);
   }
